@@ -5,13 +5,16 @@
   "author": "David Moody <david@davidxmoody.com> (https://davidxmoody.com/)",
   "license": "MIT",
   "scripts": {
-    "start": "babel-node --harmony src/build.js"
+    "start": "babel-node --harmony src/build.js",
+    "test": "mocha --compilers js:babel-register",
+    "watch": "mocha --watch --compilers js:babel-register"
   },
   "dependencies": {
     "babel-cli": "^6.3.17",
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-react": "^6.3.13",
     "babel-preset-stage-0": "^6.3.13",
+    "babel-register": "^6.3.13",
     "bem-classname": "^0.1.1",
     "chai": "^3.4.1",
     "mocha": "^2.3.4",
