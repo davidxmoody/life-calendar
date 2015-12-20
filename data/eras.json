@@ -1,0 +1,30 @@
+[
+  {
+    "start": "1990-07-04",
+    "name": "Before school"
+  },
+  {
+    "start": "1995-09-01",
+    "name": "Primary school"
+  },
+  {
+    "start": "2001-09-01",
+    "name": "Secondary school"
+  },
+  {
+    "start": "2006-09-12",
+    "name": "Strode College"
+  },
+  {
+    "start": "2008-10-06",
+    "name": "University of Cambridge"
+  },
+  {
+    "start": "2011-06-23",
+    "name": "At home"
+  },
+  {
+    "start": "2015-03-23",
+    "name": "Working at MFT"
+  }
+]
