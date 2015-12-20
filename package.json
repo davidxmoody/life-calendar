@@ -5,7 +5,7 @@
   "author": "David Moody <david@davidxmoody.com> (https://davidxmoody.com/)",
   "license": "MIT",
   "scripts": {
-    "start": "babel-node --harmony --presets es2015,stage-0,react src/build.js"
+    "start": "babel-node --harmony src/build.js"
   },
   "dependencies": {
     "babel-cli": "^6.3.17",
@@ -13,6 +13,9 @@
     "babel-preset-react": "^6.3.13",
     "babel-preset-stage-0": "^6.3.13",
     "bem-classname": "^0.1.1",
+    "chai": "^3.4.1",
+    "mocha": "^2.3.4",
+    "moment": "^2.10.6",
     "ramda": "^0.18.0",
     "react": "^0.14.3",
     "react-dom": "^0.14.3"
