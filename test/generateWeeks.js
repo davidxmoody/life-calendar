@@ -5,10 +5,11 @@ import moment from 'moment'
 import {tail, last} from 'ramda'
 
 const birthDate = '1990-07-04'
+const currentDate = '2015-12-22'
 
 describe('generateWeeks', function() {
   before(() => {
-    this.weeks = generateWeeks(birthDate, eras)
+    this.weeks = generateWeeks({birthDate, eras, currentDate})
   })
 
   it('should make a longer first week', () => {
@@ -52,5 +53,23 @@ describe('generateWeeks', function() {
 
     expect(yearsToLastWeek).to.be.lessThan(90)
     expect(yearsToWeekAfterLastWeek).to.be.eql(90)
+  })
+
+  it('should add correct temporal statuses to all weeks', () => {
+    let presentCount = 0
+    for (const week of this.weeks) {
+      if (week.endDate < currentDate) {
+        expect(week.temporalStatus).to.eql('past')
+      } else if (week.startDate > currentDate) {
+        expect(week.temporalStatus).to.eql('future')
+      } else {
+        expect(week.temporalStatus).to.eql('present')
+        presentCount++
+      }
+    }
+
+    expect(presentCount).to.eql(1)
+    expect(this.weeks[0].temporalStatus).to.eql('past')
+    expect(last(this.weeks).temporalStatus).to.eql('future')
   })
 })

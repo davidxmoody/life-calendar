@@ -33,8 +33,22 @@ function makeWeek({birthDate, startDate, maxAge}) {
   }]
 }
 
-export default function(birthDate, eras) {
+function addTemporalStatus(weeks, currentDate) {
+  for (const week of weeks) {
+    if (week.endDate < currentDate) {
+      week.temporalStatus = 'past'
+    } else if (week.startDate > currentDate) {
+      week.temporalStatus = 'future'
+    } else {
+      week.temporalStatus = 'present'
+    }
+  }
+}
+
+export default function({birthDate, eras, currentDate}) {
   const weeks = unfold(makeWeek, {birthDate, startDate: birthDate, maxAge: 90})
+
+  addTemporalStatus(weeks, currentDate)
 
   return weeks
 }
