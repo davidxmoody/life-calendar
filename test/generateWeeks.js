@@ -1,11 +1,25 @@
 import {expect} from 'chai'
 import generateWeeks from '../src/generateWeeks'
-import eras from '../data/eras'
 import moment from 'moment'
-import {tail, last} from 'ramda'
+import {head, tail, last} from 'ramda'
 
 const birthDate = '1990-07-04'
 const currentDate = '2015-12-22'
+
+const eras = [
+  {
+    startDate: '1990-07-04',
+    name: 'Era1',
+  },
+  {
+    startDate: '1995-09-01',
+    name: 'Era2',
+  },
+  {
+    startDate: '2001-09-01',
+    name: 'Era3',
+  },
+]
 
 describe('generateWeeks', function() {
   before(() => {
@@ -13,8 +27,8 @@ describe('generateWeeks', function() {
   })
 
   it('should make a longer first week', () => {
-    expect(this.weeks[0].startDate).to.eql(birthDate)
-    expect(this.weeks[0].endDate).to.eql('1990-07-15')
+    expect(head(this.weeks).startDate).to.eql(birthDate)
+    expect(head(this.weeks).endDate).to.eql('1990-07-15')
   })
 
   it('should make every week (except the first) span seven days', () => {
@@ -69,7 +83,13 @@ describe('generateWeeks', function() {
     }
 
     expect(presentCount).to.eql(1)
-    expect(this.weeks[0].temporalStatus).to.eql('past')
+    expect(head(this.weeks).temporalStatus).to.eql('past')
     expect(last(this.weeks).temporalStatus).to.eql('future')
+  })
+
+  it('should add eras to each week', () => {
+    expect(head(this.weeks).era).to.eql('Era1')
+    expect(this.weeks[7 * 52].era).to.eql('Era2')
+    expect(last(this.weeks).era).to.eql('Era3')
   })
 })

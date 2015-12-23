@@ -45,10 +45,21 @@ function addTemporalStatus(weeks, currentDate) {
   }
 }
 
+function addEras(weeks, eras) {
+  for (const week of weeks) {
+    for (const era of eras) {
+      if (era.startDate <= week.startDate) {
+        week.era = era.name
+      }
+    }
+  }
+}
+
 export default function({birthDate, eras, currentDate}) {
   const weeks = unfold(makeWeek, {birthDate, startDate: birthDate, maxAge: 90})
 
   addTemporalStatus(weeks, currentDate)
+  addEras(weeks, eras)
 
   return weeks
 }
