@@ -6,19 +6,15 @@ export default function Week({
   endDate,
   currentDate,
   yearNum,
-  weekNum,
   era,
-  subEras,
+  temporalStatus,
+  color,
 }) {
-  const temporalStatus = endDate < currentDate ? (
-    'past'
-  ) : startDate > currentDate ? (
-    'future'
-  ) : (
-    'present'
-  )
 
   return (
-    <div className={cx('lifecal', 'week', [temporalStatus])}></div>
+    <div
+      className={cx('lifecal', 'week', [temporalStatus])}
+      style={{background: color}}
+    ></div>
   )
 }

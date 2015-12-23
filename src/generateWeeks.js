@@ -1,5 +1,6 @@
 import moment from 'moment'
 import {unfold} from 'ramda'
+import getWeekColor from './getWeekColor'
 
 function isEndOfWeek(date) {
   return moment(date).format('ddd') === 'Sun'
@@ -21,7 +22,6 @@ function makeWeek({birthDate, startDate, maxAge}) {
     startDate,
     endDate,
     yearNum: Math.abs(moment(startDate).diff(birthDate, 'years')),
-    weekNum: moment(startDate).diff(birthDate, 'weeks'),
   }
 
   if (week.yearNum >= maxAge) return false
@@ -55,11 +55,19 @@ function addEras(weeks, eras) {
   }
 }
 
+function addColors(weeks) {
+  for (const week of weeks) {
+    week.color = getWeekColor(week)
+  }
+}
+
 export default function({birthDate, eras, currentDate}) {
   const weeks = unfold(makeWeek, {birthDate, startDate: birthDate, maxAge: 90})
 
+  // TODO this has become a bit awkward, could use a Ramda pipeline instead
   addTemporalStatus(weeks, currentDate)
   addEras(weeks, eras)
+  addColors(weeks)
 
   return weeks
 }

@@ -92,4 +92,19 @@ describe('generateWeeks', function() {
     expect(this.weeks[7 * 52].era).to.eql('Era2')
     expect(last(this.weeks).era).to.eql('Era3')
   })
+
+  it('should add correct year numbers', () => {
+    expect(head(this.weeks).yearNum).to.eql(0)
+    expect(this.weeks[ 0 * 52 + 20].yearNum).to.eql(0)
+    expect(this.weeks[ 1 * 52 + 20].yearNum).to.eql(1)
+    expect(this.weeks[ 7 * 52 + 20].yearNum).to.eql(7)
+    expect(this.weeks[60 * 52 + 20].yearNum).to.eql(60)
+    expect(last(this.weeks).yearNum).to.eql(89)
+  })
+
+  it('should add colors to every week', () => {
+    for (const week of this.weeks) {
+      expect(week.color).to.exist
+    }
+  })
 })
