@@ -1,18 +1,16 @@
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
+import moment from 'moment'
 import generateWeeks from './generateWeeks'
 import birthDate from '../data/birthDate'
 import eras from '../data/eras'
-import Week from './components/Week'
+import Calendar from './components/Calendar'
 
-const weeks = generateWeeks({birthDate, eras})
+const currentDate = moment().format('YYYY-MM-DD')
+const weeks = generateWeeks({currentDate, birthDate, eras})
 
-const weeksHtml = ReactDOMServer.renderToStaticMarkup(
-  <div>
-    {weeks.map(week => (
-      <Week {...week} />
-    ))}
-  </div>
+const calendarString = ReactDOMServer.renderToStaticMarkup(
+  <Calendar currentDate={currentDate} weeks={weeks} />
 )
 
-console.log(weeksHtml)
+console.log(calendarString)
