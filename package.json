@@ -5,7 +5,7 @@
   "author": "David Moody <david@davidxmoody.com> (https://davidxmoody.com/)",
   "license": "MIT",
   "scripts": {
-    "start": "webpack-dev-server",
+    "start": "webpack-dev-server --inline",
     "test": "mocha --compilers js:babel-register",
     "test-watch": "mocha --watch --compilers js:babel-register"
   },
@@ -17,6 +17,7 @@
     "babel-register": "^6.3.13",
     "bem-classname": "^0.1.1",
     "chai": "^3.4.1",
+    "json-loader": "^0.5.4",
     "mocha": "^2.3.4",
     "moment": "^2.10.6",
     "ramda": "^0.18.0",
