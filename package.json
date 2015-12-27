@@ -5,9 +5,9 @@
   "author": "David Moody <david@davidxmoody.com> (https://davidxmoody.com/)",
   "license": "MIT",
   "scripts": {
-    "start": "babel-node --harmony src/build.js",
+    "start": "webpack-dev-server",
     "test": "mocha --compilers js:babel-register",
-    "watch": "mocha --watch --compilers js:babel-register"
+    "test-watch": "mocha --watch --compilers js:babel-register"
   },
   "dependencies": {
     "babel-cli": "^6.3.17",
@@ -22,6 +22,12 @@
     "ramda": "^0.18.0",
     "random-seed": "^0.3.0",
     "react": "^0.14.3",
-    "react-dom": "^0.14.3"
+    "react-dom": "^0.14.3",
+    "webpack": "^1.12.9",
+    "webpack-dev-server": "^1.14.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.3.26",
+    "babel-loader": "^6.2.0"
   }
 }
