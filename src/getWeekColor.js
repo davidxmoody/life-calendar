@@ -2,7 +2,7 @@ import {memoize} from 'ramda'
 import randomSeed from 'random-seed'
 
 const getBaseColor = memoize(era => {
-  const seeded = randomSeed.create(era)
+  const seeded = randomSeed.create('9' + era)
   return seeded(360)
 })
 
