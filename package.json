@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "webpack-dev-server --inline",
+    "build": "babel-node src/build.js",
     "test": "mocha --compilers js:babel-register",
     "test-watch": "mocha --watch --compilers js:babel-register"
   },

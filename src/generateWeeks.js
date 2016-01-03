@@ -34,6 +34,8 @@ function makeWeek({birthDate, startDate, maxAge}) {
 }
 
 function addTemporalStatus(weeks, currentDate) {
+  if (!currentDate) return
+
   for (const week of weeks) {
     if (week.endDate < currentDate) {
       week.temporalStatus = 'past'
@@ -46,6 +48,8 @@ function addTemporalStatus(weeks, currentDate) {
 }
 
 function addEras(weeks, eras) {
+  if (!eras) return
+
   for (const week of weeks) {
     for (const era of eras) {
       if (era.startDate <= week.startDate) {
