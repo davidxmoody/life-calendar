@@ -1,20 +1,22 @@
 import React from 'react'
 import Year from './Year'
-import cx from 'bem-classname'
 import {groupBy, toPairs} from 'ramda'
 
-export default function Calendar({
-  weeks,
-  currentDate,
-}) {
+export default class Calendar extends React.Component {
+  shouldComponentUpdate(nextProps) {
+    return nextProps.weeks !== this.props.weeks || nextProps.currentDate !== this.props.currentDate
+  }
 
-  const weeksByYear = groupBy(week => week.yearNum, weeks)
+  render() {
+    const {weeks, currentDate} = this.props
+    const weeksByYear = groupBy(week => week.yearNum, weeks)
 
-  return (
-    <div className={cx('lifecal', 'calendar')}>
-      {toPairs(weeksByYear).map(([yearNum, weeksInYear]) => (
-        <Year key={yearNum} currentDate={currentDate} yearNum={parseInt(yearNum, 10)} weeks={weeksInYear} />
-      ))}
-    </div>
-  )
+    return (
+      <div className="lifecal__calendar card">
+        {toPairs(weeksByYear).map(([yearNum, weeksInYear]) => (
+          <Year key={yearNum} currentDate={currentDate} yearNum={parseInt(yearNum, 10)} weeks={weeksInYear} />
+        ))}
+      </div>
+    )
+  }
 }

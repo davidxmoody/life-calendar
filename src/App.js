@@ -4,7 +4,9 @@ import generateWeeks from './generateWeeks'
 import birthDate from '../data/birthDate'
 import eras from '../data/eras'
 import Calendar from './components/Calendar'
+import Sidebar from './components/Sidebar'
 
+import 'bootstrap/dist/css/bootstrap.min.css'
 import './styles'
 
 export default class App extends React.Component {
@@ -16,12 +18,22 @@ export default class App extends React.Component {
     this.state = {
       currentDate,
       weeks: generateWeeks({currentDate, birthDate, eras}),
+      selectedDate: currentDate,
     }
   }
 
   render() {
     return (
-      <Calendar currentDate={this.state.currentDate} weeks={this.state.weeks} />
+      <div className="lifecal container">
+        <div className="row">
+          <div className="col-md-6">
+            <Calendar currentDate={this.state.currentDate} weeks={this.state.weeks} />
+          </div>
+          <div className="col-md-6">
+            <Sidebar />
+          </div>
+        </div>
+      </div>
     )
   }
 }
