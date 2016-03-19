@@ -1,15 +1,11 @@
 .year {
-  clear: both;
+  display: block;
+  height: 7px;
+  margin-top: 1px;
+  width: calc(53 * 8px);
 }
 
 .yearDecadeEnd {
   composes: year;
-}
-
-.yearDecadeEnd::after {
-  content: ' ';
-  width: 6px;
-  height: 6px;
-  display: block;
-  clear: both;
+  margin-bottom: 8px;
 }
