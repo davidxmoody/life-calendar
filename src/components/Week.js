@@ -1,5 +1,5 @@
 import React from 'react'
-import cx from 'bem-classname'
+import styles from './Week.css'
 
 export default function Week({
   startDate,
@@ -13,7 +13,7 @@ export default function Week({
 
   return (
     <div
-      className={cx('lifecal', 'week', [temporalStatus])}
+      className={styles[temporalStatus]}
       style={{background: color}}
     ></div>
   )

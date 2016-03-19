@@ -12,7 +12,7 @@ export default class Calendar extends React.Component {
     const weeksByYear = groupBy(week => week.yearNum, weeks)
 
     return (
-      <div className="lifecal__calendar card">
+      <div className="card">
         {toPairs(weeksByYear).map(([yearNum, weeksInYear]) => (
           <Year key={yearNum} currentDate={currentDate} yearNum={parseInt(yearNum, 10)} weeks={weeksInYear} />
         ))}

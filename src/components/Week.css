@@ -1,0 +1,27 @@
+.week {
+  border: 1px solid black;
+  width: 5px;
+  height: 5px;
+  margin-left: 1px;
+  margin-top: 1px;
+  float: left;
+}
+
+.week:hover {
+  background: red;
+}
+
+.past {
+  composes: week;
+  background: lightgrey;
+  border: 1px solid grey;
+}
+
+.present {
+  composes: week;
+}
+
+.future {
+  composes: week;
+  opacity: 0.3;
+}
