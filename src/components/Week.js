@@ -1,15 +1,8 @@
 import React from 'react'
 import styles from './Week.css'
 
-export default function Week({
-  startDate,
-  endDate,
-  currentDate,
-  yearNum,
-  era,
-  temporalStatus,
-  color,
-}) {
+export default function Week(props) {
+  const {temporalStatus, color} = props
 
   return (
     <div

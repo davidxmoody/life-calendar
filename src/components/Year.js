@@ -2,12 +2,8 @@ import React from 'react'
 import Week from './Week'
 import styles from './Year.css'
 
-export default function Year({
-  weeks,
-  currentDate,
-  yearNum,
-}) {
-
+export default function Year(props) {
+  const {weeks, currentDate, yearNum} = props
   const decadeEnd = (yearNum + 1) % 10 === 0
 
   return (
