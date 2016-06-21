@@ -6,8 +6,6 @@ import eras from '../data/eras'
 import Calendar from './components/Calendar'
 import Sidebar from './components/Sidebar'
 
-import '!!style!css!bootstrap/dist/css/bootstrap.min.css'
-
 export default class App extends React.Component {
   constructor(props) {
     super(props)
@@ -23,15 +21,9 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col-md-6">
-            <Calendar currentDate={this.state.currentDate} weeks={this.state.weeks} />
-          </div>
-          <div className="col-md-6">
-            <Sidebar selectedDate={this.state.selectedDate} />
-          </div>
-        </div>
+      <div>
+        <Calendar currentDate={this.state.currentDate} weeks={this.state.weeks} />
+        <Sidebar selectedDate={this.state.selectedDate} />
       </div>
     )
   }
