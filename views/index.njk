@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <title>Life calendar</title>
+
+  <style>
+    .year {
+      display: flex;
+      margin-top: 1px;
+    }
+
+    .year--decade-end {
+      margin-bottom: 8px;
+    }
+
+    .week {
+      box-sizing: border-box;
+      border: 1px solid black;
+      width: 9px;
+      height: 9px;
+      margin-left: 1px;
+    }
+
+    .week:target {
+      border: 2px solid red;
+    }
+
+    .week--past {
+      border: 1px solid grey;
+    }
+
+    .week--future {
+      opacity: 0.3;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal--open {
+      display: flex;
+    }
+  </style>
+
+</head>
+<body>
+
+  <div class="calendar">
+    {% for yearNum, yearWeeks in weeks | groupby('yearNum') %}
+      <div class="year{% if ((yearNum | int) + 1) % 10 == 0 %} year--decade-end{% endif %}">
+        {% for week in yearWeeks %}
+          <a
+            class="week week--{{ week.temporalStatus }}"
+            style="background: {{ week.color}};"
+            href="#{{ week.startDate }}"
+            id="{{ week.startDate }}"
+          ></a>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="modal">
+    <iframe frameborder="0"></iframe>
+  </div>
+
+  <script>
+    function openModal(week) {
+      document.querySelector(".modal iframe").src = `/weeks/${week}`
+      document.querySelector(".modal").classList.add("modal--open")
+    }
+
+    document.querySelector(".calendar").addEventListener("click", event => {
+      const el = event.target
+      if (el.classList.contains("week")) {
+        openModal(el.id)
+      }
+    })
+  </script>
+
+</body>
+</html>
