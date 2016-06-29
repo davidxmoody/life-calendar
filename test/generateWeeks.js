@@ -1,7 +1,7 @@
-import {expect} from 'chai'
-import generateWeeks from '../src/generateWeeks'
-import moment from 'moment'
-import {head, tail, last} from 'ramda'
+const {expect} = require('chai')
+const generateWeeks = require('../src/generateWeeks')
+const moment = require('moment')
+const {head, tail, last} = require('ramda')
 
 const birthDate = '1990-07-04'
 const currentDate = '2015-12-22'

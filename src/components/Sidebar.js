@@ -1,6 +1,6 @@
-import React from 'react'
+const React = require('react')
 
-export default function Sidebar(props) {
+module.exports = function Sidebar(props) {
   return (
     <div>
       Selected date: {props.selectedDate}

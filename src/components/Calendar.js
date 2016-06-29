@@ -1,8 +1,8 @@
-import React from 'react'
-import Year from './Year'
-import {groupBy, toPairs} from 'ramda'
+const React = require('react')
+const Year = require('./Year')
+const {groupBy, toPairs} = require('ramda')
 
-export default class Calendar extends React.Component {
+module.exports = class Calendar extends React.Component {
   shouldComponentUpdate(nextProps) {
     return nextProps.weeks !== this.props.weeks || nextProps.currentDate !== this.props.currentDate
   }

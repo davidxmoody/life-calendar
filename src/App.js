@@ -1,12 +1,12 @@
-import React from 'react'
-import moment from 'moment'
-import generateWeeks from './generateWeeks'
-import birthDate from '../data/birthDate'
-import eras from '../data/eras'
-import Calendar from './components/Calendar'
-import Sidebar from './components/Sidebar'
+const React = require('react')
+const moment = require('moment')
+const generateWeeks = require('./generateWeeks')
+const birthDate = require('../data/birthDate')
+const eras = require('../data/eras')
+const Calendar = require('./components/Calendar')
+const Sidebar = require('./components/Sidebar')
 
-export default class App extends React.Component {
+module.exports = class App extends React.Component {
   constructor(props) {
     super(props)
 

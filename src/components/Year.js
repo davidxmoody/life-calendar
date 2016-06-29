@@ -1,8 +1,8 @@
-import React from 'react'
-import Week from './Week'
-import styles from './Year.css'
+const React = require('react')
+const Week = require('./Week')
+const styles = require('./Year.css')
 
-export default function Year(props) {
+module.exports = function Year(props) {
   const {weeks, currentDate, yearNum} = props
   const decadeEnd = (yearNum + 1) % 10 === 0
 

@@ -1,7 +1,7 @@
-import React from 'react'
-import styles from './Week.css'
+const React = require('react')
+const styles = require('./Week.css')
 
-export default function Week(props) {
+module.exports = function Week(props) {
   const {temporalStatus, color} = props
 
   return (

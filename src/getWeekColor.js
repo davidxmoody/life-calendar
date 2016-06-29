@@ -1,5 +1,5 @@
-import {memoize} from 'ramda'
-import randomSeed from 'random-seed'
+const {memoize} = require('ramda')
+const randomSeed = require('random-seed')
 
 const getBaseColor = memoize(era => {
   // TODO Prefixing with a '9' gives slightly more distinct random colors with
@@ -9,7 +9,7 @@ const getBaseColor = memoize(era => {
   return seeded(360)
 })
 
-export default function({era}) {
+module.exports = function({era}) {
   // May someday use other week parameters
   const baseColor = getBaseColor(era)
   return `hsl(${baseColor}, 100%, 50%)`

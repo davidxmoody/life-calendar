@@ -1,6 +1,6 @@
-import moment from 'moment'
-import {unfold} from 'ramda'
-import getWeekColor from './getWeekColor'
+const moment = require('moment')
+const {unfold} = require('ramda')
+const getWeekColor = require('./getWeekColor')
 
 function isEndOfWeek(date) {
   return moment(date).format('ddd') === 'Sun'
@@ -65,7 +65,7 @@ function addColors(weeks) {
   }
 }
 
-export default function({birthDate, eras, currentDate}) {
+module.exports = function({birthDate, eras, currentDate}) {
   const weeks = unfold(makeWeek, {birthDate, startDate: birthDate, maxAge: 90})
 
   // TODO this has become a bit awkward, could use a Ramda pipeline instead

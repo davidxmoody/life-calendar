@@ -1,7 +1,7 @@
-import generateWeeks from './generateWeeks'
-import birthDate from '../data/birthDate'
-import fs from 'fs'
-import path from 'path'
+const generateWeeks = require('./generateWeeks')
+const birthDate = require('../data/birthDate')
+const fs = require('fs')
+const path = require('path')
 
 const baseDir = './weeks'
 
