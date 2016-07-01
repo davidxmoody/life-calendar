@@ -1,18 +1,30 @@
+const path = require('path')
+const webpack = require('webpack')
+
 module.exports = {
-  entry: './src/main.js',
+  devtool: 'eval',
+  entry: [
+    'react-hot-loader/patch',
+    'webpack-dev-server/client?http://localhost:3000',
+    'webpack/hot/only-dev-server',
+    './src/main',
+  ],
   output: {
-    path: './build',
+    path: path.join(__dirname, 'build'),
+    filename: 'bundle.js',
     publicPath: '/',
-    filename: 'bundle.js'
   },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+  ],
   module: {
     loaders: [
-      {test: /\.js$/, exclude: /node_modules/, loader: 'babel'},
-      {test: /\.json$/, exclude: /node_modules/, loader: 'json'},
-      {test: /\.css$/, loader: 'style!css?modules!autoprefixer'}
-    ]
+      {test: /\.js$/, loaders: ['babel'], include: path.join(__dirname, 'src')},
+      {test: /\.json$/, loader: 'json'},
+      {test: /\.css$/, loader: 'style!css?modules!autoprefixer'},
+    ],
   },
   resolve: {
     extensions: ['', '.js', '.json', '.css']
-  }
+  },
 }

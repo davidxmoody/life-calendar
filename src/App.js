@@ -6,7 +6,7 @@ const eras = require('../data/eras')
 const Calendar = require('./components/Calendar')
 const Sidebar = require('./components/Sidebar')
 
-module.exports = class App extends React.Component {
+export default class App extends React.Component {
   constructor(props) {
     super(props)
 

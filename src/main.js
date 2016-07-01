@@ -1,5 +1,17 @@
+const {AppContainer} = require('react-hot-loader')
 const React = require('react')
 const ReactDOM = require('react-dom')
-const App = require('./App')
+import App from './App'
 
-ReactDOM.render(<App />, document.getElementById('main-content'))
+const mountApp = document.getElementById('main-content')
+
+ReactDOM.render(<AppContainer component={App} />, mountApp)
+
+if (module.hot) {
+  module.hot.accept('./App', () => {
+    ReactDOM.render(
+      <AppContainer component={require('./App').default} />,
+      mountApp
+    )
+  })
+}

@@ -24,10 +24,12 @@
     "mocha": "^2.5.3",
     "moment": "^2.13.0",
     "nunjucks": "^2.4.2",
+    "opener": "^1.4.1",
     "ramda": "^0.21.0",
     "random-seed": "^0.3.0",
     "react": "^15.1.0",
     "react-dom": "^15.1.0",
+    "react-hot-loader": "^3.0.0-beta.2",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1"
