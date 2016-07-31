@@ -47,6 +47,13 @@
       background: rgba(0, 0, 0, 0.5);
     }
 
+    .modal iframe {
+      width: 700px;
+      max-width: 100vw;
+      height: 100%;
+      max-height: 90vh;
+    }
+
     .modal--open {
       display: flex;
     }
@@ -70,11 +77,16 @@
     {% endfor %}
   </div>
 
-  <div class="modal">
+  <div class="modal" onclick="closeModal()">
     <iframe frameborder="0"></iframe>
   </div>
 
   <script>
+    function closeModal(week) {
+      document.querySelector(".modal iframe").src = undefined
+      document.querySelector(".modal").classList.remove("modal--open")
+    }
+
     function openModal(week) {
       document.querySelector(".modal iframe").src = `/weeks/${week}`
       document.querySelector(".modal").classList.add("modal--open")

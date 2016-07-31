@@ -4,6 +4,7 @@ const nunjucks = require("nunjucks")
 const moment = require("moment")
 
 const generateWeeks = require('./src/generateWeeks')
+const getDataForWeek = require('./getDataForWeek')
 const birthDate = require('./data/birthDate')
 const eras = require('./data/eras')
 
@@ -24,7 +25,8 @@ app.get("/", (req, res) => {
 })
 
 app.get("/weeks/:week", (req, res) => {
-  res.send(req.params.week + " it worked!")
+  const weekData = getDataForWeek(req.params.week)
+  res.render("week.njk", weekData)
 })
 
 app.listen("5000", () => {
