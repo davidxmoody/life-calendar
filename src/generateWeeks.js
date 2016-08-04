@@ -1,6 +1,6 @@
-const moment = require('moment')
-const {unfold} = require('ramda')
-const getWeekColor = require('./getWeekColor')
+import moment from 'moment'
+import {unfold} from 'ramda'
+import getWeekColor from './getWeekColor'
 
 function isEndOfWeek(date) {
   return moment(date).format('ddd') === 'Sun'
@@ -36,42 +36,36 @@ function makeWeek({birthDate, startDate, maxAge}) {
 function addTemporalStatus(weeks, currentDate) {
   if (!currentDate) return
 
-  for (const week of weeks) {
-    if (week.endDate < currentDate) {
-      week.temporalStatus = 'past'
-    } else if (week.startDate > currentDate) {
-      week.temporalStatus = 'future'
-    } else {
-      week.temporalStatus = 'present'
-    }
-  }
+  return weeks.map(week => ({
+    ...week,
+    temporalStatus:
+      week.endDate < currentDate ? 'past' :
+      week.startDate > currentDate ? 'future' :
+      'present'
+  }))
 }
 
 function addEras(weeks, eras) {
   if (!eras) return
 
-  for (const week of weeks) {
-    for (const era of eras) {
-      if (era.startDate <= week.startDate) {
-        week.era = era.name
-      }
-    }
-  }
+  eras = eras.slice().reverse()
+  return weeks.map(week => {
+    const currentEra = eras.find(era => era.startDate <= week.startDate)
+    if (!currentEra) return week
+    return {...week, era: currentEra.name}
+  })
 }
 
 function addColors(weeks) {
-  for (const week of weeks) {
-    week.color = getWeekColor(week)
-  }
+  return weeks.map(week => ({...week, color: getWeekColor(week)}))
 }
 
 module.exports = function({birthDate, eras, currentDate}) {
-  const weeks = unfold(makeWeek, {birthDate, startDate: birthDate, maxAge: 90})
+  let weeks = unfold(makeWeek, {birthDate, startDate: birthDate, maxAge: 90})
 
-  // TODO this has become a bit awkward, could use a Ramda pipeline instead
-  addTemporalStatus(weeks, currentDate)
-  addEras(weeks, eras)
-  addColors(weeks)
+  weeks = addTemporalStatus(weeks, currentDate)
+  weeks = addEras(weeks, eras)
+  weeks = addColors(weeks)
 
   return weeks
 }
