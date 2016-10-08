@@ -87,13 +87,13 @@
     {% endfor %}
   </div>
 
-  <div class="modal" onclick="closeModal()">
+  <div class="modal" onclick="event.preventDefault(); closeModal()">
     <iframe frameborder="0"></iframe>
   </div>
 
   <script>
     function closeModal(week) {
-      document.querySelector(".modal iframe").src = undefined
+      document.querySelector(".modal iframe").src = "javascript:void(0);"
       document.querySelector(".modal").classList.remove("modal--open")
     }
 
