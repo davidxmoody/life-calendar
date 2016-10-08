@@ -6,14 +6,24 @@
   <title>Life calendar</title>
 
   <style>
-    .year {
+    .calendar {
       display: flex;
-      margin-top: 1px;
+      flex-wrap: wrap;
+      width: 740px;
     }
 
-    .year--decade-end {
+    .year {
+      display: flex;
+      flex-wrap: wrap;
+      flex-grow: 0;
+      flex-shrink: 0;
+      margin: 1px;
+      height: 80px;
+      width: 72px;
       margin-bottom: 8px;
     }
+
+    .year--decade-end {}
 
     .week {
       box-sizing: border-box;
