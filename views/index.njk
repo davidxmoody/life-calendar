@@ -27,10 +27,11 @@
 
     .week {
       box-sizing: border-box;
-      border: 1px solid black;
+      border: 1px solid grey;
       width: 9px;
       height: 9px;
       margin-left: 1px;
+      opacity: 0.8;
     }
 
     .week:target {
@@ -42,7 +43,12 @@
     }
 
     .week--future {
-      opacity: 0.3;
+      opacity: 0.2;
+    }
+
+    .week--exists {
+      opacity: 1;
+      border-color: black;
     }
 
     .modal {
@@ -77,7 +83,7 @@
       <div class="year{% if ((yearNum | int) + 1) % 10 == 0 %} year--decade-end{% endif %}">
         {% for week in yearWeeks %}
           <a
-            class="week week--{{ week.temporalStatus }}"
+            class="week week--{{ week.temporalStatus }} {% if week.dataExists %}week--exists{% endif %}"
             style="background: {{ week.color}};"
             href="#{{ week.startDate }}"
             id="{{ week.startDate }}"

@@ -7,9 +7,11 @@ const generateWeeks = require("./src/generateWeeks")
 const unsafeGetDataForWeek = require("./unsafeGetDataForWeek")
 const birthDate = require("./data/birthDate")
 const eras = require("./data/eras")
+const addDiaryExistanceMetadata = require("./addDiaryExistanceMetadata")
 
 const currentDate = moment().format("YYYY-MM-DD")
-const weeks = generateWeeks({currentDate, birthDate, eras})
+let weeks = generateWeeks({currentDate, birthDate, eras})
+weeks = addDiaryExistanceMetadata(weeks)
 
 const app = express()
 
