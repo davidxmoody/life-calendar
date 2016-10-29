@@ -9,6 +9,8 @@ const birthDate = require("./data/birthDate")
 const eras = require("./data/eras")
 const addDiaryExistanceMetadata = require("./addDiaryExistanceMetadata")
 
+const SCANNED_DIR = "/home/david/sync/diary-data/scanned"
+
 const currentDate = moment().format("YYYY-MM-DD")
 let weeks = generateWeeks({currentDate, birthDate, eras})
 weeks = addDiaryExistanceMetadata(weeks)
@@ -34,6 +36,8 @@ app.get("/weeks/:week", (req, res) => {
     res.status(400).render("error.njk", {error: e.toString()})
   }
 })
+
+app.use("/scanned", express.static(SCANNED_DIR))
 
 app.listen("5000", () => {
   console.log("App listening on port http://localhost:5000/")
