@@ -1,19 +1,18 @@
-const moment = require('moment')
-const {unfold} = require('ramda')
-const getWeekColor = require('./getWeekColor')
+const moment = require("moment")
+const {unfold} = require("ramda")
 
 function isEndOfWeek(date) {
-  return moment(date).format('ddd') === 'Sun'
+  return moment(date).format("ddd") === "Sun"
 }
 
 function addOneDay(date) {
-  return moment(date).add(1, 'days').format('YYYY-MM-DD')
+  return moment(date).add(1, "days").format("YYYY-MM-DD")
 }
 
 function getEndDate(birthDate) {
-  const endDate = moment(birthDate).add(6, 'days')
-  while (!isEndOfWeek(endDate)) endDate.add(1, 'days')
-  return endDate.format('YYYY-MM-DD')
+  const endDate = moment(birthDate).add(6, "days")
+  while (!isEndOfWeek(endDate)) endDate.add(1, "days")
+  return endDate.format("YYYY-MM-DD")
 }
 
 function makeWeek({birthDate, startDate, maxAge}) {
@@ -21,7 +20,7 @@ function makeWeek({birthDate, startDate, maxAge}) {
   const week = {
     startDate,
     endDate,
-    yearNum: Math.abs(moment(startDate).diff(birthDate, 'years')),
+    yearNum: Math.abs(moment(startDate).diff(birthDate, "years")),
   }
 
   if (week.yearNum >= maxAge) return false
@@ -34,44 +33,33 @@ function makeWeek({birthDate, startDate, maxAge}) {
 }
 
 function addTemporalStatus(weeks, currentDate) {
-  if (!currentDate) return
-
   for (const week of weeks) {
     if (week.endDate < currentDate) {
-      week.temporalStatus = 'past'
+      week.temporalStatus = "past"
     } else if (week.startDate > currentDate) {
-      week.temporalStatus = 'future'
+      week.temporalStatus = "future"
     } else {
-      week.temporalStatus = 'present'
+      week.temporalStatus = "present"
     }
   }
 }
 
 function addEras(weeks, eras) {
-  if (!eras) return
-
   for (const week of weeks) {
     for (const era of eras) {
       if (era.startDate <= week.startDate) {
         week.era = era.name
+        week.color = era.color
       }
     }
   }
 }
 
-function addColors(weeks) {
-  for (const week of weeks) {
-    week.color = getWeekColor(week)
-  }
-}
-
-module.exports = function({birthDate, eras, currentDate}) {
+module.exports = ({birthDate, eras, currentDate}) => {
   const weeks = unfold(makeWeek, {birthDate, startDate: birthDate, maxAge: 90})
 
-  // TODO this has become a bit awkward, could use a Ramda pipeline instead
   addTemporalStatus(weeks, currentDate)
   addEras(weeks, eras)
-  addColors(weeks)
 
   return weeks
 }
