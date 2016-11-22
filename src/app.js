@@ -3,10 +3,10 @@ const express = require("express")
 const nunjucks = require("nunjucks")
 const moment = require("moment")
 
-const generateWeeks = require("./src/generateWeeks")
+const generateWeeks = require("./generateWeeks")
 const unsafeGetDataForWeek = require("./unsafeGetDataForWeek")
-const birthDate = require("./data/birthDate")
-const eras = require("./data/eras")
+const birthDate = require("../data/birthDate")
+const eras = require("../data/eras")
 const addDiaryExistanceMetadata = require("./addDiaryExistanceMetadata")
 
 const SCANNED_DIR = "/home/david/sync/diary-data/scanned"
@@ -17,12 +17,7 @@ weeks = addDiaryExistanceMetadata(weeks)
 
 const app = express()
 
-app.set("views", path.join(__dirname, "./views"))
-
-nunjucks.configure("views", {
-  autoescape: true,
-  express: app,
-})
+nunjucks.configure(path.join(__dirname, "./views"), {autoescape: true, express: app})
 
 app.get("/", (req, res) => {
   res.render("index.njk", {weeks})
