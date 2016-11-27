@@ -2,36 +2,36 @@
   {
     "startDate": "1990-07-04",
     "name": "Before school",
-    "color": "rgb(255, 180, 180)"
+    "color": "#fb9a99"
   },
   {
     "startDate": "1995-04-18",
     "name": "Primary school",
-    "color": "rgb(255, 100, 100)"
+    "color": "#a6cee3"
   },
   {
     "startDate": "2001-09-04",
     "name": "Secondary school",
-    "color": "rgb(255, 20, 20)"
+    "color": "#b2df8a"
   },
   {
     "startDate": "2006-09-05",
     "name": "Strode College",
-    "color": "rgb(200, 0, 0)"
+    "color": "#cab2d6"
   },
   {
     "startDate": "2008-10-06",
     "name": "University of Cambridge",
-    "color": "rgb(100, 255, 100)"
+    "color": "#fdbf6f"
   },
   {
     "startDate": "2011-06-23",
     "name": "At home",
-    "color": "rgb(20, 100, 200)"
+    "color": "#e31a1c"
   },
   {
     "startDate": "2015-03-23",
     "name": "Working at MFT",
-    "color": "rgb(200, 100, 0)"
+    "color": "#1f78b4"
   }
 ]
