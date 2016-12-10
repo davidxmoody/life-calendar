@@ -12,7 +12,6 @@
   "dependencies": {
     "chai": "^3.5.0",
     "express": "^4.14.0",
-    "marked": "^0.3.6",
     "mocha": "^2.5.3",
     "moment": "^2.13.0",
     "nodemon": "^1.11.0",
