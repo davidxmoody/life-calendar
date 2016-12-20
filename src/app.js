@@ -4,8 +4,7 @@ const nunjucks = require("nunjucks")
 const moment = require("moment")
 
 const generateWeeks = require("./generate-weeks")
-const birthDate = require("../data/birthDate")
-const eras = require("../data/eras")
+const {birthDate, eras} = require("../life-data.json")
 
 const currentDate = moment().format("YYYY-MM-DD")
 const weeks = generateWeeks({currentDate, birthDate, eras})
