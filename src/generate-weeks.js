@@ -1,22 +1,9 @@
 const moment = require("moment")
 const {unfold} = require("ramda")
-
-function isEndOfWeek(date) {
-  return moment(date).format("ddd") === "Sun"
-}
-
-function addOneDay(date) {
-  return moment(date).add(1, "days").format("YYYY-MM-DD")
-}
-
-function getEndDate(birthDate) {
-  const endDate = moment(birthDate).add(6, "days")
-  while (!isEndOfWeek(endDate)) endDate.add(1, "days")
-  return endDate.format("YYYY-MM-DD")
-}
+const {getWeekStart, getWeekEnd, getNextWeekStart} = require("./date-helpers")
 
 function makeWeek({birthDate, startDate, maxAge}) {
-  const endDate = getEndDate(startDate)
+  const endDate = getWeekEnd(startDate)
   const week = {
     startDate,
     endDate,
@@ -27,7 +14,7 @@ function makeWeek({birthDate, startDate, maxAge}) {
 
   return [week, {
     birthDate,
-    startDate: addOneDay(endDate),
+    startDate: getNextWeekStart(endDate),
     maxAge,
   }]
 }
@@ -46,6 +33,9 @@ function addTemporalStatus(weeks, currentDate) {
 
 function addEras(weeks, eras) {
   for (const week of weeks) {
+    week.era = eras[0].name
+    week.color = eras[0].color
+
     for (const era of eras) {
       if (era.startDate <= week.startDate) {
         week.era = era.name
@@ -56,7 +46,7 @@ function addEras(weeks, eras) {
 }
 
 module.exports = ({birthDate, eras, currentDate}) => {
-  const weeks = unfold(makeWeek, {birthDate, startDate: birthDate, maxAge: 90})
+  const weeks = unfold(makeWeek, {birthDate, startDate: getWeekStart(birthDate), maxAge: 90})
 
   addTemporalStatus(weeks, currentDate)
   addEras(weeks, eras)

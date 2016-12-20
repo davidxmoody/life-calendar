@@ -3,7 +3,7 @@ const express = require("express")
 const nunjucks = require("nunjucks")
 const moment = require("moment")
 
-const generateWeeks = require("./generateWeeks")
+const generateWeeks = require("./generate-weeks")
 const birthDate = require("../data/birthDate")
 const eras = require("../data/eras")
 

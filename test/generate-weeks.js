@@ -1,7 +1,7 @@
 const {expect} = require("chai")
-const generateWeeks = require("../src/generateWeeks")
+const generateWeeks = require("../src/generate-weeks")
 const moment = require("moment")
-const {head, tail, last} = require("ramda")
+const {head, last} = require("ramda")
 
 const birthDate = "1990-07-04"
 const currentDate = "2015-12-22"
@@ -27,29 +27,24 @@ const eras = [
 describe("generateWeeks", () => {
   before(() => {
     this.weeks = generateWeeks({birthDate, eras, currentDate})
+    this.weeksToTest = [
+      this.weeks[0],
+      this.weeks[1],
+      this.weeks[10],
+      this.weeks[100],
+      this.weeks[1000],
+      this.weeks[this.weeks.length - 1],
+    ]
   })
 
-  it("should make a longer first week", () => {
-    expect(head(this.weeks).startDate).to.eql(birthDate)
-    expect(head(this.weeks).endDate).to.eql("1990-07-15")
+  it("should make the first week include the start date", () => {
+    expect(this.weeks[0].startDate).to.be.at.most(birthDate)
+    expect(this.weeks[0].endDate).to.be.at.least(birthDate)
   })
 
-  it("should make every week (except the first) span seven days", () => {
-    for (const week of tail(this.weeks)) {
-      const daysDiff = moment(week.endDate).diff(week.startDate, "days")
-      expect(daysDiff).to.eql(6)
-    }
-  })
-
-  it("should start every week (except the first) on a Monday", () => {
-    for (const week of tail(this.weeks)) {
+  it("should start weeks on a Monday", () => {
+    for (const week of this.weeksToTest) {
       expect(moment(week.startDate).format("ddd")).to.eql("Mon")
-    }
-  })
-
-  it("should end every week on a Sunday", () => {
-    for (const week of this.weeks) {
-      expect(moment(week.endDate).format("ddd")).to.eql("Sun")
     }
   })
 
