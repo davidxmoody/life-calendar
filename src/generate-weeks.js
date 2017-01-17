@@ -1,33 +1,41 @@
-const {unfold} = require("ramda")
-const {getWeekStart, getWeekEnd, getNextWeekStart, getYearNum, getTemporalStatus, getEra} = require("./date-helpers")
+const moment = require("moment")
 
-function makeWeek({birthDate, startDate, maxAge}) {
-  const endDate = getWeekEnd(startDate)
-  const week = {
-    startDate,
-    endDate,
-    yearNum: getYearNum(birthDate, startDate),
-  }
-
-  if (week.yearNum >= maxAge) return false
-
-  return [week, {
-    birthDate,
-    startDate: getNextWeekStart(endDate),
-    maxAge,
-  }]
+function getWeekStart(date) {
+  return moment(date).isoWeekday(1).format("YYYY-MM-DD")
 }
 
-module.exports = ({birthDate, eras, currentDate}) => {
+function getNextWeekStart(date) {
+  return moment(date).isoWeekday(8).format("YYYY-MM-DD")
+}
+
+function getYearNum(firstWeekStart, weekStart) {
+  return Math.abs(moment(weekStart).diff(firstWeekStart, "years"))
+}
+
+function getEra(eras, weekStart) {
+  let selectedEra = eras[0]
+
+  for (const era of eras) {
+    if (era.startDate <= weekStart) {
+      selectedEra = era
+    }
+  }
+
+  return selectedEra
+}
+
+module.exports = ({birthDate, deathDate, eras}) => {
   const firstWeekStart = getWeekStart(birthDate)
-  const weeks = unfold(makeWeek, {birthDate, startDate: firstWeekStart, maxAge: 90})
+  let weeks = [firstWeekStart]
+  while (weeks[weeks.length - 1] <= deathDate) {
+    weeks.push(getNextWeekStart(weeks[weeks.length - 1]))
+  }
+
+  weeks = weeks.map(startDate => ({startDate}))
 
   for (const week of weeks) {
-    week.temporalStatus = getTemporalStatus(currentDate, week.startDate)
-
-    const era = getEra(eras, week.startDate)
-    week.era = era.name
-    week.color = era.color
+    week.yearNum = getYearNum(birthDate, week.startDate)
+    week.color = getEra(eras, week.startDate).color
   }
 
   return weeks

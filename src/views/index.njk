@@ -7,9 +7,17 @@
 
   <style>
     .calendar {
+      float: left;
       display: flex;
       flex-wrap: wrap;
       width: 850px;
+    }
+
+    .sidebar {
+      width: 400px;
+      height: 688px;
+      background: #eee;
+      float: left;
     }
 
     .year {
@@ -43,6 +51,20 @@
     .week--future {
       opacity: 0.2;
     }
+
+    .week--selected {
+      opacity: 1;
+      border: 2px solid orange;
+    }
+
+    .era {
+      cursor: pointer;
+      margin: 20px;
+    }
+
+    .era--clear {
+      color: grey;
+    }
   </style>
 
 </head>
@@ -50,10 +72,10 @@
 
   <div class="calendar">
     {% for yearNum, yearWeeks in weeks | groupby('yearNum') %}
-      <div class="year{% if ((yearNum | int) + 1) % 10 == 0 %} year--decade-end{% endif %}">
+      <div class="year {% if ((yearNum | int) + 1) % 10 == 0 %}year--decade-end{% endif %}">
         {% for week in yearWeeks %}
           <a
-            class="week week--{{ week.temporalStatus }}"
+           class="week {% if week.startDate > currentDate %}week--future{% endif %}"
             style="background: {{ week.color}};"
             href="#{{ week.startDate }}"
             id="{{ week.startDate }}"
@@ -62,6 +84,40 @@
       </div>
     {% endfor %}
   </div>
+
+  <div class="sidebar">
+    {% for era in eras %}
+      <div class="era" onclick="updateWeeks('{{ era.startDate }}', '{{ era.endDate }}')">
+        <button class="era__button" style="background: {{ era.color }};">
+          {{ era.name }} <small>({{ era.startDate }} to {{ era.endDate }})</small>
+        </button>
+      </div>
+    {% endfor %}
+    <div class="era era--clear" onclick="updateWeeks()">
+      Clear selection
+    </div>
+  </div>
+
+  <script>
+    const weeks = document.querySelectorAll(".week")
+
+    function updateWeeks(start, end) {
+      weeks.forEach((week) => {
+        if (week.id >= start && week.id <= end) {
+          week.classList.add("week--selected")
+        } else {
+          week.classList.remove("week--selected")
+        }
+      })
+    }
+
+//    function updateSidebar() {
+//      const date = window.location.hash.replace(/^#/, "")
+//      document.querySelector(".sidebar__date").innerHTML = date
+//    }
+//    window.addEventListener("hashchange", updateSidebar)
+//    updateSidebar()
+  </script>
 
 </body>
 </html>
