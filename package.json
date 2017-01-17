@@ -5,14 +5,10 @@
   "author": "David Moody <david@davidxmoody.com> (https://davidxmoody.com/)",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon -e js,json,njk src/app.js",
-    "test": "mocha",
-    "test-watch": "mocha --watch"
+    "start": "nodemon -e js,json,njk src/app.js"
   },
   "dependencies": {
-    "chai": "^3.5.0",
     "express": "^4.14.0",
-    "mocha": "^2.5.3",
     "moment": "^2.13.0",
     "nodemon": "^1.11.0",
     "nunjucks": "^2.4.2",
