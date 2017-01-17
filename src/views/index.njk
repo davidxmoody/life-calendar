@@ -38,6 +38,7 @@
       height: 9px;
       margin-left: 1px;
       opacity: 0.9;
+      position: relative;
     }
 
     .week:target {
@@ -55,6 +56,13 @@
     .week--selected {
       opacity: 1;
       border: 2px solid orange;
+    }
+
+    .week__era {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0.5;
     }
 
     .era {
@@ -75,11 +83,19 @@
       <div class="year {% if ((yearNum | int) + 1) % 10 == 0 %}year--decade-end{% endif %}">
         {% for week in yearWeeks %}
           <a
-           class="week {% if week.startDate > currentDate %}week--future{% endif %}"
-            style="background: {{ week.color}};"
+            class="week {% if week.startDate > currentDate %}week--future{% endif %}"
             href="#{{ week.startDate }}"
             id="{{ week.startDate }}"
-          ></a>
+          >
+            {% for era in eras %}
+              {% if (era.startDate <= week.startDate) and (era.endDate >= week.startDate) %}
+                <div
+                  class="week__era week__era--{{ loop.index }}"
+                  style="background: {{ era.color }};"
+                ></div>
+              {% endif %}
+            {% endfor %}
+          </a>
         {% endfor %}
       </div>
     {% endfor %}
