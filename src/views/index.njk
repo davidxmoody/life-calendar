@@ -62,23 +62,17 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      opacity: 0.5;
+      opacity: 0.1;
       box-sizing: border-box;
     }
 
     .era {
-      cursor: pointer;
       margin: 20px;
     }
 
-    .era--clear {
-      color: grey;
-    }
-
-    {% for era in eras %}
-      .calendar--highlight-era-{{ loop.index }} .week__era--{{ loop.index }} {
-        border: 1px solid black;
-        opacity: 0.8;
+    {% for eraGroup in eraGroups %}
+      .calendar--highlight-era-group-{{ loop.index }} .week__era--{{ loop.index }} {
+        opacity: 0.9;
       }
     {% endfor %}
   </style>
@@ -95,13 +89,16 @@
             href="#{{ week.startDate }}"
             id="{{ week.startDate }}"
           >
-            {% for era in eras %}
-              {% if (era.startDate <= week.startDate) and (era.endDate >= week.startDate) %}
-                <div
-                  class="week__era week__era--{{ loop.index }}"
-                  style="background: {{ era.color }};"
-                ></div>
-              {% endif %}
+            {% for eraGroup in eraGroups %}
+              {% set eraGroupIndex = loop.index %}
+              {% for era in eraGroup.eras %}
+                {% if (era.startDate <= week.startDate) and (era.endDate >= week.startDate) %}
+                  <div
+                    class="week__era week__era--{{ eraGroupIndex }}"
+                    style="background: {{ era.color }};"
+                  ></div>
+                {% endif %}
+              {% endfor %}
             {% endfor %}
           </a>
         {% endfor %}
@@ -110,23 +107,23 @@
   </div>
 
   <div class="sidebar">
-    {% for era in eras %}
-      <div class="era" onclick="updateWeeks({{ loop.index }})">
-        <button class="era__button" style="background: {{ era.color }};">
+    {% for eraGroup in eraGroups %}
+      {% set eraGroupIndex = loop.index %}
+      <div>Era group: {{ eraGroup.name }}</div>
+      <button onclick="updateWeeks({{ eraGroupIndex }})">Highlight it</button>
+      {% for era in eraGroup.eras %}
+        <div class="era" style="background: {{ era.color }};">
           {{ era.name }} <small>({{ era.startDate }} to {{ era.endDate }})</small>
-        </button>
-      </div>
+        </div>
+      {% endfor %}
     {% endfor %}
-    <div class="era era--clear" onclick="updateWeeks()">
-      Clear selection
-    </div>
   </div>
 
   <script>
     const weeks = document.querySelectorAll(".week")
 
-    function updateWeeks(eraIndex) {
-      document.querySelector(".calendar").classList.toggle(`calendar--highlight-era-${eraIndex}`)
+    function updateWeeks(eraGroupIndex) {
+      document.querySelector(".calendar").classList.toggle(`calendar--highlight-era-group-${eraGroupIndex}`)
     }
 
 //    function updateSidebar() {
