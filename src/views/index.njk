@@ -63,6 +63,7 @@
       width: 100%;
       height: 100%;
       opacity: 0.5;
+      box-sizing: border-box;
     }
 
     .era {
@@ -73,6 +74,13 @@
     .era--clear {
       color: grey;
     }
+
+    {% for era in eras %}
+      .calendar--highlight-era-{{ loop.index }} .week__era--{{ loop.index }} {
+        border: 1px solid black;
+        opacity: 0.8;
+      }
+    {% endfor %}
   </style>
 
 </head>
@@ -103,7 +111,7 @@
 
   <div class="sidebar">
     {% for era in eras %}
-      <div class="era" onclick="updateWeeks('{{ era.startDate }}', '{{ era.endDate }}')">
+      <div class="era" onclick="updateWeeks({{ loop.index }})">
         <button class="era__button" style="background: {{ era.color }};">
           {{ era.name }} <small>({{ era.startDate }} to {{ era.endDate }})</small>
         </button>
@@ -117,14 +125,8 @@
   <script>
     const weeks = document.querySelectorAll(".week")
 
-    function updateWeeks(start, end) {
-      weeks.forEach((week) => {
-        if (week.id >= start && week.id <= end) {
-          week.classList.add("week--selected")
-        } else {
-          week.classList.remove("week--selected")
-        }
-      })
+    function updateWeeks(eraIndex) {
+      document.querySelector(".calendar").classList.toggle(`calendar--highlight-era-${eraIndex}`)
     }
 
 //    function updateSidebar() {
