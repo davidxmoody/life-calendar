@@ -1,3 +1,5 @@
+/* eslint-disable no-constant-condition */
+
 const moment = require("moment")
 
 function getWeekStart(date) {
@@ -25,15 +27,34 @@ function getColor(eras, weekStart) {
 }
 
 module.exports = ({birthDate, deathDate, eras}) => {
-  const weeks = [getWeekStart(birthDate)]
+  let weeks = [getWeekStart(birthDate)]
 
-  while (weeks[weeks.length - 1] <= deathDate) {
-    weeks.push(getNextWeekStart(weeks[weeks.length - 1]))
+  while (true) {
+    const lastWeek = weeks[weeks.length - 1]
+    const nextWeek = getNextWeekStart(lastWeek)
+    if (nextWeek > deathDate) break
+    weeks.push(nextWeek)
   }
 
-  return weeks.map((startDate) => ({
+  weeks = weeks.map((startDate) => ({
     startDate,
-    yearNum: getYearNum(birthDate, startDate),
     color: getColor(eras, startDate),
   }))
+
+  const calendar = {
+    birthDate,
+    deathDate,
+    eras,
+    decades: [],
+  }
+
+  for (const week of weeks) {
+    const yearNum = getYearNum(birthDate, week.startDate)
+    const decadeNum = Math.floor(yearNum / 10)
+    calendar.decades[decadeNum] = calendar.decades[decadeNum] || {years: []}
+    calendar.decades[decadeNum].years[yearNum % 10] = calendar.decades[decadeNum].years[yearNum % 10] || {weeks: []}
+    calendar.decades[decadeNum].years[yearNum % 10].weeks.push(week)
+  }
+
+  return calendar
 }

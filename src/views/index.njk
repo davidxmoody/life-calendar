@@ -1,27 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
   <meta charset="UTF-8">
   <title>Life calendar</title>
-
   <style>
-    .calendar {
-      float: left;
-      display: flex;
-      flex-wrap: wrap;
-      width: 850px;
-    }
+    .calendar {}
+
+    .decade {}
 
     .year {
-      display: flex;
+      display: inline-flex;
       flex-wrap: wrap;
-      flex-grow: 0;
-      flex-shrink: 0;
-      margin: 1px;
       height: 70px;
       width: 82px;
-      margin-bottom: 6px;
     }
 
     .week {
@@ -30,8 +21,6 @@
       width: 9px;
       height: 9px;
       margin-left: 1px;
-      opacity: 0.9;
-      position: relative;
     }
 
     .week:target {
@@ -39,27 +28,29 @@
     }
 
     .week--future {
-      opacity: 0.2;
+      opacity: 0.25;
+      cursor: default;
     }
   </style>
-
 </head>
 <body>
-
   <div class="calendar">
-    {% for yearNum, yearWeeks in weeks | groupby('yearNum') %}
-      <div class="year {% if ((yearNum | int) + 1) % 10 == 0 %}year--decade-end{% endif %}">
-        {% for week in yearWeeks %}
-          <a
-            class="week {% if week.startDate > currentDate %}week--future{% endif %}"
-            href="#{{ week.startDate }}"
-            id="{{ week.startDate }}"
-            style="background-color: {{ week.color }};"
-          ></a>
+    {% for decade in calendar.decades %}
+      <div class="decade">
+        {% for year in decade.years %}
+          <div class="year">
+            {% for week in year.weeks %}
+              <a
+                class="week {% if week.startDate > currentDate %}week--future{% endif %}"
+                href="#{{ week.startDate }}"
+                id="{{ week.startDate }}"
+                style="background-color: {{ week.color }};"
+              ></a>
+            {% endfor %}
+          </div>
         {% endfor %}
       </div>
     {% endfor %}
   </div>
-
 </body>
 </html>
