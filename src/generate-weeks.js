@@ -12,7 +12,19 @@ function getYearNum(firstWeekStart, weekStart) {
   return Math.abs(moment(weekStart).diff(firstWeekStart, "years"))
 }
 
-module.exports = ({birthDate, deathDate}) => {
+function getColor(eras, weekStart) {
+  let selectedEra = eras[0]
+
+  for (const era of eras) {
+    if (era.startDate <= weekStart) {
+      selectedEra = era
+    }
+  }
+
+  return selectedEra.color
+}
+
+module.exports = ({birthDate, deathDate, eras}) => {
   const weeks = [getWeekStart(birthDate)]
 
   while (weeks[weeks.length - 1] <= deathDate) {
@@ -22,5 +34,6 @@ module.exports = ({birthDate, deathDate}) => {
   return weeks.map((startDate) => ({
     startDate,
     yearNum: getYearNum(birthDate, startDate),
+    color: getColor(eras, startDate),
   }))
 }
