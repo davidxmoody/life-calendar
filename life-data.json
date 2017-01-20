@@ -6,42 +6,49 @@
       "startDate": "1990-07-04",
       "endDate": "1995-04-17",
       "name": "Before school",
-      "color": "#fb9a99"
+      "startColor": "#fb9a99",
+      "endColor": "#fb9a99"
     },
     {
       "startDate": "1995-04-18",
       "endDate": "2001-09-03",
       "name": "Primary school",
-      "color": "#a6cee3"
+      "startColor": "#a6cee3",
+      "endColor": "#a6cee3"
     },
     {
       "startDate": "2001-09-04",
       "endDate": "2006-09-04",
       "name": "Secondary school",
-      "color": "#b2df8a"
+      "startColor": "#b2df8a",
+      "endColor": "#b2df8a"
     },
     {
       "startDate": "2006-09-05",
       "endDate": "2008-10-05",
       "name": "Strode College",
-      "color": "#cab2d6"
+      "startColor": "#cab2d6",
+      "endColor": "#cab2d6"
     },
     {
       "startDate": "2008-10-06",
       "endDate": "2011-06-22",
       "name": "University of Cambridge",
-      "color": "#fdbf6f"
+      "startColor": "#fdbf6f",
+      "endColor": "#fdbf6f"
     },
     {
       "startDate": "2011-06-23",
       "endDate": "2015-03-22",
       "name": "At home",
-      "color": "#e31a1c"
+      "startColor": "#e31a1c",
+      "endColor": "#e31a1c"
     },
     {
       "startDate": "2015-03-23",
       "name": "Working at MFT",
-      "color": "#1f78b4",
+      "startColor": "#43a2ca",
+      "endColor": "#e0f3db",
       "subEras": [
         {
           "name": "Temporary accommodation"

@@ -15,6 +15,12 @@ function getYearNum(firstWeekStart, weekStart) {
   return Math.abs(moment(weekStart).diff(firstWeekStart, "years"))
 }
 
+function ratioBetweenDates(startDate, endDate, date) {
+  const range = moment(endDate).unix() - moment(startDate).unix()
+  const amount = moment(endDate).unix() - moment(date).unix()
+  return amount / range
+}
+
 function getEra(eras, weekStart) {
   let selectedEra = eras[0]
   let subEraIndex = 0
@@ -45,21 +51,13 @@ module.exports = ({birthDate, deathDate, eras}) => {
     weeks.push(nextWeek)
   }
 
-  let lastEra = eras[0]
-  let lastSubEraIndex = 0
-  let colorModifier = 1
   weeks = weeks.map((startDate, index) => {
     const [era, subEraIndex] = getEra(eras, startDate, index, weeks.length)
-    if (era !== lastEra || subEraIndex !== lastSubEraIndex) {
-      console.log("reset era", lastEra.name, era.name, lastSubEraIndex, subEraIndex)
-      lastEra = era
-      lastSubEraIndex = subEraIndex
-      colorModifier = 1
-    } else {
-      colorModifier = Math.max(0, colorModifier - (1 / 20))
-    }
+    const start = era.subEras ? era.subEras[subEraIndex].startDate || era.startDate : era.startDate
+    const end = era.subEras ? (era.subEras[subEraIndex + 1] || {}).startDate || era.endDate || moment().format("YYYY-MM-DD") : era.endDate || moment().format("YYYY-MM-DD")
+    const intensity = 1 - ratioBetweenDates(start, end, startDate)
 
-    const color = col(era.color).brighten(15 * (1 - colorModifier)).toRgbString()
+    const color = col.mix(era.startColor, era.endColor, 100 * (intensity)).toRgbString()
 
     return {
       startDate,
