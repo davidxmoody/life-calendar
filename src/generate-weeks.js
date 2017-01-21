@@ -66,8 +66,13 @@ module.exports = ({currentDate, birthDate, deathDate, eras}) => {
       color = col.mix("#ddd", "white", 100 * (1 - prob)).toRgbString()
     }
 
+    const yearsOld = moment(startDate).diff(birthDate, "years")
+    const eraOrSurvival = prob !== 1 ? `${Math.floor(prob * 1000) / 10}% chance of survival` : era.name
+
+    const title = `${yearsOld} years old (${eraOrSurvival})`
+
     return {
-      title: `${startDate} (${moment(startDate).diff(birthDate, "years")} years old, ${Math.floor(prob * 1000) / 10}% chance of survival)`,
+      title,
       startDate,
       color,
     }

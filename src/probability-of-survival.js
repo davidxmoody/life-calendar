@@ -19,7 +19,7 @@ module.exports = (birthDate, currentDate, date) => {
 
   const currentAge = Math.max(0, moment(currentDate).diff(birthDate, "years", true))
   const queryAgeIndex = Math.max(0, moment(date).diff(birthDate, "years"))
-  const currentAgeIndex = Math.min(101, Math.floor(currentAge))
+  const currentAgeIndex = Math.min(maleProbabilityOfDyingByAge.length, Math.floor(currentAge))
   const currentAgeRemainder = currentAge % 1
 
   const adjustedProbs = maleProbabilityOfDyingByAge.map((prob, index) => {
@@ -38,9 +38,3 @@ module.exports = (birthDate, currentDate, date) => {
 
   return 1 - cumulativeProbOfDying
 }
-
-// let d = moment("1990-07-04")
-// for (let i = 0; i < 110; i++) {
-//   console.log(d.format("YYYY-MM-DD"), module.exports("1990-07-04", "2017-01-21", d.format("YYYY-MM-DD")))
-//   d = d.add(1, "year")
-// }
