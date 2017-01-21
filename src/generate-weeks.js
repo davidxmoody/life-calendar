@@ -1,7 +1,8 @@
-/* eslint-disable no-constant-condition */
+/* eslint-disable no-constant-condition, no-loop-func */
 
 const moment = require("moment")
 const col = require("tinycolor2")
+const probabilityOfSurvival = require("./probability-of-survival")
 
 function getWeekStart(date) {
   return moment(date).isoWeekday(1).format("YYYY-MM-DD")
@@ -41,17 +42,6 @@ function getEra(eras, weekStart) {
   return [selectedEra, subEraIndex]
 }
 
-function calculateProbability(birthDate, currentDate, weekStart) {
-  if (weekStart < currentDate) return 1
-
-  const oneHundredYearsOld = moment(birthDate).add(100, "years").unix()
-  const now = moment(currentDate).unix()
-  const secondsRemaining = oneHundredYearsOld - now
-  const secondsRemainingAtWeek = oneHundredYearsOld - moment(weekStart).unix()
-
-  return Math.max(0, secondsRemainingAtWeek / secondsRemaining)
-}
-
 module.exports = ({currentDate, birthDate, deathDate, eras}) => {
   let weeks = [getWeekStart(birthDate)]
 
@@ -70,13 +60,14 @@ module.exports = ({currentDate, birthDate, deathDate, eras}) => {
 
     let color = col.mix(era.startColor, era.endColor, 100 * (intensity)).toRgbString()
 
-    const probabilityOfReaching = calculateProbability(birthDate, currentDate, startDate)
+    const prob = probabilityOfSurvival(birthDate, currentDate, startDate)
 
-    if (probabilityOfReaching !== 1) {
-      color = col.mix("#ddd", "white", 100 * (1 - probabilityOfReaching)).toRgbString()
+    if (prob !== 1) {
+      color = col.mix("#ddd", "white", 100 * (1 - prob)).toRgbString()
     }
 
     return {
+      title: `${startDate} (${moment(startDate).diff(birthDate, "years")} years old, ${Math.floor(prob * 1000) / 10}% chance of survival)`,
       startDate,
       color,
     }
