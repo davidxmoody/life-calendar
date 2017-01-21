@@ -19,7 +19,6 @@
 
     .week {
       box-sizing: border-box;
-      border: 1px solid grey;
       width: 9px;
       height: 9px;
       margin-left: 1px;
@@ -27,11 +26,6 @@
 
     .week:target {
       border: 2px solid red;
-    }
-
-    .week--future {
-      opacity: 0.25;
-      cursor: default;
     }
   </style>
 </head>
@@ -43,10 +37,10 @@
           <div class="year">
             {% for week in year.weeks %}
               <a
-                class="week {% if week.startDate > currentDate %}week--future{% endif %}"
+                class="week"
                 href="#{{ week.startDate }}"
                 id="{{ week.startDate }}"
-                style="background-color: {{ week.color }};"
+                style="background-color: {% if week.startDate > currentDate %}#ddd{% else %}{{ week.color }}{% endif %};"
               ></a>
             {% endfor %}
           </div>
