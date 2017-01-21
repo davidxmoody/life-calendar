@@ -41,7 +41,18 @@ function getEra(eras, weekStart) {
   return [selectedEra, subEraIndex]
 }
 
-module.exports = ({birthDate, deathDate, eras}) => {
+function calculateProbability(birthDate, currentDate, weekStart) {
+  if (weekStart < currentDate) return 1
+
+  const oneHundredYearsOld = moment(birthDate).add(100, "years").unix()
+  const now = moment(currentDate).unix()
+  const secondsRemaining = oneHundredYearsOld - now
+  const secondsRemainingAtWeek = oneHundredYearsOld - moment(weekStart).unix()
+
+  return Math.max(0, secondsRemainingAtWeek / secondsRemaining)
+}
+
+module.exports = ({currentDate, birthDate, deathDate, eras}) => {
   let weeks = [getWeekStart(birthDate)]
 
   while (true) {
@@ -57,7 +68,13 @@ module.exports = ({birthDate, deathDate, eras}) => {
     const end = era.subEras ? (era.subEras[subEraIndex + 1] || {}).startDate || era.endDate || moment().format("YYYY-MM-DD") : era.endDate || moment().format("YYYY-MM-DD")
     const intensity = 1 - ratioBetweenDates(start, end, startDate)
 
-    const color = col.mix(era.startColor, era.endColor, 100 * (intensity)).toRgbString()
+    let color = col.mix(era.startColor, era.endColor, 100 * (intensity)).toRgbString()
+
+    const probabilityOfReaching = calculateProbability(birthDate, currentDate, startDate)
+
+    if (probabilityOfReaching !== 1) {
+      color = col.mix("#ddd", "white", 100 * (1 - probabilityOfReaching)).toRgbString()
+    }
 
     return {
       startDate,

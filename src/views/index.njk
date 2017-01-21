@@ -40,7 +40,7 @@
                 class="week"
                 href="#{{ week.startDate }}"
                 id="{{ week.startDate }}"
-                style="background-color: {% if week.startDate > currentDate %}#ddd{% else %}{{ week.color }}{% endif %};"
+                style="background-color: {{ week.color }};"
               ></a>
             {% endfor %}
           </div>
