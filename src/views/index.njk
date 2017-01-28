@@ -4,10 +4,45 @@
   <meta charset="UTF-8">
   <title>Life calendar</title>
   <style>
+    .app {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .sidebar {
+      flex-shrink: 0;
+      flex-grow: 1;
+      width: 400px;
+      background: #eee;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar__tab-row {
+      flex-shrink: 0;
+      flex-grow: 0;
+    }
+
+    .sidebar__iframe-container {
+      position: relative;
+      flex-grow: 1;
+    }
+
+    .sidebar__iframe-container iframe{
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+    }
+
     .calendar {
       -webkit-user-select: none;
       width: 860px;
-      margin: auto;
+      flex-grow: 0;
+      flex-shrink: 0;
     }
 
     .decade {}
@@ -32,24 +67,62 @@
   </style>
 </head>
 <body>
-  <div class="calendar">
-    {% for decade in calendar.decades %}
-      <div class="decade">
-        {% for year in decade.years %}
-          <div class="year">
-            {% for week in year.weeks %}
-              <a
-                class="week"
-                href="#{{ week.startDate }}"
-                id="{{ week.startDate }}"
-                style="background-color: {{ week.color }};"
-                title="{{ week.title }}"
-              ></a>
-            {% endfor %}
-          </div>
-        {% endfor %}
+  <div class="app">
+    <div class="calendar">
+      {% for decade in calendar.decades %}
+        <div class="decade">
+          {% for year in decade.years %}
+            <div class="year">
+              {% for week in year.weeks %}
+                <a
+                  class="week"
+                  href="#{{ week.startDate }}"
+                  id="{{ week.startDate }}"
+                  style="background-color: {{ week.color }};"
+                  title="{{ week.title }}"
+                ></a>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="sidebar">
+      <div class="sidebar__tab-row">
+        <a class="sidebar__tab" href="javascript:openTab('eras')" id="tab-toggle-eras">Eras</a>
+        <a class="sidebar__tab" href="javascript:openTab('week')" id="tab-toggle-eras">Week</a>
       </div>
-    {% endfor %}
+      <div class="sidebar__iframe-container">
+        <iframe src="/eras" frameborder="0"></iframe>
+      </div>
+    </div>
   </div>
+
+  <script>
+    function openTab(tabName) {
+      localStorage.currentTab = tabName
+      updateSidebar()
+    }
+
+    // const weeks = document.querySelectorAll(".week")
+
+    // function updateWeeks(eraGroupIndex) {
+    //   document.querySelector(".calendar").classList.toggle(`calendar--highlight-era-group-${eraGroupIndex}`)
+    // }
+
+    function updateSidebar() {
+      const date = window.location.hash.replace(/^#/, "") || "{{ calendar.currentWeekStart }}"
+      const currentTab = localStorage.currentTab || "week"
+
+      if (currentTab === "week") {
+        document.querySelector(".sidebar__iframe-container iframe").src = `/weeks/${date}` // TODO
+      } else if (currentTab === "eras") {
+        document.querySelector(".sidebar__iframe-container iframe").src = "/eras" // TODO
+      }
+    }
+    window.addEventListener("hashchange", updateSidebar)
+    updateSidebar()
+  </script>
 </body>
 </html>

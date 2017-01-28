@@ -81,6 +81,7 @@ module.exports = ({currentDate, birthDate, deathDate, eras}) => {
   const calendar = {
     birthDate,
     deathDate,
+    currentWeekStart: getWeekStart(currentDate),
     eras,
     decades: [],
   }
