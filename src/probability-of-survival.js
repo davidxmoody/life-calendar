@@ -15,7 +15,7 @@ const maleProbabilityOfDyingByAge = [
 module.exports = (birthDate, currentDate, date) => {
   if (currentDate < birthDate) throw new Error("currentDate must be after birthDate")
 
-  if (date < currentDate) return 1
+  if (date <= currentDate) return 1
 
   const currentAge = Math.max(0, moment(currentDate).diff(birthDate, "years", true))
   const queryAgeIndex = Math.max(0, moment(date).diff(birthDate, "years"))
