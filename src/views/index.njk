@@ -7,6 +7,7 @@
     .app {
       display: flex;
       flex-wrap: wrap;
+      justify-content: center;
     }
 
     .sidebar {
@@ -16,6 +17,10 @@
       background: #eee;
       display: flex;
       flex-direction: column;
+    }
+
+    .sidebar--hidden {
+      display: none;
     }
 
     .sidebar__tab-row {
@@ -88,7 +93,7 @@
       {% endfor %}
     </div>
 
-    <div class="sidebar">
+    <div class="sidebar sidebar--hidden">
       <div class="sidebar__tab-row">
         <a class="sidebar__tab" href="javascript:openTab('eras')" id="tab-toggle-eras">Eras</a>
         <a class="sidebar__tab" href="javascript:openTab('week')" id="tab-toggle-eras">Week</a>
@@ -100,6 +105,10 @@
   </div>
 
   <script>
+    function unhideSidebar() {
+      document.querySelector(".sidebar").classList.remove("sidebar--hidden")
+    }
+
     function openTab(tabName) {
       localStorage.currentTab = tabName
       updateSidebar()
@@ -121,6 +130,8 @@
         document.querySelector(".sidebar__iframe-container iframe").src = "/eras" // TODO
       }
     }
+
+    window.addEventListener("hashchange", unhideSidebar)
     window.addEventListener("hashchange", updateSidebar)
     updateSidebar()
   </script>
