@@ -42,26 +42,13 @@
       "endDate": "2015-03-22",
       "name": "At home",
       "startColor": "#de2d26",
-      "endColor": "#fcae91"
+      "endColor": "#fb6a4a"
     },
     {
       "startDate": "2015-03-23",
       "name": "Working at MFT",
-      "startColor": "#08519c",
-      "endColor": "#eff3ff",
-      "subEras": [
-        {
-          "name": "Temporary accommodation"
-        },
-        {
-          "startDate": "2015-06-14",
-          "name": "Abandoned care home"
-        },
-        {
-          "startDate": "2016-03-11",
-          "name": "New apartment"
-        }
-      ]
+      "startColor": "#3182bd",
+      "endColor": "#6baed6"
     }
   ]
 }
