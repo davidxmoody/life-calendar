@@ -48,7 +48,11 @@ const runningData = {
   "2017-01-02": 2.5,
   "2017-01-09": 10,
   "2017-01-16": 7.5,
-  "2017-01-23": 5,
+  "2017-01-23": 10,
+  "2017-01-30": 15,
+  "2017-02-06": 5,
+  "2017-02-13": 15,
+  "2017-02-20": 5,
 }
 
 function getWeekStart(date) {
@@ -115,7 +119,7 @@ module.exports = ({currentDate, birthDate, deathDate, eras}) => {
     }
 
     const yearsOld = Math.floor(moment(startDate).diff(birthDate, "years", true) * 10) / 10
-    const eraOrSurvival = prob !== 1 ? `${Math.floor(prob * 1000) / 10}% chance of survival` : era.name
+    const eraOrSurvival = prob !== 1 ? `${Math.floor(prob * 1000) / 10}% chance of survival` : `${era.name}, ${runningData[startDate] || 0} miles run`
 
     const title = `${yearsOld} years old (${eraOrSurvival})`
 
