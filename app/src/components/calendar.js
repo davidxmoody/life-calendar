@@ -13,35 +13,38 @@ export default class Calendar extends React.Component {
 
   componentDidMount() {
     this.updateCanvas()
-    window.addEventListener("resize", this.updateCanvas)
+    // window.addEventListener("resize", this.updateCanvas)
   }
 
   componentWillUnmount() {
-    window.removeEventListener("resize", this.updateCanvas)
+    // window.removeEventListener("resize", this.updateCanvas)
   }
 
   updateCanvas() {
-    console.log("update canvas")
     const ctx = this.canvas.getContext("2d")
     const {width, height} = this.canvas
+    const {x, y, scale} = this.props
 
     ctx.save() // Save here to prevent the scale operations accumulating
     ctx.clearRect(0, 0, width, height)
+    ctx.translate(0.5 * width, 0.5 * height)
+    ctx.scale(scale, scale)
+    ctx.translate((-x) * width, (-y) * height)
 
-    console.time("draw")
+    // console.time("draw")
     drawCalendar({ctx, width, height, weeks: this.props.weeks})
-    console.timeEnd("draw")
+    // console.timeEnd("draw")
 
     ctx.restore()
   }
 
   render() {
-    console.log(this.props)
-    const {scale, x, y} = this.props
-    const width = 600
-    const height = 900
+    const {scale, x, y, grabbing} = this.props
+    const width = window.innerWidth
+    const height = window.innerHeight
     const deviceDisplayScale = window.devicePixelRatio || 1
-    const transform = `scale(${scale}, ${scale}) translate(${(0.5 - x) * width}px, ${(0.5 - y) * height}px`
+    // const transform = `scale(${scale}, ${scale}) translate(${(0.5 - x) * width}px, ${(0.5 - y) * height}px)`
+    const cursor = grabbing ? "-webkit-grabbing" : "-webkit-grab"
 
     return (
       <div>
@@ -50,7 +53,7 @@ export default class Calendar extends React.Component {
           ref={(canvas) => { this.canvas = canvas }}
           width={width * deviceDisplayScale}
           height={height * deviceDisplayScale}
-          style={{width, height, transform}}
+          style={{width, height, cursor}}
         />
       </div>
     )

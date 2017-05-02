@@ -14,12 +14,12 @@ export default class App extends React.Component {
 
     this.state = {
       random: 1,
+      grabbing: false,
       weeks: generateWeeks({birthDate, deathDate, eras, currentDate}),
     }
   }
 
   render() {
-    console.log(this.state.weeks)
     return (
       <div onClick={() => this.setState({random: Math.random()})}>
         <PannableCalendar
@@ -28,6 +28,9 @@ export default class App extends React.Component {
           scaleFactor={1.1}
           renderOnChange={true}
           passOnProps={true}
+          onPanStart={() => this.setState({grabbing: true})}
+          onPanEnd={() => this.setState({grabbing: false})}
+          grabbing={this.state.grabbing}
           weeks={this.state.weeks}
         />
       </div>
