@@ -28,23 +28,31 @@ export default class Calendar extends React.Component {
     ctx.save() // Save here to prevent the scale operations accumulating
     ctx.clearRect(0, 0, width, height)
 
+    console.time("draw")
     drawCalendar({ctx, width, height, weeks: this.props.weeks})
+    console.timeEnd("draw")
 
     ctx.restore()
   }
 
   render() {
+    console.log(this.props)
+    const {scale, x, y} = this.props
     const width = 600
     const height = 900
     const deviceDisplayScale = window.devicePixelRatio || 1
+    const transform = `scale(${scale}, ${scale}) translate(${(0.5 - x) * width}px, ${(0.5 - y) * height}px`
 
     return (
-      <canvas
-        ref={(canvas) => { this.canvas = canvas }}
-        width={width * deviceDisplayScale}
-        height={height * deviceDisplayScale}
-        style={{width, height}}
-      />
+      <div>
+        <pre>{this.props.x}, {this.props.y}, {this.props.scale}</pre>
+        <canvas
+          ref={(canvas) => { this.canvas = canvas }}
+          width={width * deviceDisplayScale}
+          height={height * deviceDisplayScale}
+          style={{width, height, transform}}
+        />
+      </div>
     )
   }
 }
