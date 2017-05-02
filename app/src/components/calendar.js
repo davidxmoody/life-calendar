@@ -39,23 +39,18 @@ export default class Calendar extends React.Component {
   }
 
   render() {
-    const {scale, x, y, grabbing} = this.props
     const width = window.innerWidth
     const height = window.innerHeight
     const deviceDisplayScale = window.devicePixelRatio || 1
-    // const transform = `scale(${scale}, ${scale}) translate(${(0.5 - x) * width}px, ${(0.5 - y) * height}px)`
-    const cursor = grabbing ? "-webkit-grabbing" : "-webkit-grab"
+    const cursor = this.props.grabbing ? "-webkit-grabbing" : "-webkit-grab"
 
     return (
-      <div>
-        <pre>{this.props.x}, {this.props.y}, {this.props.scale}</pre>
-        <canvas
-          ref={(canvas) => { this.canvas = canvas }}
-          width={width * deviceDisplayScale}
-          height={height * deviceDisplayScale}
-          style={{width, height, cursor}}
-        />
-      </div>
+      <canvas
+        ref={(canvas) => { this.canvas = canvas }}
+        width={width * deviceDisplayScale}
+        height={height * deviceDisplayScale}
+        style={{width, height, cursor}}
+      />
     )
   }
 }

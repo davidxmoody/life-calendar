@@ -13,7 +13,6 @@ export default class App extends React.Component {
     const currentDate = moment().format("YYYY-MM-DD")
 
     this.state = {
-      random: 1,
       grabbing: false,
       weeks: generateWeeks({birthDate, deathDate, eras, currentDate}),
     }
@@ -21,19 +20,17 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <div onClick={() => this.setState({random: Math.random()})}>
-        <PannableCalendar
-          maxScale={100}
-          minScale={1}
-          scaleFactor={1.1}
-          renderOnChange={true}
-          passOnProps={true}
-          onPanStart={() => this.setState({grabbing: true})}
-          onPanEnd={() => this.setState({grabbing: false})}
-          grabbing={this.state.grabbing}
-          weeks={this.state.weeks}
-        />
-      </div>
+      <PannableCalendar
+        maxScale={100}
+        minScale={1}
+        scaleFactor={1.15}
+        renderOnChange={true}
+        passOnProps={true}
+        onPanStart={() => this.setState({grabbing: true})}
+        onPanEnd={() => this.setState({grabbing: false})}
+        grabbing={this.state.grabbing}
+        weeks={this.state.weeks}
+      />
     )
   }
 }
