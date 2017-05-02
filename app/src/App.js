@@ -1,21 +1,19 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react"
+import Calendar from "./components/calendar"
 
-class App extends Component {
+export default class App extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      random: 1,
+    }
+  }
+
   render() {
     return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <div style={{width: 600, height: 600}} onClick={() => this.setState({random: Math.random()})}>
+        <Calendar />
       </div>
-    );
+    )
   }
 }
-
-export default App;
