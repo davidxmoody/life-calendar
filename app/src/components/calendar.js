@@ -28,14 +28,14 @@ export default class Calendar extends React.Component {
     ctx.save() // Save here to prevent the scale operations accumulating
     ctx.clearRect(0, 0, width, height)
 
-    drawCalendar({ctx, width, height})
+    drawCalendar({ctx, width, height, weeks: this.props.weeks})
 
     ctx.restore()
   }
 
   render() {
-    const width = 300
-    const height = 300
+    const width = 600
+    const height = 900
     const deviceDisplayScale = window.devicePixelRatio || 1
 
     return (
