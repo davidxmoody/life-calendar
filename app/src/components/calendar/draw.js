@@ -6,6 +6,8 @@ const yearWidth = weekWidth * 6 + yearPadding
 
 export default function({
   ctx,
+  width,
+  height,
   weeks,
 }) {
   for (let i = 0; i < weeks.decades.length; i++) {
