@@ -1,15 +1,46 @@
-const yearPadding = 4
-const weekHeight = 8
-const weekWidth = 8
-const yearHeight = weekHeight * 9 + yearPadding
-const yearWidth = weekWidth * 6 + yearPadding
+// const yearPadding = 4
+// const weekHeight = 8
+// const weekWidth = 8
+// const yearHeight = weekHeight * 9 + yearPadding
+// const yearWidth = weekWidth * 6 + yearPadding
+let weekHeight
+let weekWidth
+let yearHeight
+let yearWidth
 
-export default function({
+export default function drawCalendar({
   ctx,
   width,
   height,
   weeks,
 }) {
+  let weekSize
+
+  const spacePerYearHorizontal = Math.floor(width / 10)
+  const maybeWeekWidth = Math.floor(spacePerYearHorizontal / 7)
+
+  const maybeCalendarHeight = maybeWeekWidth * 10 * 10
+  const fillWidth = maybeCalendarHeight <= height
+
+  if (!fillWidth) {
+    const spacePerYearVertical = Math.floor(height / 10)
+    weekSize = Math.floor(spacePerYearVertical / 10)
+  } else {
+    weekSize = maybeWeekWidth
+  }
+
+  weekHeight = weekSize
+  weekWidth = weekSize
+  yearHeight = weekSize * 10
+  yearWidth = weekSize * 7
+  const calendarHeight = yearHeight * 10
+  const calendarWidth = yearWidth * 10
+
+  const xOffset = Math.floor((width - calendarWidth) / 2)
+  const yOffset = Math.floor((height - calendarHeight) / 2)
+
+  ctx.translate(xOffset, yOffset)
+
   for (let i = 0; i < weeks.decades.length; i++) {
     ctx.save()
     ctx.translate(0, yearHeight * i)
@@ -20,6 +51,8 @@ export default function({
     })
     ctx.restore()
   }
+
+  ctx.restore()
 }
 
 function drawDecade({
