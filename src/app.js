@@ -18,7 +18,7 @@ const app = express()
 nunjucks.configure(path.join(__dirname, "./views"), {autoescape: true, express: app})
 
 app.get("/", (req, res) => {
-  res.render("index.njk", {calendar})
+  res.render("index.njk", {calendar, currentDate})
 })
 
 app.get("/weeks/:week", (req, res) => {

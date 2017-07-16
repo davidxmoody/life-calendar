@@ -1,11 +1,8 @@
-import React, {PropTypes} from "react"
+import React from "react"
+import PropTypes from "prop-types"
 import drawCalendar from "./draw"
 
 export default class Calendar extends React.Component {
-  static propTypes = {
-    weeks: PropTypes.any.isRequired,
-  }
-
   constructor(props) {
     super(props)
     this.updateCanvas = this.updateCanvas.bind(this)
@@ -44,9 +41,13 @@ export default class Calendar extends React.Component {
   render() {
     return (
       <canvas
-        ref={(canvas) => {this.canvas = canvas}}
+        ref={(canvas) => { this.canvas = canvas }}
         style={{width: "100%", height: "100%"}}
       />
     )
   }
+}
+
+Calendar.propTypes = {
+  weeks: PropTypes.any.isRequired,
 }

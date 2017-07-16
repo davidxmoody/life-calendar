@@ -84,7 +84,7 @@
             <div class="year">
               {% for week in year.weeks %}
                 <a
-                  class="week"
+                  class="week{% if week.startDate > currentDate %} week--future{% endif %}"
                   href="#{{ week.startDate }}"
                   id="{{ week.startDate }}"
                   style="background-color: {{ week.color }};"
@@ -109,6 +109,22 @@
   </div>
 
   <script>
+    function updateWithCurrentDate() {
+      const currentDate = new Date().toISOString().slice(0, 10)
+
+      const pastWeeks = document.querySelectorAll(".week:not(.week--future)")
+      let lastWeekColor = pastWeeks[pastWeeks.length - 1].style["background-color"]
+
+      document.querySelectorAll(".week--future").forEach((week) => {
+        if (!(week.id < currentDate)) return
+        console.log(week.id)
+
+        week.style["background-color"] = lastWeekColor
+      })
+    }
+
+    updateWithCurrentDate()
+
     function unhideSidebar() {
       document.querySelector(".sidebar").classList.remove("sidebar--hidden")
     }
