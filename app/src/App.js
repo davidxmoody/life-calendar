@@ -12,6 +12,7 @@ export default class App extends React.Component {
 
     this.state = {
       weeks: generateWeeks({birthDate, deathDate, eras, currentDate}),
+      selectedYear: null,
     }
   }
 
@@ -20,6 +21,8 @@ export default class App extends React.Component {
       <FullScreenWrapper>
         <Calendar
           weeks={this.state.weeks}
+          selectedYear={this.state.selectedYear}
+          select={(selectedYear) => this.setState({selectedYear})}
         />
       </FullScreenWrapper>
     )

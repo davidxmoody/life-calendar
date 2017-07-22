@@ -1,8 +1,5 @@
-// const yearPadding = 4
-// const weekHeight = 8
-// const weekWidth = 8
-// const yearHeight = weekHeight * 9 + yearPadding
-// const yearWidth = weekWidth * 6 + yearPadding
+// I cannot believe how hacky this has become
+
 let weekHeight
 let weekWidth
 let yearHeight
@@ -13,6 +10,8 @@ export default function drawCalendar({
   width,
   height,
   weeks,
+  selectedYear,
+  zoomProgress,
 }) {
   let weekSize
 
@@ -39,7 +38,14 @@ export default function drawCalendar({
   const xOffset = Math.floor((width - calendarWidth) / 2)
   const yOffset = Math.floor((height - calendarHeight) / 2)
 
-  ctx.translate(xOffset, yOffset)
+  // ctx.translate(xOffset, yOffset)
+
+  if (selectedYear != null) {
+    const maxZoom = 10
+    const scaleFactor = (1 - zoomProgress) + maxZoom * zoomProgress
+    ctx.scale(scaleFactor, scaleFactor)
+    ctx.translate(-1 * yearWidth * (selectedYear % 10) * zoomProgress, -1 * yearHeight * Math.floor(selectedYear / 10) * zoomProgress)
+  }
 
   for (let i = 0; i < weeks.decades.length; i++) {
     ctx.save()
