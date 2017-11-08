@@ -5,62 +5,17 @@
   <meta name="viewport" content="width=648, initial-scale=0.65">
   <title>Life calendar</title>
   <style>
-    .app {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .sidebar {
-      flex-shrink: 0;
-      flex-grow: 1;
-      width: 400px;
-      background: #eee;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .sidebar--hidden {
-      display: none;
-    }
-
-    .sidebar__tab-row {
-      flex-shrink: 0;
-      flex-grow: 0;
-    }
-
-    .sidebar__iframe-container {
-      position: relative;
-      flex-grow: 1;
-    }
-
-    .sidebar__iframe-container iframe{
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      width: 100%;
-      height: 100%;
-    }
-
     .calendar {
-      -webkit-user-select: none;
+      margin: auto;
       width: 640px;
-      /* width: 860px; */
-      flex-grow: 0;
-      flex-shrink: 0;
+      -webkit-user-select: none;
     }
-
-    .decade {}
 
     .year {
       display: inline-flex;
       flex-wrap: wrap;
       height: 90px;
       width: 60px;
-      /* height: 70px; */
-      /* width: 82px; */
     }
 
     .week {
@@ -76,84 +31,38 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <div class="calendar">
-      {% for decade in calendar.decades %}
-        <div class="decade">
-          {% for year in decade.years %}
-            <div class="year">
-              {% for week in year.weeks %}
-                <a
-                  class="week{% if week.startDate > currentDate %} week--future{% endif %}"
-                  href="#{{ week.startDate }}"
-                  id="{{ week.startDate }}"
-                  style="background-color: {{ week.color }};"
-                  title="{{ week.title }}"
-                ></a>
-              {% endfor %}
-            </div>
-          {% endfor %}
-        </div>
-      {% endfor %}
-    </div>
-
-    <div class="sidebar sidebar--hidden">
-      <div class="sidebar__tab-row">
-        <a class="sidebar__tab" href="javascript:openTab('eras')" id="tab-toggle-eras">Eras</a>
-        <a class="sidebar__tab" href="javascript:openTab('week')" id="tab-toggle-eras">Week</a>
+  <div class="calendar">
+    {% for decade in calendar.decades %}
+      <div class="decade">
+        {% for year in decade.years %}
+          <div class="year">
+            {% for week in year.weeks %}
+              <span
+                class="week{% if week.startDate > currentDate %} week--future{% endif %}"
+                id="{{ week.startDate }}"
+                style="background-color: {{ week.color }};"
+                title="{{ week.startDate}} {{ week.title }}"
+              ></span>
+            {% endfor %}
+          </div>
+        {% endfor %}
       </div>
-      <div class="sidebar__iframe-container">
-        <iframe src="/eras" frameborder="0"></iframe>
-      </div>
-    </div>
+    {% endfor %}
   </div>
 
   <script>
-    function updateWithCurrentDate() {
-      const currentDate = new Date().toISOString().slice(0, 10)
+    const currentDate = new Date().toISOString().slice(0, 10)
 
-      const pastWeeks = document.querySelectorAll(".week:not(.week--future)")
-      let lastWeekColor = pastWeeks[pastWeeks.length - 1].style["background-color"]
-
-      document.querySelectorAll(".week--future").forEach((week) => {
-        if (!(week.id < currentDate)) return
-        console.log(week.id)
-
-        week.style["background-color"] = lastWeekColor
-      })
-    }
-
-    updateWithCurrentDate()
-
-    function unhideSidebar() {
-      document.querySelector(".sidebar").classList.remove("sidebar--hidden")
-    }
-
-    function openTab(tabName) {
-      localStorage.currentTab = tabName
-      updateSidebar()
-    }
-
-    // const weeks = document.querySelectorAll(".week")
-
-    // function updateWeeks(eraGroupIndex) {
-    //   document.querySelector(".calendar").classList.toggle(`calendar--highlight-era-group-${eraGroupIndex}`)
-    // }
-
-    function updateSidebar() {
-      const date = window.location.hash.replace(/^#/, "") || "{{ calendar.currentWeekStart }}"
-      const currentTab = localStorage.currentTab || "week"
-
-      if (currentTab === "week") {
-        document.querySelector(".sidebar__iframe-container iframe").src = `/weeks/${date}` // TODO
-      } else if (currentTab === "eras") {
-        document.querySelector(".sidebar__iframe-container iframe").src = "/eras" // TODO
+    let lastColor = "black"
+    for (const week of document.querySelectorAll(".week")) {
+      if (!week.classList.contains("week--future")) {
+        lastColor = week.style["background-color"]
+      } else if (week.id < currentDate) {
+        week.style["background-color"] = lastColor
+      } else {
+        break
       }
     }
-
-    window.addEventListener("hashchange", unhideSidebar)
-    window.addEventListener("hashchange", updateSidebar)
-    updateSidebar()
   </script>
 </body>
 </html>
