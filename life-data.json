@@ -40,15 +40,29 @@
     {
       "startDate": "2011-06-23",
       "endDate": "2015-03-22",
-      "name": "At home",
-      "startColor": "#de2d26",
-      "endColor": "#fb6a4a"
+      "name": "After uni",
+      "startColor": "#74c476",
+      "endColor": "#bae4b3"
     },
     {
       "startDate": "2015-03-23",
-      "name": "Working at MFT",
-      "startColor": "#3182bd",
-      "endColor": "#6baed6"
+      "endDate": "2017-08-13",
+      "name": "MFT",
+      "startColor": "#a50f15",
+      "endColor": "#de2d26"
+    },
+    {
+      "startDate": "2017-08-14",
+      "endDate": "2017-10-15",
+      "name": "After MFT",
+      "startColor": "#fb6a4a",
+      "endColor": "#fcae91"
+    },
+    {
+      "startDate": "2017-10-16",
+      "name": "Candide",
+      "startColor": "#006d2c",
+      "endColor": "#31a354"
     }
   ]
 }

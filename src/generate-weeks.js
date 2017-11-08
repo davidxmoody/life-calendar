@@ -47,7 +47,7 @@ module.exports = ({currentDate, birthDate, deathDate, eras}) => {
   weeks = weeks.map((startDate, index) => {
     const era = getEra(eras, startDate, index, weeks.length)
     const eraStart = era.startDate
-    const eraEnd = era.endDate || moment().format("YYYY-MM-DD")
+    const eraEnd = era.endDate || currentDate
     const intensity = 1 - ratioBetweenDates(eraStart, eraEnd, startDate)
 
     let color = col.mix(era.startColor, era.endColor, 100 * (intensity)).toRgbString()
