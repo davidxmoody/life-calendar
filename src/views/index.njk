@@ -24,10 +24,6 @@
       height: 9px;
       margin-right: 1px;
     }
-
-    .week:target {
-      border: 2px solid red;
-    }
   </style>
 </head>
 <body>
@@ -41,7 +37,7 @@
                 class="week{% if week.startDate > currentDate %} week--future{% endif %}"
                 id="{{ week.startDate }}"
                 style="background-color: {{ week.color }};"
-                title="{{ week.startDate}} {{ week.title }}"
+                title="{{ week.title }}"
               ></span>
             {% endfor %}
           </div>
