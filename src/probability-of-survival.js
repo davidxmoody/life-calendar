@@ -12,13 +12,16 @@ const maleProbabilityOfDyingByAge = [
   8515, 8303, 7650, 7134, 6386, 5417, 4753, 4173, 3021, 1664, 1139, 892, 631, 1117,
 ].map(val => val / totalSampleSize)
 
+function lerp(a, b, t) {
+  return a * (1 - t) + b * t
+}
+
 module.exports = (birthDate, currentDate, date) => {
   if (currentDate < birthDate) throw new Error("currentDate must be after birthDate")
 
   if (date <= currentDate) return 1
 
   const currentAge = Math.max(0, moment(currentDate).diff(birthDate, "years", true))
-  const queryAgeIndex = Math.max(0, moment(date).diff(birthDate, "years"))
   const currentAgeIndex = Math.min(maleProbabilityOfDyingByAge.length, Math.floor(currentAge))
   const currentAgeRemainder = currentAge % 1
 
@@ -31,10 +34,24 @@ module.exports = (birthDate, currentDate, date) => {
   })
 
   const totalPreNormalizedProb = adjustedProbs.reduce((a, b) => a + b, 0)
-
   const normalizedProbs = adjustedProbs.map((prob) => prob / totalPreNormalizedProb)
 
-  const cumulativeProbOfDying = normalizedProbs.slice(0, queryAgeIndex + 1).reduce((a, b) => a + b, 0)
+  const cumulativeProbs = []
+  let currentCumulativeProb = 0
+  for (let i = 0; i < normalizedProbs.length; i++) {
+    currentCumulativeProb += normalizedProbs[i]
+    cumulativeProbs.push(currentCumulativeProb)
+  }
 
-  return 1 - cumulativeProbOfDying
+  const queryAge = Math.max(0, moment(date).diff(birthDate, "years", true))
+  const queryAgeIndex = Math.floor(queryAge)
+  const queryAgeCeil = Math.ceil(queryAge)
+  const queryAgeRemainder = queryAge % 1
+
+  if (currentAgeIndex === queryAgeIndex) {
+    const fractionThroughRemainderOfCurrentYear = (queryAgeRemainder - currentAgeRemainder) / (1 - currentAgeRemainder)
+    return 1 - lerp(0, cumulativeProbs[queryAgeIndex], fractionThroughRemainderOfCurrentYear)
+  }
+
+  return 1 - lerp(cumulativeProbs[queryAgeIndex], cumulativeProbs[queryAgeCeil], queryAgeRemainder)
 }

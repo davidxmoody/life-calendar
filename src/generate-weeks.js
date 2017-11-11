@@ -66,6 +66,7 @@ module.exports = ({currentDate, birthDate, deathDate, eras}) => {
       title,
       startDate,
       color,
+      prob,
     }
   })
 

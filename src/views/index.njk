@@ -23,6 +23,7 @@
       width: 9px;
       height: 9px;
       margin-right: 1px;
+      transition: opacity 1s linear 0.5s;
     }
   </style>
 </head>
@@ -35,9 +36,10 @@
             {% for week in year.weeks %}
               <span
                 class="week{% if week.startDate > currentDate %} week--future{% endif %}"
-                id="{{ week.startDate }}"
                 style="background-color: {{ week.color }};"
                 title="{{ week.title }}"
+                data-start="{{ week.startDate }}"
+                data-prob="{{ week.prob }}"
               ></span>
             {% endfor %}
           </div>
@@ -48,15 +50,17 @@
 
   <script>
     const currentDate = new Date().toISOString().slice(0, 10)
+    const luckiness = Math.random()
 
     let lastColor = "black"
     for (const week of document.querySelectorAll(".week")) {
       if (!week.classList.contains("week--future")) {
         lastColor = week.style["background-color"]
-      } else if (week.id < currentDate) {
+      } else if (week.getAttribute("data-start") < currentDate) {
         week.style["background-color"] = lastColor
-      } else {
-        break
+        week.setAttribute("data-prob", "1")
+      } else if (week.getAttribute("data-prob") < luckiness) {
+        week.style.opacity = 0
       }
     }
   </script>
