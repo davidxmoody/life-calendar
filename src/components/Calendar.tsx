@@ -12,12 +12,18 @@ export default class Calendar extends React.PureComponent<Props> {
 
     return (
       <CalendarContainer>
-        {decades.map(decade => (
-          <DecadeContainer>
-            {decade.years.map(year => (
-              <YearContainer>
-                {year.weeks.map(week => (
+        {decades.map((decade, i) => (
+          <DecadeContainer key={i}>
+            {decade.years.map((year, j) => (
+              <YearContainer
+                key={j}
+                style={{
+                  transformOrigin: getYearTransformOrigin(i, decades.length, j),
+                }}
+              >
+                {year.weeks.map((week, k) => (
                   <WeekContainer
+                    key={k}
                     style={{
                       backgroundColor: week.color,
                     }}
@@ -33,7 +39,7 @@ export default class Calendar extends React.PureComponent<Props> {
 }
 
 const CalendarContainer = styled.div`
-  width: 640px;
+  width: 650px;
   user-select: none;
 `
 
@@ -42,14 +48,28 @@ const DecadeContainer = styled.div`
 `
 
 const YearContainer = styled.div`
-  margin-right: 4px;
-  margin-bottom: 4px;
+  margin-right: 2px;
+  margin-bottom: 2px;
+
+  padding-left: 2px;
+  padding-top: 2px;
+
+  padding-right: 1px;
+  padding-bottom: 1px;
 
   height: 90px;
   width: 60px;
 
   display: flex;
   flex-wrap: wrap;
+
+  background-color: white;
+
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(2.5);
+  }
 `
 
 const WeekContainer = styled.div`
@@ -58,4 +78,31 @@ const WeekContainer = styled.div`
 
   width: 9px;
   height: 9px;
+
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.4;
+  }
 `
+
+function getYearTransformOrigin(
+  decadeIndex: number,
+  numDecades: number,
+  yearInDecadeIndex: number,
+): string {
+  const vertical =
+    decadeIndex === 0
+      ? "top"
+      : decadeIndex === numDecades - 1
+        ? "bottom"
+        : "center"
+  const horizontal =
+    yearInDecadeIndex === 0
+      ? "left"
+      : yearInDecadeIndex === 9
+        ? "center"
+        : "center"
+  return `${vertical} ${horizontal}`
+}
