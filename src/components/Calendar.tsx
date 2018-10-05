@@ -1,14 +1,25 @@
 import * as React from "react"
 import styled from "styled-components"
-import {CalendarData} from "src/types"
+import {Era} from "src/types"
+import generateCalendarData from "../generateCalendarData"
 
 interface Props {
-  data: CalendarData
+  currentDate: string
+  birthDate: string
+  deathDate: string
+  eras: Era[]
+  onClickWeek: (weekStart: string) => void
 }
 
 export default class Calendar extends React.PureComponent<Props> {
   public render() {
-    const {decades} = this.props.data
+    const {currentDate, birthDate, deathDate, eras, onClickWeek} = this.props
+    const {decades} = generateCalendarData({
+      currentDate,
+      birthDate,
+      deathDate,
+      eras,
+    })
 
     return (
       <CalendarContainer>
@@ -27,6 +38,7 @@ export default class Calendar extends React.PureComponent<Props> {
                     style={{
                       backgroundColor: week.color,
                     }}
+                    onClick={() => onClickWeek(week.startDate)}
                   />
                 ))}
               </YearContainer>
@@ -48,6 +60,8 @@ const DecadeContainer = styled.div`
 `
 
 const YearContainer = styled.div`
+  overflow: hidden;
+
   margin-right: 2px;
   margin-bottom: 2px;
 
