@@ -1,7 +1,13 @@
 {
-  "name": "new-app",
+  "name": "life-calendar",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "react-scripts-ts start",
+    "build": "react-scripts-ts build",
+    "test": "react-scripts-ts test --env=jsdom",
+    "eject": "react-scripts-ts eject"
+  },
   "dependencies": {
     "moment": "^2.22.2",
     "react": "^16.5.2",
@@ -9,12 +15,6 @@
     "react-scripts-ts": "3.1.0",
     "styled-components": "^3.4.9",
     "tinycolor2": "^1.4.1"
-  },
-  "scripts": {
-    "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
     "@types/jest": "^23.3.3",
