@@ -51,7 +51,8 @@ export default class Calendar extends React.PureComponent<Props> {
 }
 
 const CalendarContainer = styled.div`
-  width: 650px;
+  padding: 3px;
+  width: 656px;
   user-select: none;
 `
 
@@ -62,8 +63,7 @@ const DecadeContainer = styled.div`
 const YearContainer = styled.div`
   overflow: hidden;
 
-  margin-right: 2px;
-  margin-bottom: 2px;
+  margin: 1px;
 
   padding-left: 2px;
   padding-top: 2px;
@@ -108,15 +108,10 @@ function getYearTransformOrigin(
 ): string {
   const vertical =
     decadeIndex === 0
-      ? "top"
+      ? "2px"
       : decadeIndex === numDecades - 1
         ? "bottom"
         : "center"
-  const horizontal =
-    yearInDecadeIndex === 0
-      ? "left"
-      : yearInDecadeIndex === 9
-        ? "center"
-        : "center"
-  return `${vertical} ${horizontal}`
+  const horizontal = yearInDecadeIndex === 0 ? "2px" : "center"
+  return `${horizontal} ${vertical}`
 }
