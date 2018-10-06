@@ -1,3 +1,9 @@
+export interface Entry {
+  date: string
+  file: string
+  content: string
+}
+
 export interface Era {
   startDate: string
   endDate: string
