@@ -1,6 +1,7 @@
 import * as React from "react"
 import {Entry} from "src/types"
 import fetchEntriesForWeek from "src/fetchEntriesForWeek"
+import EntryComponent from "src/components/Entry"
 
 interface Props {
   selectedWeekStart: string | null
@@ -38,10 +39,20 @@ export default class WeekSummary extends React.PureComponent<Props, State> {
 
   public render() {
     return (
-      <pre style={{whiteSpace: "pre-wrap"}}>
-        {JSON.stringify(this.props, null, 2)}
-        {JSON.stringify(this.state, null, 2)}
-      </pre>
+      <div>
+        <pre style={{whiteSpace: "pre-wrap"}}>
+          {JSON.stringify(this.props, null, 2)}
+          loading: {JSON.stringify(this.state.loading, null, 2)}
+          error: {JSON.stringify(this.state.error, null, 2)}
+        </pre>
+        {this.state.entries ? (
+          <div>
+            {this.state.entries.map((entry, index) => (
+              <EntryComponent key={index} entry={entry} />
+            ))}
+          </div>
+        ) : null}
+      </div>
     )
   }
 }

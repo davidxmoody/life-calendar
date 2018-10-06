@@ -1,9 +1,9 @@
 import * as React from "react"
 import * as moment from "moment"
-import Calendar from "./components/Calendar"
-import lifeData from "./lifeData"
+import Calendar from "../components/Calendar"
+import lifeData from "../lifeData"
 import styled from "styled-components"
-import WeekSummary from "./components/WeekSummary"
+import WeekSummary from "./WeekSummary"
 
 interface State {
   currentDate: string
