@@ -2,6 +2,7 @@ import * as React from "react"
 import {Entry} from "src/types"
 import fetchEntriesForWeek from "src/fetchEntriesForWeek"
 import EntryComponent from "src/components/Entry"
+import styled from "styled-components"
 
 interface Props {
   selectedWeekStart: string | null
@@ -25,7 +26,7 @@ export default class WeekSummary extends React.PureComponent<Props, State> {
       nextProps.selectedWeekStart &&
       nextProps.selectedWeekStart !== this.props.selectedWeekStart
     ) {
-      this.setState({loading: true, error: false, entries: null})
+      this.setState({loading: true, error: false})
       fetchEntriesForWeek(nextProps.selectedWeekStart)
         .then((entries: Entry[]) =>
           this.setState({loading: false, error: false, entries}),
@@ -38,21 +39,35 @@ export default class WeekSummary extends React.PureComponent<Props, State> {
   }
 
   public render() {
+    const {loading, error, entries} = this.state
+
+    if (!error && !loading && !entries) {
+      return <Container />
+    }
+
+    if (error) {
+      return <Container>Error</Container>
+    }
+
     return (
-      <div>
-        <pre style={{whiteSpace: "pre-wrap"}}>
-          {JSON.stringify(this.props, null, 2)}
-          loading: {JSON.stringify(this.state.loading, null, 2)}
-          error: {JSON.stringify(this.state.error, null, 2)}
-        </pre>
-        {this.state.entries ? (
-          <div>
-            {this.state.entries.map((entry, index) => (
-              <EntryComponent key={index} entry={entry} />
-            ))}
-          </div>
+      <Container loading={loading}>
+        {entries ? (
+          entries.length > 0 ? (
+            <div>
+              {entries.map((entry, index) => (
+                <EntryComponent key={index} entry={entry} />
+              ))}
+            </div>
+          ) : (
+            <div>No entries</div>
+          )
         ) : null}
-      </div>
+      </Container>
     )
   }
 }
+
+const Container = styled.div<{loading?: boolean}>`
+  transition: opacity 0.2s 0.1s;
+  opacity: ${({loading}) => (loading ? 0.5 : 1)};
+`
