@@ -33,6 +33,9 @@ export default class App extends React.Component<{}, State> {
 
     return (
       <Container>
+        <WeekSummaryContainer>
+          <WeekSummary selectedWeekStart={selectedWeekStart} />
+        </WeekSummaryContainer>
         <CalendarContainer>
           <Calendar
             currentDate={currentDate}
@@ -42,9 +45,6 @@ export default class App extends React.Component<{}, State> {
             onClickWeek={this.onClickWeek}
           />
         </CalendarContainer>
-        <WeekSummaryContainer>
-          <WeekSummary selectedWeekStart={selectedWeekStart} />
-        </WeekSummaryContainer>
       </Container>
     )
   }
@@ -55,17 +55,25 @@ export default class App extends React.Component<{}, State> {
 }
 
 const Container = styled.div`
-  display: flex;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
 `
 
 const CalendarContainer = styled.div`
-  flex-grow: 0;
-  flex-shrink: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
 `
 
 const WeekSummaryContainer = styled.div`
-  overflow: hidden;
-  width: 1px;
-  flex-grow: 1;
-  flex-shrink: 1;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  left: 656px;
+  overflow-y: scroll;
 `
