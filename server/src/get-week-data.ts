@@ -1,11 +1,18 @@
 import * as moment from "moment"
 import {readdirSync, readFileSync} from "fs"
 import {join} from "path"
+import * as glob from "glob"
 
 interface Entry {
   date: string
   file: string
   content: string
+}
+
+function getWeekStart(day: string): string {
+  return moment(day)
+    .startOf("isoWeek")
+    .format("YYYY-MM-DD")
 }
 
 function getDaysForWeek(date: string): string[] {
@@ -22,9 +29,16 @@ function getPathForDay(diaryDir: string, day: string): string {
   return join(diaryDir, "new-entries", day.replace(/-/g, "/"))
 }
 
+function getDateFromFilename(file: string, dayOnly: boolean = false): string {
+  return file.replace(
+    /^.*\/(\d\d\d\d)\/(\d\d)\/(\d\d)\/diary-(\d\d)-(\d\d).(txt|md)$/,
+    dayOnly ? "$1-$2-$3" : "$1-$2-$3 $4:$5",
+  )
+}
+
 function getEntry(file: string): Entry {
   const content = readFileSync(file, "utf8")
-  const date = file.replace(/^.*\/(\d\d\d\d)\/(\d\d)\/(\d\d)\/diary-(\d\d)-(\d\d).(txt|md)$/, "$1-$2-$3 $4:$5")
+  const date = getDateFromFilename(file)
   return {date, file, content}
 }
 
@@ -44,8 +58,24 @@ function getEntriesForDay(diaryDir: string, days: string[]) {
   return entries
 }
 
-export default async function getWeekData(diaryDir: string, date: string) {
+function getAllDaysWithData(diaryDir: string): string[] {
+  return glob
+    .sync("new-entries/*/*/*/diary-*.*", {cwd: diaryDir})
+    .map(file => getDateFromFilename(file, true))
+}
+
+export function getWeekData(diaryDir: string, date: string) {
   const days = getDaysForWeek(date)
   const entries = getEntriesForDay(diaryDir, days)
   return entries
+}
+
+export async function getOverviewData(diaryDir: string) {
+  const days = getAllDaysWithData(diaryDir)
+  const acc = {}
+  days.forEach(day => {
+    const weekStart = getWeekStart(day)
+    acc[weekStart] = (acc[weekStart] || 0) + 1
+  })
+  return acc
 }

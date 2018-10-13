@@ -9,11 +9,19 @@ interface Props {
   deathDate: string
   eras: Era[]
   onClickWeek: (weekStart: string) => void
+  overview: null | {[day: string]: number | undefined}
 }
 
 export default class Calendar extends React.PureComponent<Props> {
   public render() {
-    const {currentDate, birthDate, deathDate, eras, onClickWeek} = this.props
+    const {
+      currentDate,
+      birthDate,
+      deathDate,
+      eras,
+      onClickWeek,
+      overview,
+    } = this.props
     const {decades} = generateCalendarData({
       currentDate,
       birthDate,
@@ -39,7 +47,11 @@ export default class Calendar extends React.PureComponent<Props> {
                       backgroundColor: week.color,
                     }}
                     onClick={() => onClickWeek(week.startDate)}
-                  />
+                  >
+                    <OverviewContainer>
+                      {overview && overview[week.startDate]}
+                    </OverviewContainer>
+                  </WeekContainer>
                 ))}
               </YearContainer>
             ))}
@@ -83,6 +95,11 @@ const YearContainer = styled.div`
 
   &:hover {
     transform: scale(2.5);
+    z-index: 1;
+
+    .overview-container {
+      opacity: 1;
+    }
   }
 `
 
@@ -99,6 +116,12 @@ const WeekContainer = styled.div`
   &:hover {
     opacity: 0.4;
   }
+`
+
+const OverviewContainer = styled.div.attrs({className: "overview-container"})`
+  font-size: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
 `
 
 function getYearTransformOrigin(

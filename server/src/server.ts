@@ -1,5 +1,5 @@
 import * as express from "express"
-import getWeekData from "./get-week-data"
+import {getWeekData, getOverviewData} from "./get-week-data"
 
 const DIARY_DIR = process.env.DIARY_DIR
 if (!DIARY_DIR) {
@@ -15,6 +15,11 @@ app.use((req, res, next) => {
 
 app.get("/weeks/:date", async (req, res) => {
   const data = await getWeekData(DIARY_DIR, req.params.date)
+  res.send(data)
+})
+
+app.get("/overview", async (req, res) => {
+  const data = await getOverviewData(DIARY_DIR)
   res.send(data)
 })
 

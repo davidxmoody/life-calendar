@@ -4,6 +4,7 @@ import Calendar from "../components/Calendar"
 import lifeData from "../lifeData"
 import styled from "styled-components"
 import WeekSummary from "./WeekSummary"
+import getOverview from "src/getOverview"
 
 interface State {
   currentDate: string
@@ -11,6 +12,7 @@ interface State {
   deathDate: string
   eras: any
   selectedWeekStart: string | null
+  overview: null | {[day: string]: number | undefined}
 }
 
 export default class App extends React.Component<{}, State> {
@@ -20,6 +22,12 @@ export default class App extends React.Component<{}, State> {
     deathDate: lifeData.deathDate,
     eras: lifeData.eras,
     selectedWeekStart: null,
+    overview: null,
+  }
+
+  public async componentDidMount() {
+    const overview = await getOverview()
+    this.setState({overview})
   }
 
   public render() {
@@ -29,6 +37,7 @@ export default class App extends React.Component<{}, State> {
       deathDate,
       eras,
       selectedWeekStart,
+      overview,
     } = this.state
 
     return (
@@ -43,6 +52,7 @@ export default class App extends React.Component<{}, State> {
             deathDate={deathDate}
             eras={eras}
             onClickWeek={this.onClickWeek}
+            overview={overview}
           />
         </CalendarContainer>
       </Container>
