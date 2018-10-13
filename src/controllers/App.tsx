@@ -40,6 +40,10 @@ export default class App extends React.Component<{}, State> {
       overview,
     } = this.state
 
+    if (!overview) {
+      return <LoadingContainer>Loading...</LoadingContainer>
+    }
+
     return (
       <Container>
         <WeekSummaryContainer>
@@ -86,4 +90,10 @@ const WeekSummaryContainer = styled.div`
   bottom: 0;
   left: 656px;
   overflow-y: scroll;
+`
+
+const LoadingContainer = styled.div`
+  padding: 16px;
+  opacity: 0.2;
+  font-style: italic;
 `

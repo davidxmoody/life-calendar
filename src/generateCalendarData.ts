@@ -19,15 +19,15 @@ function getYearNum(firstWeekStart: string, weekStart: string): number {
   return Math.abs(moment(weekStart).diff(firstWeekStart, "years"))
 }
 
-function ratioBetweenDates(
-  startDate: string,
-  endDate: string,
-  date: string,
-): number {
-  const range = moment(endDate).unix() - moment(startDate).unix()
-  const amount = moment(endDate).unix() - moment(date).unix()
-  return amount / range
-}
+// function ratioBetweenDates(
+//   startDate: string,
+//   endDate: string,
+//   date: string,
+// ): number {
+//   const range = moment(endDate).unix() - moment(startDate).unix()
+//   const amount = moment(endDate).unix() - moment(date).unix()
+//   return amount / range
+// }
 
 function getEra(eras: Era[], weekStart: string): Era {
   let selectedEra = eras[0]
@@ -46,11 +46,13 @@ export default function generateWeeks({
   birthDate,
   deathDate,
   eras,
+  overview,
 }: {
   currentDate: string
   birthDate: string
   deathDate: string
   eras: Era[]
+  overview: {[day: string]: number | undefined}
 }): CalendarData {
   const weekDates: string[] = [getWeekStart(birthDate)]
 
@@ -65,12 +67,18 @@ export default function generateWeeks({
 
   const weeks: WeekData[] = weekDates.map((startDate, index) => {
     const era = getEra(eras, startDate)
-    const eraStart = era.startDate
-    const eraEnd = era.endDate || currentDate
-    const intensity = 1 - ratioBetweenDates(eraStart, eraEnd, startDate)
+    // const eraStart = era.startDate
+    // const eraEnd = era.endDate || currentDate
+    // const intensity = 1 - ratioBetweenDates(eraStart, eraEnd, startDate)
 
+    // let color = col
+    //   .mix(era.startColor, era.endColor, 100 * intensity)
+    //   .lighten(10 - 20 * (Math.min(1, (overview[startDate] || 0) / 7)))
+    //   .toRgbString()
+
+    const entryFrequency = Math.min(1, (overview[startDate] || 0) / 7)
     let color = col
-      .mix(era.startColor, era.endColor, 100 * intensity)
+      .mix("white", era.startColor, 40 + 60 * entryFrequency)
       .toRgbString()
 
     const prob = probabilityOfSurvival(birthDate, currentDate, startDate)
