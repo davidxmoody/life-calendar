@@ -2,6 +2,7 @@ import * as moment from "moment"
 import {readdirSync, readFileSync} from "fs"
 import {join} from "path"
 import * as glob from "glob"
+import {DIARY_DIR} from "./config"
 
 interface Entry {
   date: string
@@ -25,8 +26,8 @@ function getDaysForWeek(date: string): string[] {
   return dates
 }
 
-function getPathForDay(diaryDir: string, day: string): string {
-  return join(diaryDir, "new-entries", day.replace(/-/g, "/"))
+function getPathForDay(day: string): string {
+  return join(DIARY_DIR, "new-entries", day.replace(/-/g, "/"))
 }
 
 function getDateFromFilename(file: string, dayOnly: boolean = false): string {
@@ -42,11 +43,11 @@ function getEntry(file: string): Entry {
   return {date, file, content}
 }
 
-function getEntriesForDay(diaryDir: string, days: string[]) {
+function getEntriesForDay(days: string[]) {
   const entries = []
   for (const day of days) {
     try {
-      const dir = getPathForDay(diaryDir, day)
+      const dir = getPathForDay(day)
       const filenames = readdirSync(dir)
       for (const filename of filenames) {
         entries.push(getEntry(join(dir, filename)))
@@ -58,24 +59,30 @@ function getEntriesForDay(diaryDir: string, days: string[]) {
   return entries
 }
 
-function getAllDaysWithData(diaryDir: string): string[] {
+function getAllDaysWithData(): string[] {
   return glob
-    .sync("new-entries/*/*/*/diary-*.*", {cwd: diaryDir})
+    .sync("new-entries/*/*/*/diary-*.*", {cwd: DIARY_DIR})
     .map(file => getDateFromFilename(file, true))
 }
 
-export function getWeekData(diaryDir: string, date: string) {
+export function getWeekData(date: string) {
   const days = getDaysForWeek(date)
-  const entries = getEntriesForDay(diaryDir, days)
+  const entries = getEntriesForDay(days)
   return entries
 }
 
-export async function getOverviewData(diaryDir: string) {
-  const days = getAllDaysWithData(diaryDir)
+export async function getOverviewData() {
+  const days = getAllDaysWithData()
   const acc = {}
   days.forEach(day => {
     const weekStart = getWeekStart(day)
     acc[weekStart] = (acc[weekStart] || 0) + 1
   })
   return acc
+}
+
+export function getAllEntries(): Entry[] {
+  return glob
+    .sync("new-entries/*/*/*/diary-*.*", {cwd: DIARY_DIR})
+    .map(file => getEntry(join(DIARY_DIR, file)))
 }

@@ -1,11 +1,6 @@
 import * as express from "express"
 import {getWeekData, getOverviewData} from "./get-week-data"
 
-const DIARY_DIR = process.env.DIARY_DIR
-if (!DIARY_DIR) {
-  throw new Error("DIARY_DIR env var is not set")
-}
-
 const app = express()
 
 app.use((req, res, next) => {
@@ -14,12 +9,12 @@ app.use((req, res, next) => {
 })
 
 app.get("/weeks/:date", async (req, res) => {
-  const data = await getWeekData(DIARY_DIR, req.params.date)
+  const data = await getWeekData(req.params.date)
   res.send(data)
 })
 
 app.get("/overview", async (req, res) => {
-  const data = await getOverviewData(DIARY_DIR)
+  const data = await getOverviewData()
   res.send(data)
 })
 
