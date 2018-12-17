@@ -27,7 +27,7 @@ function getDaysForWeek(date: string): string[] {
 }
 
 function getPathForDay(day: string): string {
-  return join(DIARY_DIR, "new-entries", day.replace(/-/g, "/"))
+  return join(DIARY_DIR, "entries", day.replace(/-/g, "/"))
 }
 
 function getDateFromFilename(file: string, dayOnly: boolean = false): string {
@@ -61,7 +61,7 @@ function getEntriesForDay(days: string[]) {
 
 function getAllDaysWithData(): string[] {
   return glob
-    .sync("new-entries/*/*/*/diary-*.*", {cwd: DIARY_DIR})
+    .sync("entries/*/*/*/diary-*.*", {cwd: DIARY_DIR})
     .map(file => getDateFromFilename(file, true))
 }
 
@@ -83,6 +83,6 @@ export async function getOverviewData() {
 
 export function getAllEntries(): Entry[] {
   return glob
-    .sync("new-entries/*/*/*/diary-*.*", {cwd: DIARY_DIR})
+    .sync("entries/*/*/*/diary-*.*", {cwd: DIARY_DIR})
     .map(file => getEntry(join(DIARY_DIR, file)))
 }
