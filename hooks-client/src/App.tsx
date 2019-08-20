@@ -1,14 +1,6 @@
 import React, {useState} from "react"
 import {Route, Link} from "wouter"
 import Calendar from "./Calendar"
-import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  Button,
-} from "@material-ui/core"
-import MenuIcon from "@material-ui/icons/Menu"
 import AppTopBar from "./components/AppTopBar"
 import AppSideDrawer from "./components/AppSideDrawer"
 
