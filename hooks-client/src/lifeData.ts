@@ -1,0 +1,68 @@
+export default {
+  birthDate: "1990-07-04",
+  deathDate: "2090-07-03",
+  eras: [
+    {
+      startDate: "1990-07-04",
+      endDate: "1995-04-17",
+      name: "Before school",
+      startColor: "#fb6a4a",
+      endColor: "#fcae91",
+    },
+    {
+      startDate: "1995-04-18",
+      endDate: "2001-09-03",
+      name: "Primary school",
+      startColor: "#6baed6",
+      endColor: "#bdd7e7",
+    },
+    {
+      startDate: "2001-09-04",
+      endDate: "2006-09-04",
+      name: "Secondary school",
+      startColor: "#74c476",
+      endColor: "#bae4b3",
+    },
+    {
+      startDate: "2006-09-05",
+      endDate: "2008-10-05",
+      name: "Strode College",
+      startColor: "#9e9ac8",
+      endColor: "#cbc9e2",
+    },
+    {
+      startDate: "2008-10-06",
+      endDate: "2011-06-22",
+      name: "University of Cambridge",
+      startColor: "#fd8d3c",
+      endColor: "#fdbe85",
+    },
+    {
+      startDate: "2011-06-23",
+      endDate: "2015-03-22",
+      name: "After uni",
+      startColor: "#74c476",
+      endColor: "#bae4b3",
+    },
+    {
+      startDate: "2015-03-23",
+      endDate: "2017-08-13",
+      name: "MFT",
+      startColor: "#a50f15",
+      endColor: "#de2d26",
+    },
+    {
+      startDate: "2017-08-14",
+      endDate: "2017-10-15",
+      name: "After MFT",
+      startColor: "#fb6a4a",
+      endColor: "#fcae91",
+    },
+    {
+      startDate: "2017-10-16",
+      name: "Candide",
+      startColor: "#006d2c",
+      endColor: "#31a354",
+    },
+  ],
+}

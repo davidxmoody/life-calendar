@@ -1,8 +1,8 @@
 import React, {useState} from "react"
 import {Route, Link} from "wouter"
 import Calendar from "./Calendar"
-import AppTopBar from "./components/AppTopBar"
-import AppSideDrawer from "./components/AppSideDrawer"
+import AppTopBar from "./AppTopBar"
+import AppSideDrawer from "./AppSideDrawer"
 
 export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false)
