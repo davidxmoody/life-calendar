@@ -14,11 +14,20 @@ export default function App() {
         onClickMenu={() => setDrawerOpen(x => !x)}
       />
 
-      <div style={{margin: 16}}>
-        <Route path="/" component={Calendar} />
-        <Route path="/test">this is test</Route>
-        <Link href="/">goto home</Link>
-        <Link href="/test">goto test</Link>
+      <div style={{margin: 16, display: "flex"}}>
+        <Calendar />
+
+        <div style={{flex: 1}}>
+          <Route path="/">
+            <div>Root</div>
+          </Route>
+          <Route path="/test">
+            <div>Test</div>
+          </Route>
+          <div>
+            <Link href="/">goto home</Link> <Link href="/test">goto test</Link>
+          </div>
+        </div>
       </div>
 
       <AppSideDrawer open={drawerOpen} />

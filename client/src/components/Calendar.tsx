@@ -1,11 +1,10 @@
-import * as React from "react"
+import React, {useMemo, memo} from "react"
 import styled from "styled-components"
 import moment from "moment"
 import generateCalendarData from "../helpers/generateCalendarData"
-import {useMemo} from "react"
 import lifeData from "../lifeData"
 
-export default function Calendar() {
+export default memo(function Calendar() {
   const currentDate = moment().format("YYYY-MM-DD")
   const {decades} = useMemo(
     () => generateCalendarData({currentDate, overview: {}, ...lifeData}),
@@ -17,13 +16,7 @@ export default function Calendar() {
       {decades.map((decade, i) => (
         <DecadeContainer key={i}>
           {decade.years.map((year, j) => (
-            <YearContainer
-              key={j}
-              id={`year-${j}`}
-              style={{
-                transformOrigin: getYearTransformOrigin(i, decades.length, j),
-              }}
-            >
+            <YearContainer key={j}>
               {year.weeks.map((week, k) => (
                 <WeekContainer key={k} style={{backgroundColor: week.color}} />
               ))}
@@ -33,7 +26,7 @@ export default function Calendar() {
       ))}
     </CalendarContainer>
   )
-}
+})
 
 const CalendarContainer = styled.div`
   padding: 3px;
@@ -61,15 +54,6 @@ const YearContainer = styled.div`
 
   display: flex;
   flex-wrap: wrap;
-
-  background-color: white;
-
-  transition: transform 0.2s;
-
-  &:target {
-    transform: scale(2.5);
-    z-index: 1;
-  }
 `
 
 const WeekContainer = styled.div`
@@ -78,21 +62,4 @@ const WeekContainer = styled.div`
 
   width: 9px;
   height: 9px;
-
-  cursor: pointer;
 `
-
-function getYearTransformOrigin(
-  decadeIndex: number,
-  numDecades: number,
-  yearInDecadeIndex: number,
-): string {
-  const vertical =
-    decadeIndex === 0
-      ? "2px"
-      : decadeIndex === numDecades - 1
-        ? "bottom"
-        : "center"
-  const horizontal = yearInDecadeIndex === 0 ? "2px" : "center"
-  return `${horizontal} ${vertical}`
-}

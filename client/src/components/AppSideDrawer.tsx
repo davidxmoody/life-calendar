@@ -1,11 +1,9 @@
-import * as React from "react"
+import React from "react"
 
 interface Props {
   open: boolean
 }
 
 export default function AppSideDrawer(props: Props) {
-  return (
-    <></>
-  )
+  return <></>
 }
