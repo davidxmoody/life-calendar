@@ -4,6 +4,7 @@ import Calendar from "./Calendar"
 import AppTopBar from "./AppTopBar"
 import AppSideDrawer from "./AppSideDrawer"
 import WeekSummary from "./WeekSummary"
+import LayerList from "./LayerList"
 
 export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -20,12 +21,16 @@ export default function App() {
       <div style={{margin: 16, display: "flex"}}>
         <Calendar layerName={layerParams && layerParams.layerName} />
 
-        {weekParams && weekParams.weekStart ? (
-          <WeekSummary
-            key={weekParams.weekStart}
-            weekStart={weekParams.weekStart}
-          />
-        ) : null}
+        <div>
+          <LayerList />
+
+          {weekParams && weekParams.weekStart ? (
+            <WeekSummary
+              key={weekParams.weekStart}
+              weekStart={weekParams.weekStart}
+            />
+          ) : null}
+        </div>
       </div>
 
       <AppSideDrawer open={drawerOpen} />
