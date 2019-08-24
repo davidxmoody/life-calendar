@@ -1,6 +1,7 @@
 import * as express from "express"
 import {getWeekData, getOverviewData} from "./get-week-data"
-import * as testLayer from "./test-layer-data.json"
+import * as testLayer1 from "./test-layer-data-1.json"
+import * as testLayer2 from "./test-layer-data-2.json"
 
 const app = express()
 
@@ -19,8 +20,12 @@ app.get("/overview", async (req, res) => {
   res.send(data)
 })
 
-app.get("/layers/test", async (req, res) => {
-  res.send(testLayer)
+app.get("/layers/test1", async (req, res) => {
+  res.send(testLayer1)
+})
+
+app.get("/layers/test2", async (req, res) => {
+  res.send(testLayer2)
 })
 
 app.listen(3001, "localhost", () => {
