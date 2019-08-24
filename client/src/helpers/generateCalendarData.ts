@@ -76,13 +76,7 @@ export default function generateCalendarData({
       return {startDate, prob, color}
     }
 
-    // const entryFrequency = Math.min(1, (overview[startDate] || 0) / 7)
-
     const overviewIntensity = Math.min(1, overview[startDate] || 0)
-
-    if (startDate in overview) {
-      console.warn(overviewIntensity)
-    }
 
     // const eraStart = era.startDate
     // const eraEnd = era.endDate || currentDate
@@ -93,7 +87,7 @@ export default function generateCalendarData({
     // )
 
     const color = col
-      .mix("white", era.baseColor, 40 + 60 * overviewIntensity)
+      .mix("white", era.baseColor, 30 + 70 * overviewIntensity)
       .toRgbString()
 
     return {startDate, prob, color}
