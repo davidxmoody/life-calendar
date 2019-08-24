@@ -1,7 +1,22 @@
 import moment from "moment"
-import * as col from "tinycolor2"
 import probabilityOfSurvival from "./probabilityOfSurvival"
-import {CalendarData, Era, WeekData} from "../types"
+import {Era} from "../lifeData"
+
+interface PastWeek {
+  startDate: string
+  era: Era
+}
+
+interface FutureWeek {
+  startDate: string
+  prob: number
+}
+
+export type Week = PastWeek | FutureWeek
+
+interface CalendarData {
+  decades: Array<{years: Array<{weeks: Array<Week>}>}>
+}
 
 function getWeekStart(date: string): string {
   return moment(date)
@@ -31,75 +46,43 @@ function getEra(eras: Era[], weekStart: string): Era {
   return selectedEra
 }
 
-// function ratioBetweenDates(
-//   startDate: string,
-//   endDate: string,
-//   date: string,
-// ): number {
-//   const range = moment(endDate).unix() - moment(startDate).unix()
-//   const amount = moment(endDate).unix() - moment(date).unix()
-//   return amount / range
-// }
-
 export default function generateCalendarData({
   currentDate,
   birthDate,
   deathDate,
   eras,
-  overview,
 }: {
   currentDate: string
   birthDate: string
   deathDate: string
   eras: Era[]
-  overview: {[day: string]: number | undefined}
-}): CalendarData {
-  const weekDates: string[] = [getWeekStart(birthDate)]
+}) {
+  const firstWeekStartDate = getWeekStart(birthDate)
+  const weeks: Week[] = [
+    {startDate: firstWeekStartDate, era: getEra(eras, firstWeekStartDate)},
+  ]
 
   while (true) {
-    const lastWeek = weekDates[weekDates.length - 1]
-    const nextWeek = getNextWeekStart(lastWeek)
+    const lastWeek = weeks[weeks.length - 1]
+    const nextWeek = getNextWeekStart(lastWeek.startDate)
     if (nextWeek > deathDate) {
       break
     }
-    weekDates.push(nextWeek)
-  }
 
-  const weeks: WeekData[] = weekDates.map((startDate, index) => {
-    const era = getEra(eras, startDate)
-
-    const prob = probabilityOfSurvival(birthDate, currentDate, startDate)
-
-    if (prob !== 1) {
-      const color = col.mix("#d9d9d9", "white", 100 * (1 - prob)).toRgbString()
-
-      return {startDate, prob, color}
+    if (nextWeek <= currentDate) {
+      weeks.push({
+        startDate: nextWeek,
+        era: getEra(eras, nextWeek),
+      })
+    } else {
+      weeks.push({
+        startDate: nextWeek,
+        prob: probabilityOfSurvival(birthDate, currentDate, nextWeek),
+      })
     }
-
-    const overviewIntensity = Math.min(1, overview[startDate] || 0)
-
-    // const eraStart = era.startDate
-    // const eraEnd = era.endDate || currentDate
-    // const intensity = Math.max(
-    //   0,
-    //   (1 - 0.8 * ratioBetweenDates(eraStart, eraEnd, startDate)) *
-    //     (0.5 + 0.5 * entryFrequency),
-    // )
-
-    const color = col
-      .mix("white", era.baseColor, 30 + 70 * overviewIntensity)
-      .toRgbString()
-
-    return {startDate, prob, color}
-  })
-
-  const calendar: CalendarData = {
-    birthDate,
-    deathDate,
-    currentWeekStart: getWeekStart(currentDate),
-    eras,
-    decades: [],
   }
+
+  const calendar: CalendarData = {decades: []}
 
   for (const week of weeks) {
     const yearNum = getYearNum(birthDate, week.startDate)

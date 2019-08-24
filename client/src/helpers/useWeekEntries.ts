@@ -1,6 +1,11 @@
-import {Entry} from "../types"
 import {REMOTE_URL} from "../config"
 import {useState, useEffect} from "react"
+
+export interface Entry {
+  date: string
+  file: string
+  content: string
+}
 
 async function fetchWeekEntries(weekStart: string): Promise<Entry[]> {
   return fetch(`${REMOTE_URL}/weeks/${weekStart}`).then(res => res.json())

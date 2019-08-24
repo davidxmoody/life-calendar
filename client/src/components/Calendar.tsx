@@ -2,9 +2,9 @@ import React, {useMemo, memo} from "react"
 import styled from "styled-components"
 import generateCalendarData from "../helpers/generateCalendarData"
 import lifeData from "../lifeData"
-import {Link} from "wouter"
 import useCurrentDate from "../helpers/useCurrentDate"
 import useLayerData from "../helpers/useLayerData"
+import Year from "./Year"
 
 interface Props {
   layerName: string | undefined | null
@@ -14,13 +14,8 @@ export default memo(function Calendar(props: Props) {
   const currentDate = useCurrentDate()
   const overview = useLayerData(props.layerName)
   const {decades} = useMemo(
-    () =>
-      generateCalendarData({
-        currentDate,
-        overview: overview || {},
-        ...lifeData,
-      }),
-    [currentDate, overview],
+    () => generateCalendarData({currentDate, ...lifeData}),
+    [currentDate],
   )
 
   return (
@@ -28,18 +23,7 @@ export default memo(function Calendar(props: Props) {
       {decades.map((decade, i) => (
         <DecadeContainer key={i}>
           {decade.years.map((year, j) => (
-            <YearContainer key={j}>
-              {year.weeks.map((week, k) => (
-                <Link key={k} href={`/weeks/${week.startDate}`}>
-                  <WeekContainer
-                    style={{
-                      backgroundColor: week.color,
-                      cursor: week.prob === 1 ? "pointer" : "auto",
-                    }}
-                  />
-                </Link>
-              ))}
-            </YearContainer>
+            <Year key={j} weeks={year.weeks} overview={overview} />
           ))}
         </DecadeContainer>
       ))}
@@ -55,30 +39,4 @@ const CalendarContainer = styled.div`
 
 const DecadeContainer = styled.div`
   display: flex;
-`
-
-const YearContainer = styled.div`
-  overflow: hidden;
-
-  margin: 1px;
-
-  padding-left: 2px;
-  padding-top: 2px;
-
-  padding-right: 1px;
-  padding-bottom: 1px;
-
-  height: 90px;
-  width: 60px;
-
-  display: flex;
-  flex-wrap: wrap;
-`
-
-const WeekContainer = styled.div`
-  margin-right: 1px;
-  margin-bottom: 1px;
-
-  width: 9px;
-  height: 9px;
 `
