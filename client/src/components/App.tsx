@@ -7,7 +7,8 @@ import WeekSummary from "./WeekSummary"
 
 export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [, params] = useRoute("/:weekStart")
+  const [, weekParams] = useRoute("/week/:weekStart")
+  const [, layerParams] = useRoute("/layers/:layerName")
 
   return (
     <div>
@@ -17,10 +18,13 @@ export default function App() {
       />
 
       <div style={{margin: 16, display: "flex"}}>
-        <Calendar />
+        <Calendar layerName={layerParams && layerParams.layerName} />
 
-        {params && params.weekStart ? (
-          <WeekSummary key={params.weekStart} weekStart={params.weekStart} />
+        {weekParams && weekParams.weekStart ? (
+          <WeekSummary
+            key={weekParams.weekStart}
+            weekStart={weekParams.weekStart}
+          />
         ) : null}
       </div>
 

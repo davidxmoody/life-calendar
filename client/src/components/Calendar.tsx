@@ -2,13 +2,17 @@ import React, {useMemo, memo} from "react"
 import styled from "styled-components"
 import generateCalendarData from "../helpers/generateCalendarData"
 import lifeData from "../lifeData"
-import useOverview from "../helpers/useOverview"
 import {Link} from "wouter"
 import useCurrentDate from "../helpers/useCurrentDate"
+import useLayerData from "../helpers/useLayerData"
 
-export default memo(function Calendar() {
+interface Props {
+  layerName: string | undefined | null
+}
+
+export default memo(function Calendar(props: Props) {
   const currentDate = useCurrentDate()
-  const overview = useOverview()
+  const overview = useLayerData(props.layerName)
   const {decades} = useMemo(
     () =>
       generateCalendarData({

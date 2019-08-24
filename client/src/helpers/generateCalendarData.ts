@@ -31,15 +31,15 @@ function getEra(eras: Era[], weekStart: string): Era {
   return selectedEra
 }
 
-function ratioBetweenDates(
-  startDate: string,
-  endDate: string,
-  date: string,
-): number {
-  const range = moment(endDate).unix() - moment(startDate).unix()
-  const amount = moment(endDate).unix() - moment(date).unix()
-  return amount / range
-}
+// function ratioBetweenDates(
+//   startDate: string,
+//   endDate: string,
+//   date: string,
+// ): number {
+//   const range = moment(endDate).unix() - moment(startDate).unix()
+//   const amount = moment(endDate).unix() - moment(date).unix()
+//   return amount / range
+// }
 
 export default function generateCalendarData({
   currentDate,
@@ -76,17 +76,25 @@ export default function generateCalendarData({
       return {startDate, prob, color}
     }
 
-    const entryFrequency = Math.min(1, (overview[startDate] || 0) / 7)
+    // const entryFrequency = Math.min(1, (overview[startDate] || 0) / 7)
 
-    const eraStart = era.startDate
-    const eraEnd = era.endDate || currentDate
-    const intensity = Math.max(
-      0,
-      (1 - 0.8 * ratioBetweenDates(eraStart, eraEnd, startDate)) *
-        (0.5 + 0.5 * entryFrequency),
-    )
+    const overviewIntensity = Math.min(1, overview[startDate] || 0)
 
-    const color = col.mix(era.baseColor, "white", 60 * intensity).toRgbString()
+    if (startDate in overview) {
+      console.warn(overviewIntensity)
+    }
+
+    // const eraStart = era.startDate
+    // const eraEnd = era.endDate || currentDate
+    // const intensity = Math.max(
+    //   0,
+    //   (1 - 0.8 * ratioBetweenDates(eraStart, eraEnd, startDate)) *
+    //     (0.5 + 0.5 * entryFrequency),
+    // )
+
+    const color = col
+      .mix("white", era.baseColor, 40 + 60 * overviewIntensity)
+      .toRgbString()
 
     return {startDate, prob, color}
   })
