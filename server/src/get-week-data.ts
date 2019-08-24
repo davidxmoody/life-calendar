@@ -53,7 +53,9 @@ function getEntriesForDay(days: string[]) {
         entries.push(getEntry(join(dir, filename)))
       }
     } catch (e) {
-      console.warn(e)
+      if (e.code !== "ENOENT") {
+        console.warn(e)
+      }
     }
   }
   return entries
