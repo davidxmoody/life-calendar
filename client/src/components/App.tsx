@@ -1,11 +1,13 @@
 import React, {useState} from "react"
-import {Route, Link} from "wouter"
+import {useRoute} from "wouter"
 import Calendar from "./Calendar"
 import AppTopBar from "./AppTopBar"
 import AppSideDrawer from "./AppSideDrawer"
+import WeekSummary from "./WeekSummary"
 
 export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [, params] = useRoute("/:weekStart")
 
   return (
     <div>
@@ -17,17 +19,9 @@ export default function App() {
       <div style={{margin: 16, display: "flex"}}>
         <Calendar />
 
-        <div style={{flex: 1}}>
-          <Route path="/">
-            <div>Root</div>
-          </Route>
-          <Route path="/test">
-            <div>Test</div>
-          </Route>
-          <div>
-            <Link href="/">goto home</Link> <Link href="/test">goto test</Link>
-          </div>
-        </div>
+        {params && params.weekStart ? (
+          <WeekSummary key={params.weekStart} weekStart={params.weekStart} />
+        ) : null}
       </div>
 
       <AppSideDrawer open={drawerOpen} />

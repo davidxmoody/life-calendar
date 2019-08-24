@@ -4,6 +4,7 @@ import moment from "moment"
 import generateCalendarData from "../helpers/generateCalendarData"
 import lifeData from "../lifeData"
 import useOverview from "../helpers/useOverview"
+import {Link} from "wouter"
 
 export default memo(function Calendar() {
   const currentDate = moment().format("YYYY-MM-DD")
@@ -25,7 +26,9 @@ export default memo(function Calendar() {
           {decade.years.map((year, j) => (
             <YearContainer key={j}>
               {year.weeks.map((week, k) => (
-                <WeekContainer key={k} style={{backgroundColor: week.color}} />
+                <Link key={k} href={`/${week.startDate}`}>
+                  <WeekContainer style={{backgroundColor: week.color}} />
+                </Link>
               ))}
             </YearContainer>
           ))}
@@ -69,4 +72,6 @@ const WeekContainer = styled.div`
 
   width: 9px;
   height: 9px;
+
+  cursor: pointer;
 `

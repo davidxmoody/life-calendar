@@ -1,12 +1,12 @@
 import {useState, useEffect} from "react"
+import {REMOTE_URL} from "../config"
 
 type Overview = {[day: string]: number | undefined}
-
-const REMOTE_URL = "http://localhost:3001"
 
 async function fetchOverview(): Promise<Overview> {
   return fetch(`${REMOTE_URL}/overview`).then(res => res.json())
 }
+
 export default function useOverview() {
   const [data, setData] = useState<Overview | undefined>(undefined)
 
