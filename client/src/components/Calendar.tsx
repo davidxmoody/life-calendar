@@ -23,7 +23,11 @@ export default memo(function Calendar(props: Props) {
       {decades.map((decade, i) => (
         <DecadeContainer key={i}>
           {decade.years.map((year, j) => (
-            <Year key={j} weeks={year.weeks} overview={overview} />
+            <Year
+              key={j}
+              weeks={year.weeks}
+              overview={i === 2 ? overview : undefined}
+            />
           ))}
         </DecadeContainer>
       ))}
