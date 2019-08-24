@@ -30,7 +30,7 @@ export default memo(function Calendar(props: Props) {
           {decade.years.map((year, j) => (
             <YearContainer key={j}>
               {year.weeks.map((week, k) => (
-                <Link key={k} href={`/${week.startDate}`}>
+                <Link key={k} href={`/weeks/${week.startDate}`}>
                   <WeekContainer
                     style={{
                       backgroundColor: week.color,

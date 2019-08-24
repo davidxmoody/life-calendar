@@ -8,7 +8,7 @@ import LayerList from "./LayerList"
 
 export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [, weekParams] = useRoute("/week/:weekStart")
+  const [, weekParams] = useRoute("/weeks/:weekStart")
   const [, layerParams] = useRoute("/layers/:layerName")
 
   return (
