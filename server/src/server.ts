@@ -1,10 +1,8 @@
 import * as express from "express"
 import {getWeekData, getOverviewData} from "./get-week-data"
-import * as testLayer1 from "./test-layer-data-1.json"
-import * as testLayer2 from "./test-layer-data-2.json"
-import * as testLayer3 from "./test-layer-data-3.json"
-import * as testLayer4 from "./test-layer-data-4.json"
-import {LISTEN_PORT} from "./config"
+import {LISTEN_PORT, DIARY_DIR} from "./config"
+import {join} from "path"
+import {readFileSync} from "fs"
 
 const app = express()
 
@@ -23,20 +21,19 @@ app.get("/overview", async (req, res) => {
   res.send(data)
 })
 
-app.get("/layers/test1", async (req, res) => {
-  res.send(testLayer1)
-})
-
-app.get("/layers/test2", async (req, res) => {
-  res.send(testLayer2)
-})
-
-app.get("/layers/test3", async (req, res) => {
-  res.send(testLayer3)
-})
-
-app.get("/layers/test4", async (req, res) => {
-  res.send(testLayer4)
+app.get("/layers/:layerName", async (req, res) => {
+  try {
+    const layerName = req.params.layerName
+    const file = join(DIARY_DIR, "layers", `${layerName}.json`)
+    const data = JSON.parse(readFileSync(file, "utf8"))
+    res.send(data)
+  } catch (e) {
+    if (e.code === "ENOENT") {
+      res.sendStatus(404)
+    } else {
+      throw e
+    }
+  }
 })
 
 app.listen(LISTEN_PORT, "localhost", () => {
