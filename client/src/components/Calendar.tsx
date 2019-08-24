@@ -27,7 +27,12 @@ export default memo(function Calendar() {
             <YearContainer key={j}>
               {year.weeks.map((week, k) => (
                 <Link key={k} href={`/${week.startDate}`}>
-                  <WeekContainer style={{backgroundColor: week.color}} />
+                  <WeekContainer
+                    style={{
+                      backgroundColor: week.color,
+                      cursor: week.prob === 1 ? "pointer" : "auto",
+                    }}
+                  />
                 </Link>
               ))}
             </YearContainer>
@@ -72,6 +77,4 @@ const WeekContainer = styled.div`
 
   width: 9px;
   height: 9px;
-
-  cursor: pointer;
 `

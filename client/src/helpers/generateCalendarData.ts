@@ -31,6 +31,16 @@ function getEra(eras: Era[], weekStart: string): Era {
   return selectedEra
 }
 
+function ratioBetweenDates(
+  startDate: string,
+  endDate: string,
+  date: string,
+): number {
+  const range = moment(endDate).unix() - moment(startDate).unix()
+  const amount = moment(endDate).unix() - moment(date).unix()
+  return amount / range
+}
+
 export default function generateCalendarData({
   currentDate,
   birthDate,
@@ -58,30 +68,27 @@ export default function generateCalendarData({
   const weeks: WeekData[] = weekDates.map((startDate, index) => {
     const era = getEra(eras, startDate)
 
-    const entryFrequency = Math.min(1, (overview[startDate] || 0) / 7)
-    let color = col
-      .mix("white", era.startColor, 40 + 60 * entryFrequency)
-      .toRgbString()
-
     const prob = probabilityOfSurvival(birthDate, currentDate, startDate)
 
     if (prob !== 1) {
-      color = col.mix("#ddd", "white", 100 * (1 - prob)).toRgbString()
+      const color = col.mix("#d9d9d9", "white", 100 * (1 - prob)).toRgbString()
+
+      return {startDate, prob, color}
     }
 
-    const eraOrSurvival =
-      prob !== 1
-        ? `${Math.floor(prob * 1000) / 10}% chance of survival`
-        : era.name
+    const entryFrequency = Math.min(1, (overview[startDate] || 0) / 7)
 
-    const title = `${startDate} (${eraOrSurvival})`
+    const eraStart = era.startDate
+    const eraEnd = era.endDate || currentDate
+    const intensity = Math.max(
+      0,
+      (1 - 0.8 * ratioBetweenDates(eraStart, eraEnd, startDate)) *
+        (0.5 + 0.5 * entryFrequency),
+    )
 
-    return {
-      title,
-      startDate,
-      color,
-      prob,
-    }
+    const color = col.mix(era.baseColor, "white", 60 * intensity).toRgbString()
+
+    return {startDate, prob, color}
   })
 
   const calendar: CalendarData = {
