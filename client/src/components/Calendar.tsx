@@ -3,12 +3,19 @@ import styled from "styled-components"
 import moment from "moment"
 import generateCalendarData from "../helpers/generateCalendarData"
 import lifeData from "../lifeData"
+import useOverview from "../helpers/useOverview"
 
 export default memo(function Calendar() {
   const currentDate = moment().format("YYYY-MM-DD")
+  const overview = useOverview()
   const {decades} = useMemo(
-    () => generateCalendarData({currentDate, overview: {}, ...lifeData}),
-    [currentDate],
+    () =>
+      generateCalendarData({
+        currentDate,
+        overview: overview || {},
+        ...lifeData,
+      }),
+    [currentDate, overview],
   )
 
   return (
