@@ -2,7 +2,7 @@ import * as express from "express"
 import {getWeekData, getOverviewData} from "./get-week-data"
 import {LISTEN_PORT, DIARY_DIR} from "./config"
 import {join} from "path"
-import {readFileSync} from "fs"
+import {readFileSync, readdirSync} from "fs"
 
 const app = express()
 
@@ -19,6 +19,12 @@ app.get("/weeks/:date", async (req, res) => {
 app.get("/overview", async (req, res) => {
   const data = await getOverviewData()
   res.send(data)
+})
+
+app.get("/layers", async (req, res) => {
+  const files = readdirSync(join(DIARY_DIR, "layers"))
+  const layers = files.map(file => file.replace(/\.json$/, ""))
+  res.send(layers)
 })
 
 app.get("/layers/:layerName", async (req, res) => {
