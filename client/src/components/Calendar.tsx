@@ -1,13 +1,13 @@
 import React, {useMemo, memo} from "react"
 import styled from "styled-components"
-import moment from "moment"
 import generateCalendarData from "../helpers/generateCalendarData"
 import lifeData from "../lifeData"
 import useOverview from "../helpers/useOverview"
 import {Link} from "wouter"
+import useCurrentDate from "../helpers/useCurrentDate"
 
 export default memo(function Calendar() {
-  const currentDate = moment().format("YYYY-MM-DD")
+  const currentDate = useCurrentDate()
   const overview = useOverview()
   const {decades} = useMemo(
     () =>
