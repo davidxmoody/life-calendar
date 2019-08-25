@@ -12,7 +12,7 @@ interface Props {
 
 export default memo(function Calendar(props: Props) {
   const currentDate = useCurrentDate()
-  const overview = useLayerData(props.layerName)
+  const layerData = useLayerData(props.layerName)
   const {decades} = useMemo(
     () => generateCalendarData({currentDate, ...lifeData}),
     [currentDate],
@@ -26,7 +26,15 @@ export default memo(function Calendar(props: Props) {
             <Year
               key={j}
               weeks={year.weeks}
-              overview={i === 2 ? overview : undefined}
+              layer={
+                !layerData
+                  ? undefined
+                  : year.weeks[0].startDate > layerData.latest ||
+                    year.weeks[year.weeks.length - 1].startDate <
+                      layerData.earliest
+                    ? undefined
+                    : layerData.layer
+              }
             />
           ))}
         </DecadeContainer>

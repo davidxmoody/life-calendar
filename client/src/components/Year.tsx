@@ -1,37 +1,38 @@
 import React, {memo} from "react"
 import {Week} from "../helpers/generateCalendarData"
 import styled from "styled-components"
-import {Link} from "wouter"
+import {Layer} from "../helpers/useLayerData"
 
 interface Props {
   weeks: Week[]
-  overview: undefined | Record<string, number | undefined>
+  layer: undefined | Layer
 }
 
 export default memo(function Year(props: Props) {
   return (
     <YearContainer>
-      {props.weeks.map((week, i) => (
-        <Link key={i} href={`/weeks/${week.startDate}`}>
-          {"era" in week ? (
+      {props.weeks.map(
+        (week, i) =>
+          "era" in week ? (
             <WeekContainer
+              key={i}
               style={{
                 backgroundColor: week.era.baseColor,
-                opacity: props.overview
-                  ? 0.3 + 0.7 * (props.overview[week.startDate] || 0)
-                  : 0.65,
+                opacity:
+                  0.3 +
+                  0.7 * ((props.layer && props.layer[week.startDate]) || 0),
               }}
             />
           ) : (
             <WeekContainer
+              key={i}
               style={{
                 backgroundColor: "#d9d9d9",
                 opacity: week.prob,
               }}
             />
-          )}
-        </Link>
-      ))}
+          ),
+      )}
     </YearContainer>
   )
 })
@@ -61,5 +62,5 @@ const WeekContainer = styled.div`
   width: 9px;
   height: 9px;
 
-  transition: opacity 0.4s;
+  transition: opacity 0.3s;
 `
