@@ -2,7 +2,11 @@ import * as React from "react"
 import useLayerList from "../helpers/useLayerList"
 import {Link} from "wouter"
 
-export default function LayerList() {
+interface Props {
+  activeLayerName: string | undefined
+}
+
+export default function LayerList(props: Props) {
   const layerList = useLayerList()
 
   if (!layerList) {
@@ -12,11 +16,19 @@ export default function LayerList() {
   return (
     <div>
       {layerList.map(layerName => (
-        <div key={layerName} style={{marginBottom: 8}}>
-          <Link href={`/layers/${layerName}`}>
-            <a>{layerName}</a>
-          </Link>
-        </div>
+        <Link key={layerName} href={`/layers/${layerName}`}>
+          <a
+            style={{
+              marginRight: 8,
+              fontStyle:
+                props.activeLayerName === layerName ? "italic" : "normal",
+              textDecoration:
+                props.activeLayerName === layerName ? "none" : "underline",
+            }}
+          >
+            {layerName}
+          </a>
+        </Link>
       ))}
     </div>
   )

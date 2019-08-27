@@ -10,7 +10,7 @@ export default function WeekSummary(props: Props) {
   const entries = useWeekEntries(props.weekStart)
 
   return (
-    <div style={{marginLeft: 16}}>
+    <div>
       {(entries || []).map(entry => (
         <EntryComponent key={entry.file} entry={entry} />
       ))}

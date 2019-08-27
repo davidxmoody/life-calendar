@@ -17,7 +17,6 @@ export default function EntryComponent(props: Props) {
 }
 
 const Container = styled.div`
-  margin: 8px;
   padding: 8px;
   border: 1px solid grey;
 `
