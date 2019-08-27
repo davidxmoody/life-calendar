@@ -5,12 +5,14 @@ import lifeData from "../lifeData"
 import useCurrentDate from "../helpers/useCurrentDate"
 import useLayerData from "../helpers/useLayerData"
 import Year from "./Year"
+import {useLocation} from "wouter"
 
 interface Props {
   layerName: string | undefined | null
 }
 
 export default memo(function Calendar(props: Props) {
+  const [, setLocation] = useLocation()
   const currentDate = useCurrentDate()
   const layerData = useLayerData(props.layerName)
   const {decades} = useMemo(
@@ -19,7 +21,18 @@ export default memo(function Calendar(props: Props) {
   )
 
   return (
-    <CalendarContainer>
+    <CalendarContainer
+      onClickCapture={event => {
+        try {
+          const weekStart = (event.target as any).dataset.week
+          if (weekStart) {
+            setLocation(`/weeks/${weekStart}`)
+          }
+        } catch (e) {
+          console.warn(e)
+        }
+      }}
+    >
       {decades.map((decade, i) => (
         <DecadeContainer key={i}>
           {decade.years.map((year, j) => (

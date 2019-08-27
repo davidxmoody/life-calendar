@@ -16,7 +16,9 @@ export default memo(function Year(props: Props) {
           "era" in week ? (
             <WeekContainer
               key={i}
+              data-week={week.startDate}
               style={{
+                cursor: "pointer",
                 backgroundColor: week.era.baseColor,
                 opacity:
                   0.3 +
