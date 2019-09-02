@@ -2,7 +2,7 @@ import React, {useMemo, memo} from "react"
 import styled from "styled-components"
 import generateCalendarData from "../helpers/generateCalendarData"
 import lifeData from "../lifeData"
-import useCurrentDate from "../helpers/useCurrentDate"
+import useToday from "../helpers/useToday"
 import useLayerData from "../helpers/useLayerData"
 import Year from "./Year"
 import {useLocation} from "wouter"
@@ -15,11 +15,11 @@ interface Props {
 
 export default memo(function Calendar(props: Props) {
   const [, setLocation] = useLocation()
-  const currentDate = useCurrentDate()
+  const today = useToday()
   const layerData = useLayerData(props.layerName)
   const {decades} = useMemo(
-    () => generateCalendarData({currentDate, ...lifeData}),
-    [currentDate],
+    () => generateCalendarData({currentDate: today, ...lifeData}),
+    [today],
   )
 
   return (
