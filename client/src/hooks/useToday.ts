@@ -1,9 +1,5 @@
-import moment from "moment"
 import {useState, useEffect} from "react"
-
-function getToday() {
-  return moment().format("YYYY-MM-DD")
-}
+import {getToday} from "../helpers/dates"
 
 export default function useToday() {
   const [today, setToday] = useState(getToday())

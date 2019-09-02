@@ -1,6 +1,7 @@
 import moment from "moment"
 import probabilityOfSurvival from "./probabilityOfSurvival"
 import {Era} from "../lifeData"
+import {getWeekStart, getNextWeekStart} from "./dates"
 
 interface PastWeek {
   startDate: string
@@ -16,18 +17,6 @@ export type Week = PastWeek | FutureWeek
 
 interface CalendarData {
   decades: Array<{years: Array<{weeks: Array<Week>}>}>
-}
-
-function getWeekStart(date: string): string {
-  return moment(date)
-    .isoWeekday(1)
-    .format("YYYY-MM-DD")
-}
-
-function getNextWeekStart(date: string): string {
-  return moment(date)
-    .isoWeekday(8)
-    .format("YYYY-MM-DD")
 }
 
 function getYearNum(firstWeekStart: string, weekStart: string): number {
