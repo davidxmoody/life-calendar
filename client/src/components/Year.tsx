@@ -58,6 +58,8 @@ const YearContainer = styled.div`
 `
 
 const WeekContainer = styled.div`
+  box-sizing: border-box;
+
   margin-right: 1px;
   margin-bottom: 1px;
 

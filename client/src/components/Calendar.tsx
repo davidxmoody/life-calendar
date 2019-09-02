@@ -7,6 +7,8 @@ import useLayerData from "../helpers/useLayerData"
 import Year from "./Year"
 import {useLocation} from "wouter"
 
+let lastTarget: HTMLElement | undefined
+
 interface Props {
   layerName: string | undefined | null
 }
@@ -24,8 +26,16 @@ export default memo(function Calendar(props: Props) {
     <CalendarContainer
       onClickCapture={event => {
         try {
-          const weekStart = (event.target as any).dataset.week
+          if (lastTarget) {
+            lastTarget.style.border = null
+          }
+
+          const target: HTMLElement = event.target as any
+          const weekStart = target.dataset.week
+
           if (weekStart) {
+            lastTarget = target
+            target.style.border = "2px solid black"
             setLocation(`/weeks/${weekStart}`)
           }
         } catch (e) {
