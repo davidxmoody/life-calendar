@@ -17,10 +17,9 @@ export default memo(function Calendar(props: Props) {
   const [, setLocation] = useLocation()
   const today = useToday()
   const layerData = useLayerData(props.layerName)
-  const {decades} = useMemo(
-    () => generateCalendarData({currentDate: today, ...lifeData}),
-    [today],
-  )
+  const {decades} = useMemo(() => generateCalendarData({today, ...lifeData}), [
+    today,
+  ])
 
   return (
     <CalendarContainer

@@ -18,19 +18,16 @@ function lerp(a: number, b: number, t: number) {
   return a * (1 - t) + b * t
 }
 
-export default (birthDate: string, currentDate: string, date: string) => {
-  if (currentDate < birthDate) {
-    throw new Error("currentDate must be after birthDate")
+export default (birthDate: string, today: string, date: string) => {
+  if (today < birthDate) {
+    throw new Error("today must be after birthDate")
   }
 
-  if (date <= currentDate) {
+  if (date <= today) {
     return 1
   }
 
-  const currentAge = Math.max(
-    0,
-    moment(currentDate).diff(birthDate, "years", true),
-  )
+  const currentAge = Math.max(0, moment(today).diff(birthDate, "years", true))
   const currentAgeIndex = Math.min(
     maleProbabilityOfDyingByAge.length,
     Math.floor(currentAge),

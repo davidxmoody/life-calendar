@@ -47,12 +47,12 @@ function getEra(eras: Era[], weekStart: string): Era {
 }
 
 export default function generateCalendarData({
-  currentDate,
+  today,
   birthDate,
   deathDate,
   eras,
 }: {
-  currentDate: string
+  today: string
   birthDate: string
   deathDate: string
   eras: Era[]
@@ -69,7 +69,7 @@ export default function generateCalendarData({
       break
     }
 
-    if (nextWeek <= currentDate) {
+    if (nextWeek <= today) {
       weeks.push({
         startDate: nextWeek,
         era: getEra(eras, nextWeek),
@@ -77,7 +77,7 @@ export default function generateCalendarData({
     } else {
       weeks.push({
         startDate: nextWeek,
-        prob: probabilityOfSurvival(birthDate, currentDate, nextWeek),
+        prob: probabilityOfSurvival(birthDate, today, nextWeek),
       })
     }
   }
