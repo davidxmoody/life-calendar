@@ -11,6 +11,7 @@ export default function App() {
   const [, weekParams] = useRoute("/weeks/:weekStart")
   const [, layerParams] = useRoute("/layers/:layerName")
 
+  const selectedWeekStart = (weekParams && weekParams.weekStart) || undefined
   const layerName = (layerParams && layerParams.layerName) || undefined
 
   return (
@@ -21,17 +22,17 @@ export default function App() {
       />
 
       <div style={{margin: 16, display: "flex"}}>
-        <Calendar layerName={layerName} />
+        <Calendar layerName={layerName} selectedWeekStart={selectedWeekStart} />
 
         <div style={{marginLeft: 16}}>
           <LayerList activeLayerName={layerName} />
 
           <div style={{height: 16}} />
 
-          {weekParams && weekParams.weekStart ? (
+          {selectedWeekStart ? (
             <WeekSummary
-              key={weekParams.weekStart}
-              weekStart={weekParams.weekStart}
+              key={selectedWeekStart}
+              weekStart={selectedWeekStart}
             />
           ) : null}
         </div>

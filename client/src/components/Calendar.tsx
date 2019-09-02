@@ -7,10 +7,9 @@ import useLayerData from "../hooks/useLayerData"
 import Year from "./Year"
 import {useLocation} from "wouter"
 
-let lastTarget: HTMLElement | undefined
-
 interface Props {
-  layerName: string | undefined | null
+  selectedWeekStart: string | undefined
+  layerName: string | undefined
 }
 
 export default memo(function Calendar(props: Props) {
@@ -25,16 +24,10 @@ export default memo(function Calendar(props: Props) {
     <CalendarContainer
       onClickCapture={event => {
         try {
-          if (lastTarget) {
-            lastTarget.style.border = null
-          }
-
           const target: HTMLElement = event.target as any
           const weekStart = target.dataset.week
 
           if (weekStart) {
-            lastTarget = target
-            target.style.border = "2px solid black"
             setLocation(`/weeks/${weekStart}`)
           }
         } catch (e) {
@@ -48,6 +41,14 @@ export default memo(function Calendar(props: Props) {
             <Year
               key={j}
               weeks={year.weeks}
+              selectedWeekStart={
+                props.selectedWeekStart &&
+                props.selectedWeekStart >= year.weeks[0].startDate &&
+                props.selectedWeekStart <=
+                  year.weeks[year.weeks.length - 1].startDate
+                  ? props.selectedWeekStart
+                  : undefined
+              }
               layer={
                 !layerData
                   ? undefined
