@@ -1,9 +1,9 @@
 import * as React from "react"
 import useLayerList from "../hooks/useLayerList"
-import {Link} from "wouter"
 
 interface Props {
-  activeLayerName: string | undefined
+  activeLayerName: string
+  setLayerName: (layerName: string) => void
 }
 
 export default function LayerList(props: Props) {
@@ -16,19 +16,21 @@ export default function LayerList(props: Props) {
   return (
     <div>
       {layerList.map(layerName => (
-        <Link key={layerName} href={`/layers/${layerName}`}>
-          <a
-            style={{
-              marginRight: 8,
-              fontStyle:
-                props.activeLayerName === layerName ? "italic" : "normal",
-              textDecoration:
-                props.activeLayerName === layerName ? "none" : "underline",
-            }}
-          >
-            {layerName}
-          </a>
-        </Link>
+        <a
+          key={layerName}
+          onClick={() => props.setLayerName(layerName)}
+          style={{
+            marginRight: 8,
+            fontStyle:
+              props.activeLayerName === layerName ? "italic" : "normal",
+            textDecoration:
+              props.activeLayerName === layerName ? "none" : "underline",
+            color: "blue",
+            cursor: "pointer",
+          }}
+        >
+          {layerName}
+        </a>
       ))}
     </div>
   )

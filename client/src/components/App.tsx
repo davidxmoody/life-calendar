@@ -5,14 +5,17 @@ import AppTopBar from "./AppTopBar"
 import AppSideDrawer from "./AppSideDrawer"
 import WeekSummary from "./WeekSummary"
 import LayerList from "./LayerList"
+import useLocalStorage from "../hooks/useLocalStorage"
 
 export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [, weekParams] = useRoute("/weeks/:weekStart")
-  const [, layerParams] = useRoute("/layers/:layerName")
+  const [layerName, setLayerName] = useLocalStorage(
+    "layerName",
+    "diary-entries",
+  )
 
+  const [, weekParams] = useRoute("/weeks/:weekStart")
   const selectedWeekStart = (weekParams && weekParams.weekStart) || undefined
-  const layerName = (layerParams && layerParams.layerName) || undefined
 
   return (
     <div>
@@ -25,7 +28,7 @@ export default function App() {
         <Calendar layerName={layerName} selectedWeekStart={selectedWeekStart} />
 
         <div style={{marginLeft: 16}}>
-          <LayerList activeLayerName={layerName} />
+          <LayerList activeLayerName={layerName} setLayerName={setLayerName} />
 
           <div style={{height: 16}} />
 
