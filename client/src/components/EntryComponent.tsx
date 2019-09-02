@@ -1,7 +1,7 @@
 import * as React from "react"
 import styled from "styled-components"
 import ReactMarkdown from "react-markdown"
-import {Entry} from "../helpers/useWeekEntries"
+import {Entry} from "../hooks/useWeekEntries"
 
 interface Props {
   entry: Entry

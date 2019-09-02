@@ -1,7 +1,7 @@
 import React, {memo} from "react"
 import {Week} from "../helpers/generateCalendarData"
 import styled from "styled-components"
-import {Layer} from "../helpers/useLayerData"
+import {Layer} from "../hooks/useLayerData"
 
 interface Props {
   weeks: Week[]

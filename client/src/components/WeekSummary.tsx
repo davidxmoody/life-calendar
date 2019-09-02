@@ -1,5 +1,5 @@
 import * as React from "react"
-import useWeekEntries from "../helpers/useWeekEntries"
+import useWeekEntries from "../hooks/useWeekEntries"
 import EntryComponent from "./EntryComponent"
 
 interface Props {
