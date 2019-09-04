@@ -3,6 +3,7 @@ import {readdirSync, readFileSync} from "fs"
 import {join} from "path"
 import * as glob from "glob"
 import {DIARY_DIR} from "./config"
+import R = require("ramda")
 
 interface Entry {
   date: string
@@ -87,4 +88,12 @@ export function getAllEntries(): Entry[] {
   return glob
     .sync("entries/*/*/*/diary-*.*", {cwd: DIARY_DIR})
     .map(file => getEntry(join(DIARY_DIR, file)))
+}
+
+export function getRandomEntries(limit: number): Entry[] {
+  const allFilenames = glob.sync("entries/*/*/*/diary-*.*", {cwd: DIARY_DIR})
+
+  const selectedFilenames = R.sortBy(Math.random, allFilenames).slice(0, limit)
+
+  return selectedFilenames.map(file => getEntry(join(DIARY_DIR, file)))
 }

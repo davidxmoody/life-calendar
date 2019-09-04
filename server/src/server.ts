@@ -1,5 +1,5 @@
 import * as express from "express"
-import {getWeekData, getOverviewData} from "./get-week-data"
+import {getWeekData, getOverviewData, getRandomEntries} from "./get-week-data"
 import {LISTEN_PORT, DIARY_DIR} from "./config"
 import {join} from "path"
 import {readFileSync, readdirSync} from "fs"
@@ -40,6 +40,12 @@ app.get("/layers/:layerName", async (req, res) => {
       throw e
     }
   }
+})
+
+app.get("/random", async (req, res) => {
+  const limit = parseInt(req.query.limit, 10) || 20
+  const entries = getRandomEntries(limit)
+  res.send(entries)
 })
 
 app.listen(LISTEN_PORT, "localhost", () => {
