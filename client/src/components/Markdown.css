@@ -1,0 +1,32 @@
+.markdown-wrapper {
+  line-height: 1.3;
+  font-size: 18px;
+}
+
+.markdown-wrapper h1,
+.markdown-wrapper h2 {
+  font-size: 1.8em;
+}
+
+.markdown-wrapper ul,
+.markdown-wrapper ol {
+  padding-inline-start: 30px;
+}
+
+.markdown-wrapper *:first-child {
+  margin-top: 0;
+}
+
+.markdown-wrapper blockquote {
+  color: #444;
+  font-style: italic;
+  padding-inline-start: 24px;
+  margin-inline-start: 0;
+  border-left-width: 12px;
+  border-left-style: solid;
+  border-left-color: #eee;
+}
+
+.markdown-wrapper pre {
+  background-color: #eee;
+}

@@ -1,28 +1,37 @@
 import * as React from "react"
-import styled from "styled-components"
-import ReactMarkdown from "react-markdown"
 import {Entry} from "../hooks/useWeekEntries"
+import {
+  ExpansionPanel,
+  ExpansionPanelSummary,
+  Typography,
+  ExpansionPanelDetails,
+} from "@material-ui/core"
+import getWordcount from "../helpers/getWordcount"
+import {useMemo} from "react"
+import Markdown from "./Markdown"
 
 interface Props {
   entry: Entry
 }
 
 export default function EntryComponent(props: Props) {
+  const wordcount = useMemo(() => getWordcount(props.entry.content), [
+    props.entry.content,
+  ])
+
   return (
-    <Container>
-      <DateContainer>{props.entry.date}</DateContainer>
-      <ReactMarkdown>{props.entry.content}</ReactMarkdown>
-    </Container>
+    <ExpansionPanel defaultExpanded={true}>
+      <ExpansionPanelSummary
+        aria-controls="panel1a-content"
+        id="panel1a-header"
+      >
+        <Typography>
+          {props.entry.date} ({wordcount} words)
+        </Typography>
+      </ExpansionPanelSummary>
+      <ExpansionPanelDetails>
+        <Markdown source={props.entry.content} />
+      </ExpansionPanelDetails>
+    </ExpansionPanel>
   )
 }
-
-const Container = styled.div`
-  padding: 8px;
-  border: 1px solid grey;
-`
-
-const DateContainer = styled.div`
-  margin-bottom: 8px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid grey;
-`
