@@ -27,7 +27,15 @@ export default function App() {
       <div style={{margin: 16, display: "flex"}}>
         <Calendar layerName={layerName} selectedWeekStart={selectedWeekStart} />
 
-        <div style={{marginLeft: 16}}>
+        <div
+          style={{
+            marginLeft: 16,
+            width: 350,
+            maxWidth: 1000,
+            flexGrow: 1,
+            flexShrink: 0,
+          }}
+        >
           <LayerList activeLayerName={layerName} setLayerName={setLayerName} />
 
           <div style={{height: 16}} />

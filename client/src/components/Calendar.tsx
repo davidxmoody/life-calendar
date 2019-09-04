@@ -67,8 +67,10 @@ export default memo(function Calendar(props: Props) {
 })
 
 const CalendarContainer = styled.div`
+  flex-grow: 0;
+  flex-shrink: 0;
   padding: 3px;
-  width: 656px;
+  width: 650px;
   user-select: none;
 `
 
