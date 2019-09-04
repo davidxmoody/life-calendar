@@ -43,8 +43,11 @@ app.get("/layers/:layerName", async (req, res) => {
 })
 
 app.get("/random", async (req, res) => {
-  const limit = parseInt(req.query.limit, 10) || 20
-  const entries = getRandomEntries(limit)
+  const entries = getRandomEntries({
+    limit: parseInt(req.query.limit, 10) || 20,
+    from: req.query.from,
+    to: req.query.to,
+  })
   res.send(entries)
 })
 

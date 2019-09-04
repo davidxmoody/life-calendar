@@ -90,10 +90,30 @@ export function getAllEntries(): Entry[] {
     .map(file => getEntry(join(DIARY_DIR, file)))
 }
 
-export function getRandomEntries(limit: number): Entry[] {
+export function getRandomEntries(args: {
+  limit: number
+  from: string | undefined
+  to: string | undefined
+}): Entry[] {
   const allFilenames = glob.sync("entries/*/*/*/diary-*.*", {cwd: DIARY_DIR})
 
-  const selectedFilenames = R.sortBy(Math.random, allFilenames).slice(0, limit)
+  const filenamesWithinRange = allFilenames.filter(file => {
+    const date = getDateFromFilename(file, true)
+    if (args.from && args.from > date) {
+      return false
+    }
+
+    if (args.to && args.to < date) {
+      return false
+    }
+
+    return true
+  })
+
+  const selectedFilenames = R.sortBy(Math.random, filenamesWithinRange).slice(
+    0,
+    args.limit,
+  )
 
   return selectedFilenames.map(file => getEntry(join(DIARY_DIR, file)))
 }
