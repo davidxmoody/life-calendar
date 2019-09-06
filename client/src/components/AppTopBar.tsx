@@ -9,7 +9,7 @@ interface Props {
 
 export default function AppTopBar(props: Props) {
   return (
-    <AppBar position="static">
+    <AppBar position="fixed">
       <Toolbar>
         <IconButton
           edge="start"

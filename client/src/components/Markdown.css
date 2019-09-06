@@ -1,4 +1,5 @@
 .markdown-wrapper {
+  overflow-x: auto;
   line-height: 1.3;
   font-size: 18px;
 }

@@ -7,6 +7,7 @@ import WeekSummary from "./WeekSummary"
 import LayerList from "./LayerList"
 import useLocalStorage from "../hooks/useLocalStorage"
 import RandomEntries from "./RandomEntries"
+import styled from "styled-components"
 
 export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -27,34 +28,44 @@ export default function App() {
         onClickMenu={() => setDrawerOpen(x => !x)}
       />
 
-      <div style={{margin: 16, display: "flex"}}>
+      <CalendarContainer>
         <Calendar layerName={layerName} selectedWeekStart={selectedWeekStart} />
+      </CalendarContainer>
 
-        <div
-          style={{
-            marginLeft: 16,
-            width: 350,
-            maxWidth: 1000,
-            flexGrow: 1,
-            flexShrink: 0,
-          }}
-        >
-          <LayerList activeLayerName={layerName} setLayerName={setLayerName} />
+      <ContentContainer>
+        <LayerList activeLayerName={layerName} setLayerName={setLayerName} />
 
-          <div style={{height: 16}} />
+        <div style={{height: 16}} />
 
-          {selectedWeekStart ? (
-            <WeekSummary
-              key={selectedWeekStart}
-              weekStart={selectedWeekStart}
-            />
-          ) : null}
+        {selectedWeekStart ? (
+          <WeekSummary key={selectedWeekStart} weekStart={selectedWeekStart} />
+        ) : null}
 
-          {showRandom ? <RandomEntries /> : null}
-        </div>
-      </div>
+        {showRandom ? <RandomEntries /> : null}
+      </ContentContainer>
 
-      <AppSideDrawer open={drawerOpen} />
+      <AppSideDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        setLayerName={setLayerName}
+      />
     </div>
   )
 }
+
+const CalendarContainer = styled.div`
+  position: fixed;
+  top: 74px;
+  left: 10px;
+`
+
+const ContentContainer = styled.div`
+  box-sizing: border-box;
+  padding-top: 80px;
+  padding-left: 676px;
+  padding-right: 16px
+  padding-bottom: 16px;
+  width: 100%;
+  min-width: 1200px;
+  max-width: 1600px;
+`
