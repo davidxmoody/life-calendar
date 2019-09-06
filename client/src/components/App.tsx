@@ -55,16 +55,16 @@ export default function App() {
 
 const CalendarContainer = styled.div`
   position: fixed;
-  top: 74px;
-  left: 10px;
+  top: 82px;
+  left: 18px;
 `
 
 const ContentContainer = styled.div`
   box-sizing: border-box;
-  padding-top: 80px;
-  padding-left: 676px;
-  padding-right: 16px
-  padding-bottom: 16px;
+  padding-top: 88px;
+  padding-left: 700px;
+  padding-right: 24px
+  padding-bottom: 24px;
   width: 100%;
   min-width: 1200px;
   max-width: 1600px;
