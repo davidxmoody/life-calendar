@@ -44,7 +44,7 @@ function getEntry(file: string): Entry {
   return {date, file, content}
 }
 
-function getEntriesForDay(days: string[]) {
+function getEntriesForDays(days: string[]) {
   const entries = []
   for (const day of days) {
     try {
@@ -70,8 +70,7 @@ function getAllDaysWithData(): string[] {
 
 export function getWeekData(date: string) {
   const days = getDaysForWeek(date)
-  const entries = getEntriesForDay(days)
-  return entries
+  return getEntriesForDays(days)
 }
 
 export async function getOverviewData() {
@@ -95,25 +94,27 @@ export function getRandomEntries(args: {
   from: string | undefined
   to: string | undefined
 }): Entry[] {
-  const allFilenames = glob.sync("entries/*/*/*/diary-*.*", {cwd: DIARY_DIR})
+  const allDayDirs = glob.sync("entries/*/*/*", {cwd: DIARY_DIR})
+  const allDays = allDayDirs.map(dir =>
+    dir.replace(/^.*\/(\d\d\d\d)\/(\d\d)\/(\d\d)$/, "$1-$2-$3"),
+  )
 
-  const filenamesWithinRange = allFilenames.filter(file => {
-    const date = getDateFromFilename(file, true)
-    if (args.from && args.from > date) {
+  const daysWithinRange = allDays.filter(day => {
+    if (args.from && args.from > day) {
       return false
     }
 
-    if (args.to && args.to < date) {
+    if (args.to && args.to < day) {
       return false
     }
 
     return true
   })
 
-  const selectedFilenames = R.sortBy(Math.random, filenamesWithinRange).slice(
+  const selectedDays = R.sortBy(Math.random, daysWithinRange).slice(
     0,
     args.limit,
   )
 
-  return selectedFilenames.map(file => getEntry(join(DIARY_DIR, file)))
+  return getEntriesForDays(selectedDays)
 }

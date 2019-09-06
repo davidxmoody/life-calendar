@@ -3,7 +3,7 @@
     "baseUrl": ".",
     "module": "commonjs",
     "target": "es5",
-    "lib": ["es6"],
+    "lib": ["es2019"],
     "moduleResolution": "node",
     "rootDir": "src",
     "forceConsistentCasingInFileNames": true,
