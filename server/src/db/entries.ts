@@ -8,37 +8,29 @@ interface Entry {
   content: string
 }
 
-function getPathForDay(day: string): string {
-  return join(DIARY_DIR, "entries", day.replace(/-/g, "/"))
-}
-
-function getDateFromFilename(file: string, dayOnly: boolean = false): string {
-  return file.replace(
-    /^.*\/(\d\d\d\d)\/(\d\d)\/(\d\d)\/diary-(\d\d)-(\d\d).(txt|md)$/,
-    dayOnly ? "$1-$2-$3" : "$1-$2-$3 $4:$5",
-  )
-}
-
 function getEntry(file: string): Entry {
   const content = readFileSync(file, "utf8")
-  const date = getDateFromFilename(file)
+  const date = file.replace(
+    /^.*\/(\d\d\d\d)\/(\d\d)\/(\d\d)\/diary-(\d\d)-(\d\d).(txt|md)$/,
+    "$1-$2-$3 $4:$5",
+  )
   return {date, file, content}
 }
 
-export function getEntriesForDays(days: string[]) {
-  const entries = []
-  for (const day of days) {
-    try {
-      const dir = getPathForDay(day)
-      const filenames = readdirSync(dir)
-      for (const filename of filenames) {
-        entries.push(getEntry(join(dir, filename)))
-      }
-    } catch (e) {
-      if (e.code !== "ENOENT") {
-        console.warn(e)
-      }
+function getEntriesForDay(day: string) {
+  try {
+    const dayDir = join(DIARY_DIR, "entries", day.replace(/-/g, "/"))
+    const filenames = readdirSync(dayDir)
+    return filenames.map(filename => getEntry(join(dayDir, filename)))
+  } catch (e) {
+    if (e.code === "ENOENT") {
+      return []
+    } else {
+      throw e
     }
   }
-  return entries
+}
+
+export function getEntriesForDays(days: string[]) {
+  return days.flatMap(getEntriesForDay)
 }
