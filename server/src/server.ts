@@ -1,18 +1,14 @@
 import * as express from "express"
-import {getWeekData, getRandomEntries} from "./get-week-data"
 import {LISTEN_PORT} from "./config"
 import {getLayersList, getLayerData} from "./db/layers"
+import {getDaysForWeek, getRandomDays} from "./date-helpers"
+import {getEntriesForDays} from "./db/entries"
 
 const app = express()
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*")
   next()
-})
-
-app.get("/weeks/:date", async (req, res) => {
-  const weekData = await getWeekData(req.params.date)
-  res.send(weekData)
 })
 
 app.get("/layers", async (req, res) => {
@@ -25,12 +21,19 @@ app.get("/layers/:layerName", async (req, res) => {
   res.send(layerData)
 })
 
+app.get("/weeks/:date", async (req, res) => {
+  const days = getDaysForWeek(req.params.date)
+  const entries = getEntriesForDays(days)
+  res.send(entries)
+})
+
 app.get("/random", async (req, res) => {
-  const entries = getRandomEntries({
-    limit: parseInt(req.query.limit, 10) || 20,
+  const days = getRandomDays({
+    limit: parseInt(req.query.limit, 10) || undefined,
     from: req.query.from,
     to: req.query.to,
   })
+  const entries = getEntriesForDays(days)
   res.send(entries)
 })
 
