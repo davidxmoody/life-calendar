@@ -1,27 +1,48 @@
 import {readdirSync, readFileSync} from "fs"
 import {join} from "path"
-import {DIARY_DIR} from "../config"
+import {DIARY_DIR, EXTERNAL_URL} from "../config"
 
-interface Entry {
+interface MarkdownEntry {
   date: string
-  file: string
   content: string
 }
 
-function getEntry(file: string): Entry {
+function getMarkdownEntry(file: string): MarkdownEntry {
   const content = readFileSync(file, "utf8")
   const date = file.replace(
-    /^.*\/(\d\d\d\d)\/(\d\d)\/(\d\d)\/diary-(\d\d)-(\d\d).(txt|md)$/,
+    /^.*\/(\d\d\d\d)\/(\d\d)\/(\d\d)\/diary-(\d\d)-(\d\d)\.md$/,
     "$1-$2-$3 $4:$5",
   )
-  return {date, file, content}
+
+  return {date, content}
 }
 
-function getEntriesForDay(day: string) {
+function getMarkdownEntriesForDay(day: string) {
   try {
-    const dayDir = join(DIARY_DIR, "entries", day.replace(/-/g, "/"))
-    const filenames = readdirSync(dayDir)
-    return filenames.map(filename => getEntry(join(dayDir, filename)))
+    const dir = join(DIARY_DIR, "entries", day.replace(/-/g, "/"))
+    const files = readdirSync(dir).map(x => join(dir, x))
+    return files.map(getMarkdownEntry)
+  } catch (e) {
+    if (e.code === "ENOENT") {
+      return []
+    } else {
+      throw e
+    }
+  }
+}
+
+function getScannedMarkdownEntry(date: string, imageFile: string) {
+  const relativeUrl = imageFile.replace(DIARY_DIR, "")
+  const content = `![](${EXTERNAL_URL}${relativeUrl})`
+
+  return {date, content}
+}
+
+function getScannedEntriesForDay(day: string) {
+  try {
+    const dir = join(DIARY_DIR, "scanned", day.replace(/-/g, "/"))
+    const files = readdirSync(dir).map(x => join(dir, x))
+    return files.map(file => getScannedMarkdownEntry(day, file))
   } catch (e) {
     if (e.code === "ENOENT") {
       return []
@@ -32,5 +53,8 @@ function getEntriesForDay(day: string) {
 }
 
 export function getEntriesForDays(days: string[]) {
-  return days.flatMap(getEntriesForDay)
+  return days.flatMap(day => [
+    ...getMarkdownEntriesForDay(day),
+    ...getScannedEntriesForDay(day),
+  ])
 }

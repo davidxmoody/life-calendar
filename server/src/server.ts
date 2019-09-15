@@ -1,8 +1,9 @@
 import * as express from "express"
-import {LISTEN_PORT} from "./config"
+import {LISTEN_PORT, DIARY_DIR} from "./config"
 import {getLayersList, getLayerData} from "./db/layers"
 import {getDaysForWeek, getRandomDays} from "./date-helpers"
 import {getEntriesForDays} from "./db/entries"
+import {join} from "path"
 
 const app = express()
 
@@ -10,6 +11,8 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*")
   next()
 })
+
+app.use("/scanned", express.static(join(DIARY_DIR, "scanned")))
 
 app.get("/layers", async (req, res) => {
   const layers = getLayersList()
