@@ -7,7 +7,7 @@ export function getLayersList() {
   return files.map(file => file.replace(/\.json$/, ""))
 }
 
-export function getLayerData(layerName: string) {
+export function getLayerData(layerName: string): object | undefined {
   try {
     const file = join(DIARY_DIR, "layers", `${layerName}.json`)
     return JSON.parse(readFileSync(file, "utf8"))

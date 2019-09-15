@@ -18,7 +18,11 @@ app.get("/layers", async (req, res) => {
 
 app.get("/layers/:layerName", async (req, res) => {
   const layerData = getLayerData(req.params.layerName)
-  res.send(layerData)
+  if (!layerData) {
+    res.sendStatus(404)
+  } else {
+    res.send(layerData)
+  }
 })
 
 app.get("/weeks/:date", async (req, res) => {
