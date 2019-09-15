@@ -83,12 +83,6 @@ export async function getOverviewData() {
   return acc
 }
 
-export function getAllEntries(): Entry[] {
-  return glob
-    .sync("entries/*/*/*/diary-*.*", {cwd: DIARY_DIR})
-    .map(file => getEntry(join(DIARY_DIR, file)))
-}
-
 export function getRandomEntries(args: {
   limit: number
   from: string | undefined
