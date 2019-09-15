@@ -1,8 +1,7 @@
 import * as express from "express"
 import {getWeekData, getRandomEntries} from "./get-week-data"
-import {LISTEN_PORT, DIARY_DIR} from "./config"
-import {join} from "path"
-import {readFileSync, readdirSync} from "fs"
+import {LISTEN_PORT} from "./config"
+import {getLayersList, getLayerData} from "./db/layers"
 
 const app = express()
 
@@ -12,29 +11,18 @@ app.use((req, res, next) => {
 })
 
 app.get("/weeks/:date", async (req, res) => {
-  const data = await getWeekData(req.params.date)
-  res.send(data)
+  const weekData = await getWeekData(req.params.date)
+  res.send(weekData)
 })
 
 app.get("/layers", async (req, res) => {
-  const files = readdirSync(join(DIARY_DIR, "layers"))
-  const layers = files.map(file => file.replace(/\.json$/, ""))
+  const layers = getLayersList()
   res.send(layers)
 })
 
 app.get("/layers/:layerName", async (req, res) => {
-  try {
-    const layerName = req.params.layerName
-    const file = join(DIARY_DIR, "layers", `${layerName}.json`)
-    const data = JSON.parse(readFileSync(file, "utf8"))
-    res.send(data)
-  } catch (e) {
-    if (e.code === "ENOENT") {
-      res.sendStatus(404)
-    } else {
-      throw e
-    }
-  }
+  const layerData = getLayerData(req.params.layerName)
+  res.send(layerData)
 })
 
 app.get("/random", async (req, res) => {
