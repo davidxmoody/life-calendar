@@ -1,5 +1,5 @@
 import * as express from "express"
-import {getWeekData, getOverviewData, getRandomEntries} from "./get-week-data"
+import {getWeekData, getRandomEntries} from "./get-week-data"
 import {LISTEN_PORT, DIARY_DIR} from "./config"
 import {join} from "path"
 import {readFileSync, readdirSync} from "fs"
@@ -13,11 +13,6 @@ app.use((req, res, next) => {
 
 app.get("/weeks/:date", async (req, res) => {
   const data = await getWeekData(req.params.date)
-  res.send(data)
-})
-
-app.get("/overview", async (req, res) => {
-  const data = await getOverviewData()
   res.send(data)
 })
 

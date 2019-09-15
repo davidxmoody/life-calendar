@@ -11,12 +11,6 @@ interface Entry {
   content: string
 }
 
-function getWeekStart(day: string): string {
-  return moment(day)
-    .startOf("isoWeek")
-    .format("YYYY-MM-DD")
-}
-
 function getDaysForWeek(date: string): string[] {
   const mDate = moment(date).startOf("isoWeek")
   const dates = []
@@ -62,25 +56,9 @@ function getEntriesForDays(days: string[]) {
   return entries
 }
 
-function getAllDaysWithData(): string[] {
-  return glob
-    .sync("entries/*/*/*/diary-*.*", {cwd: DIARY_DIR})
-    .map(file => getDateFromFilename(file, true))
-}
-
 export function getWeekData(date: string) {
   const days = getDaysForWeek(date)
   return getEntriesForDays(days)
-}
-
-export async function getOverviewData() {
-  const days = getAllDaysWithData()
-  const acc = {}
-  days.forEach(day => {
-    const weekStart = getWeekStart(day)
-    acc[weekStart] = (acc[weekStart] || 0) + 1
-  })
-  return acc
 }
 
 export function getRandomEntries(args: {
