@@ -32,7 +32,7 @@ export default function RandomEntries() {
       </div>
 
       {(entries || []).map(entry => (
-        <EntryComponent key={entry.file} entry={entry} />
+        <EntryComponent key={entry.date} entry={entry} />
       ))}
     </div>
   )

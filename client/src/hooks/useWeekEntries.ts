@@ -3,7 +3,6 @@ import {useState, useEffect} from "react"
 
 export interface Entry {
   date: string
-  file: string
   content: string
 }
 
