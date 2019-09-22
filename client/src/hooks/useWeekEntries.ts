@@ -2,6 +2,7 @@ import {REMOTE_URL} from "../config"
 import {useState, useEffect} from "react"
 
 export interface Entry {
+  id: string
   date: string
   content: string
 }

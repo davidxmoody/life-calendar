@@ -3,6 +3,7 @@ import {join} from "path"
 import {DIARY_DIR, EXTERNAL_URL} from "../config"
 
 interface MarkdownEntry {
+  id: string
   date: string
   content: string
 }
@@ -14,7 +15,7 @@ function getMarkdownEntry(file: string): MarkdownEntry {
     "$1-$2-$3 $4:$5",
   )
 
-  return {date, content}
+  return {id: date, date, content}
 }
 
 function getMarkdownEntriesForDay(day: string) {
@@ -31,11 +32,14 @@ function getMarkdownEntriesForDay(day: string) {
   }
 }
 
-function getScannedMarkdownEntry(date: string, imageFile: string) {
+function getScannedMarkdownEntry(
+  date: string,
+  imageFile: string,
+): MarkdownEntry {
   const relativeUrl = imageFile.replace(DIARY_DIR, "")
   const content = `![](${EXTERNAL_URL}${relativeUrl})`
 
-  return {date, content}
+  return {id: relativeUrl, date, content}
 }
 
 function getScannedEntriesForDay(day: string) {

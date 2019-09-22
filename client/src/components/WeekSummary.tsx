@@ -24,7 +24,7 @@ export default function WeekSummary(props: Props) {
       </div>
 
       {(entries || []).map(entry => (
-        <EntryComponent key={entry.date} entry={entry} />
+        <EntryComponent key={entry.id} entry={entry} />
       ))}
     </div>
   )
