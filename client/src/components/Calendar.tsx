@@ -25,10 +25,11 @@ export default memo(function Calendar(props: Props) {
       onClickCapture={event => {
         try {
           const target: HTMLElement = event.target as any
-          const weekStart = target.dataset.week
+          const href = target.getAttribute("href")
 
-          if (weekStart) {
-            setLocation(`/weeks/${weekStart}`)
+          if (href) {
+            setLocation(href)
+            event.preventDefault()
           }
         } catch (e) {
           console.warn(e)

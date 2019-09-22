@@ -15,11 +15,10 @@ export default memo(function Year(props: Props) {
       {props.weeks.map(
         (week, i) =>
           "era" in week ? (
-            <WeekContainer
+            <PastWeekContainer
               key={i}
-              data-week={week.startDate}
+              href={`/weeks/${week.startDate}`}
               style={{
-                cursor: "pointer",
                 border:
                   week.startDate === props.selectedWeekStart
                     ? "2px solid black"
@@ -31,13 +30,7 @@ export default memo(function Year(props: Props) {
               }}
             />
           ) : (
-            <WeekContainer
-              key={i}
-              style={{
-                backgroundColor: "#d9d9d9",
-                opacity: week.prob,
-              }}
-            />
+            <FutureWeekContainer key={i} style={{opacity: week.prob}} />
           ),
       )}
     </YearContainer>
@@ -62,7 +55,8 @@ const YearContainer = styled.div`
   flex-wrap: wrap;
 `
 
-const WeekContainer = styled.div`
+const PastWeekContainer = styled.a`
+  display: block;
   box-sizing: border-box;
 
   margin-right: 1px;
@@ -72,4 +66,16 @@ const WeekContainer = styled.div`
   height: 9px;
 
   transition: opacity 0.3s;
+`
+
+const FutureWeekContainer = styled.div`
+  box-sizing: border-box;
+
+  margin-right: 1px;
+  margin-bottom: 1px;
+
+  width: 9px;
+  height: 9px;
+
+  background-color: #d9d9d9;
 `
