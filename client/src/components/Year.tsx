@@ -6,6 +6,7 @@ import {Layer} from "../hooks/useLayerData"
 interface Props {
   weeks: Week[]
   selectedWeekStart: string | undefined
+  highlightedWeekStart: string | undefined
   layer: undefined | Layer
 }
 
@@ -22,7 +23,9 @@ export default memo(function Year(props: Props) {
                 border:
                   week.startDate === props.selectedWeekStart
                     ? "2px solid black"
-                    : undefined,
+                    : week.startDate === props.highlightedWeekStart
+                      ? "3px solid blue"
+                      : undefined,
                 backgroundColor: week.era.baseColor,
                 opacity:
                   0.3 +

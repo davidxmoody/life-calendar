@@ -16,6 +16,10 @@ export default function App() {
     "diary-entries",
   )
 
+  const [highlightedWeekStart, setHighlightedWeekStart] = useState<
+    string | undefined
+  >(undefined)
+
   const [, weekParams] = useRoute("/weeks/:weekStart")
   const selectedWeekStart = (weekParams && weekParams.weekStart) || undefined
 
@@ -29,7 +33,11 @@ export default function App() {
       />
 
       <CalendarContainer>
-        <Calendar layerName={layerName} selectedWeekStart={selectedWeekStart} />
+        <Calendar
+          layerName={layerName}
+          selectedWeekStart={selectedWeekStart}
+          highlightedWeekStart={highlightedWeekStart}
+        />
       </CalendarContainer>
 
       <ContentContainer>
@@ -38,10 +46,16 @@ export default function App() {
         <div style={{height: 16}} />
 
         {selectedWeekStart ? (
-          <WeekSummary key={selectedWeekStart} weekStart={selectedWeekStart} />
+          <WeekSummary
+            key={selectedWeekStart}
+            weekStart={selectedWeekStart}
+            setHighlightedWeekStart={setHighlightedWeekStart}
+          />
         ) : null}
 
-        {showRandom ? <RandomEntries /> : null}
+        {showRandom ? (
+          <RandomEntries setHighlightedWeekStart={setHighlightedWeekStart} />
+        ) : null}
       </ContentContainer>
 
       <AppSideDrawer

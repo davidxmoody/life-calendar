@@ -1,10 +1,15 @@
 import * as React from "react"
 import EntryComponent from "./EntryComponent"
 import useRandomEntries from "../hooks/useRandomEntries"
-import {useState} from "react"
+import {useState, memo} from "react"
 import {Button, TextField} from "@material-ui/core"
+import {getWeekStart} from "../helpers/dates"
 
-export default function RandomEntries() {
+interface Props {
+  setHighlightedWeekStart: (weekStart: string) => void
+}
+
+export default memo(function RandomEntries(props: Props) {
   const [randomKey, setRandomKey] = useState(1)
   const [fromDate, setFromDate] = useState<string | undefined>(undefined)
   const [toDate, setToDate] = useState<string | undefined>(undefined)
@@ -32,8 +37,14 @@ export default function RandomEntries() {
       </div>
 
       {(entries || []).map(entry => (
-        <EntryComponent key={entry.id} entry={entry} />
+        <EntryComponent
+          key={entry.id}
+          entry={entry}
+          onMouseEnter={() =>
+            props.setHighlightedWeekStart(getWeekStart(entry.date))
+          }
+        />
       ))}
     </div>
   )
-}
+})

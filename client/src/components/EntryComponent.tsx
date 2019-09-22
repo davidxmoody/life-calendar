@@ -12,6 +12,7 @@ import Markdown from "./Markdown"
 
 interface Props {
   entry: Entry
+  onMouseEnter?: () => void
 }
 
 export default function EntryComponent(props: Props) {
@@ -20,7 +21,7 @@ export default function EntryComponent(props: Props) {
   ])
 
   return (
-    <ExpansionPanel defaultExpanded={true}>
+    <ExpansionPanel defaultExpanded={true} onMouseEnter={props.onMouseEnter}>
       <ExpansionPanelSummary
         aria-controls="panel1a-content"
         id="panel1a-header"

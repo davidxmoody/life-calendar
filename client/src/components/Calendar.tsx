@@ -9,6 +9,7 @@ import {useLocation} from "wouter"
 
 interface Props {
   selectedWeekStart: string | undefined
+  highlightedWeekStart: string | undefined
   layerName: string | undefined
 }
 
@@ -48,6 +49,14 @@ export default memo(function Calendar(props: Props) {
                 props.selectedWeekStart <=
                   year.weeks[year.weeks.length - 1].startDate
                   ? props.selectedWeekStart
+                  : undefined
+              }
+              highlightedWeekStart={
+                props.highlightedWeekStart &&
+                props.highlightedWeekStart >= year.weeks[0].startDate &&
+                props.highlightedWeekStart <=
+                  year.weeks[year.weeks.length - 1].startDate
+                  ? props.highlightedWeekStart
                   : undefined
               }
               layer={
