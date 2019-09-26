@@ -21,3 +21,9 @@ export function getPrevWeekStart(date: string): string {
     .isoWeekday(-6)
     .format("YYYY-MM-DD")
 }
+
+export function prettyFormatDate(date: string): string {
+  const mDate = moment(date)
+
+  return `${mDate.fromNow()}, ${mDate.format("ddd D MMM YYYY")}`
+}

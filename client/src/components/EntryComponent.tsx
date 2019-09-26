@@ -9,6 +9,7 @@ import {
 import getWordcount from "../helpers/getWordcount"
 import {useMemo} from "react"
 import Markdown from "./Markdown"
+import {prettyFormatDate} from "../helpers/dates"
 
 interface Props {
   entry: Entry
@@ -20,6 +21,8 @@ export default function EntryComponent(props: Props) {
     props.entry.content,
   ])
 
+  const wordcountString = wordcount > 20 ? `(${wordcount} words)` : ""
+
   return (
     <ExpansionPanel defaultExpanded={true} onMouseEnter={props.onMouseEnter}>
       <ExpansionPanelSummary
@@ -27,7 +30,7 @@ export default function EntryComponent(props: Props) {
         id="panel1a-header"
       >
         <Typography>
-          {props.entry.date} ({wordcount} words)
+          {prettyFormatDate(props.entry.date)} {wordcountString}
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
