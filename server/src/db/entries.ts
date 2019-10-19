@@ -8,21 +8,30 @@ interface MarkdownEntry {
   content: string
 }
 
-function getMarkdownEntry(file: string): MarkdownEntry {
-  const content = readFileSync(file, "utf8")
-  const date = file.replace(
-    /^.*\/(\d\d\d\d)\/(\d\d)\/(\d\d)\/diary-(\d\d)-(\d\d)\.md$/,
-    "$1-$2-$3 $4:$5",
-  )
-
-  return {id: date, date, content}
+function getMarkdownContentForDay(day: string): string | undefined {
+  try {
+    const filename = join(
+      DIARY_DIR,
+      "entries",
+      day.replace(/-/g, "/"),
+      "diary.md",
+    )
+    return readFileSync(filename, "utf8")
+  } catch (e) {
+    if (e.code === "ENOENT") {
+      return undefined
+    } else {
+      throw e
+    }
+  }
 }
 
-function getMarkdownEntriesForDay(day: string): MarkdownEntry[] {
+function getScannedRelativeUrlsForDay(day: string): string[] {
   try {
-    const dir = join(DIARY_DIR, "entries", day.replace(/-/g, "/"))
-    const files = readdirSync(dir).map(x => join(dir, x))
-    return files.map(getMarkdownEntry)
+    const dir = join(DIARY_DIR, "scanned", day.replace(/-/g, "/"))
+    const filenames = readdirSync(dir).map(x => join(dir, x))
+    const relativeUrls = filenames.map(x => x.replace(DIARY_DIR, ""))
+    return relativeUrls
   } catch (e) {
     if (e.code === "ENOENT") {
       return []
@@ -32,38 +41,36 @@ function getMarkdownEntriesForDay(day: string): MarkdownEntry[] {
   }
 }
 
-function getScannedMarkdownEntry(
-  date: string,
-  imageFiles: string[],
-): MarkdownEntry {
-  const relativeUrls = imageFiles.map(imageFile =>
-    imageFile.replace(DIARY_DIR, ""),
-  )
+function getEntryForDay(day: string): MarkdownEntry | undefined {
+  let content = ""
 
-  const content = relativeUrls
-    .map(relativeUrl => `![](${EXTERNAL_URL}${relativeUrl})`)
-    .join("\n\n")
+  const markdownContent = getMarkdownContentForDay(day)
+  if (markdownContent) {
+    content = markdownContent
+  }
 
-  return {id: relativeUrls[0], date, content}
-}
+  const relativeUrls = getScannedRelativeUrlsForDay(day)
+  if (relativeUrls.length) {
+    const scannedMarkdownContent = relativeUrls
+      .map(relativeUrl => `![](${EXTERNAL_URL}${relativeUrl})`)
+      .join("\n\n")
 
-function getScannedEntriesForDay(day: string): MarkdownEntry[] {
-  try {
-    const dir = join(DIARY_DIR, "scanned", day.replace(/-/g, "/"))
-    const files = readdirSync(dir).map(x => join(dir, x))
-    return [getScannedMarkdownEntry(day, files)]
-  } catch (e) {
-    if (e.code === "ENOENT") {
-      return []
-    } else {
-      throw e
-    }
+    content = content
+      ? content + "\n\n" + scannedMarkdownContent
+      : scannedMarkdownContent
+  }
+
+  if (!content) {
+    return undefined
+  }
+
+  return {
+    id: day,
+    date: day,
+    content,
   }
 }
 
 export function getEntriesForDays(days: string[]) {
-  return days.flatMap(day => [
-    ...getMarkdownEntriesForDay(day),
-    ...getScannedEntriesForDay(day),
-  ])
+  return days.map(getEntryForDay).filter(x => x)
 }
