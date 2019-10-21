@@ -80,7 +80,7 @@ const CalendarContainer = styled.div`
   flex-grow: 0;
   flex-shrink: 0;
   padding: 3px;
-  width: 650px;
+  width: 710px;
   user-select: none;
 `
 

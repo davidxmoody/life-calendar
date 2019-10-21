@@ -51,8 +51,8 @@ const YearContainer = styled.div`
   padding-right: 1px;
   padding-bottom: 1px;
 
-  height: 90px;
-  width: 60px;
+  height: 99px;
+  width: 66px;
 
   display: flex;
   flex-wrap: wrap;
@@ -65,8 +65,8 @@ const PastWeekContainer = styled.a`
   margin-right: 1px;
   margin-bottom: 1px;
 
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
 
   transition: opacity 0.3s;
 `
@@ -77,8 +77,8 @@ const FutureWeekContainer = styled.div`
   margin-right: 1px;
   margin-bottom: 1px;
 
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
 
   background-color: #d9d9d9;
 `

@@ -76,7 +76,7 @@ const CalendarContainer = styled.div`
 const ContentContainer = styled.div`
   box-sizing: border-box;
   padding-top: 88px;
-  padding-left: 700px;
+  padding-left: 760px;
   padding-right: 24px
   padding-bottom: 24px;
   width: 100%;
