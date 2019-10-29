@@ -14,13 +14,15 @@ export default function LayerList(props: Props) {
   }
 
   return (
-    <div>
+    <div style={{textOverflow: "wrap"}}>
       {layerList.map(layerName => (
         <a
           key={layerName}
           onClick={() => props.setLayerName(layerName)}
           style={{
+            display: "inline-block",
             marginRight: 8,
+            marginBottom: 4,
             fontStyle:
               props.activeLayerName === layerName ? "italic" : "normal",
             textDecoration:

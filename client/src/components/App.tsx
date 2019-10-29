@@ -82,4 +82,5 @@ const ContentContainer = styled.div`
   width: 100%;
   min-width: 1200px;
   max-width: 1600px;
+  overflow: hidden;
 `
