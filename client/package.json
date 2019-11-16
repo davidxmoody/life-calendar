@@ -3,21 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^4.4.2",
-    "@material-ui/icons": "^4.4.1",
-    "@types/jest": "^24.0.18",
-    "@types/node": "^12.7.5",
-    "@types/react": "^16.9.2",
-    "@types/react-dom": "^16.9.0",
+    "@material-ui/core": "^4.6.1",
+    "@material-ui/icons": "^4.5.1",
+    "@types/jest": "^24.0.23",
+    "@types/node": "^12.12.8",
+    "@types/react": "^16.9.11",
+    "@types/react-dom": "^16.9.4",
     "moment": "^2.24.0",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
     "react-markdown": "^4.2.2",
-    "react-scripts": "^3.1.2",
-    "styled-components": "^4.3.2",
+    "react-scripts": "^3.2.0",
+    "styled-components": "^4.4.1",
     "tinycolor2": "^1.4.1",
-    "typescript": "^3.6.3",
-    "wouter": "^2.2.1"
+    "typescript": "^3.7.2",
+    "wouter": "^2.3.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -41,7 +41,7 @@
     ]
   },
   "devDependencies": {
-    "@types/styled-components": "^4.1.19",
+    "@types/styled-components": "^4.4.0",
     "@types/tinycolor2": "^1.4.2"
   }
 }
