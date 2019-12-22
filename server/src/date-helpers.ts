@@ -1,5 +1,4 @@
 import * as moment from "moment"
-import R = require("ramda")
 
 export function getDaysForWeek(date: string): string[] {
   const mDate = moment(date).startOf("isoWeek")
@@ -26,12 +25,18 @@ export function getRandomDays(args: {
 
   const numDaysToConsider = toDate.diff(fromDate, "days") + 1
 
-  const randomDays = R.times(() => {
+  const randomDays: string[] = []
+
+  for (let i = 0; i < limit; i++) {
     const numDaysToAdd = Math.floor(Math.random() * numDaysToConsider)
-    return moment(fromDate)
+    const randomDay = moment(fromDate)
       .add(numDaysToAdd, "days")
       .format("YYYY-MM-DD")
-  }, limit)
 
-  return R.uniq(randomDays)
+    if (!randomDays.includes(randomDay)) {
+      randomDays.push(randomDay)
+    }
+  }
+
+  return randomDays
 }
