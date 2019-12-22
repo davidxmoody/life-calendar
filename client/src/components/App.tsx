@@ -8,6 +8,7 @@ import LayerList from "./LayerList"
 import useLocalStorage from "../hooks/useLocalStorage"
 import RandomEntries from "./RandomEntries"
 import styled from "styled-components"
+import Summaries from "./Summaries"
 
 export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -24,6 +25,8 @@ export default function App() {
   const selectedWeekStart = (weekParams && weekParams.weekStart) || undefined
 
   const [showRandom] = useRoute("/random")
+
+  const [showSummaries] = useRoute("/summaries")
 
   return (
     <div>
@@ -56,6 +59,8 @@ export default function App() {
         {showRandom ? (
           <RandomEntries setHighlightedWeekStart={setHighlightedWeekStart} />
         ) : null}
+
+        {showSummaries ? <Summaries /> : null}
       </ContentContainer>
 
       <AppSideDrawer

@@ -7,7 +7,7 @@ export interface Entry {
   content: string
 }
 
-async function fetchWeekEntries(weekStart: string): Promise<Entry[]> {
+export async function fetchWeekEntries(weekStart: string): Promise<Entry[]> {
   return fetch(`${REMOTE_URL}/weeks/${weekStart}`).then(res => res.json())
 }
 
