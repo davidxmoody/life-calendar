@@ -16,7 +16,11 @@ interface WeekSummaryData {
   entries: Entry[]
 }
 
-export default function Summaries() {
+interface Props {
+  setHighlightedWeekStart: (weekStart: string) => void
+}
+
+export default function Summaries(props: Props) {
   const [summaries, setSummaries] = useState<WeekSummaryData[]>([])
 
   useEffect(() => {
@@ -32,19 +36,22 @@ export default function Summaries() {
   return (
     <div>
       {summaries.map(s => (
-        <ShortSummary {...s} />
+        <ShortSummary
+          {...s}
+          onMouseEnter={() => props.setHighlightedWeekStart(s.weekStart)}
+        />
       ))}
     </div>
   )
 }
 
-function ShortSummary(props: WeekSummaryData) {
+function ShortSummary(props: WeekSummaryData & {onMouseEnter: () => void}) {
   const textSummaries = props.entries
     .map(entry => entry.content.split("\n").filter(x => x.startsWith("##")))
     .filter(x => x.length > 0)
 
   return (
-    <ExpansionPanel defaultExpanded={true}>
+    <ExpansionPanel defaultExpanded={true} onMouseEnter={props.onMouseEnter}>
       <ExpansionPanelSummary
         aria-controls="panel1a-content"
         id="panel1a-header"
@@ -84,7 +91,7 @@ function getSomeDates() {
     .startOf("isoWeek")
     .format("YYYY-MM-DD")
 
-  while (dates.length < 10) {
+  while (dates.length < 20) {
     dates.push(weekStart)
     weekStart = moment(weekStart)
       .subtract(1, "week")

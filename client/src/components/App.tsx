@@ -60,7 +60,9 @@ export default function App() {
           <RandomEntries setHighlightedWeekStart={setHighlightedWeekStart} />
         ) : null}
 
-        {showSummaries ? <Summaries /> : null}
+        {showSummaries ? (
+          <Summaries setHighlightedWeekStart={setHighlightedWeekStart} />
+        ) : null}
       </ContentContainer>
 
       <AppSideDrawer
