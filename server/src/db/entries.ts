@@ -19,7 +19,7 @@ function getMarkdownContentForDay(day: string): string | undefined {
     return readFileSync(filename, "utf8")
   } catch (e) {
     if (e.code === "ENOENT") {
-      return "..."
+      return undefined
     } else {
       throw e
     }
