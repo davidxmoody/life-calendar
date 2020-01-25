@@ -25,5 +25,5 @@ export function getPrevWeekStart(date: string): string {
 export function prettyFormatDate(date: string): string {
   const mDate = moment(date)
 
-  return `${mDate.fromNow()}, ${mDate.format("ddd D MMM YYYY")}`
+  return `${mDate.fromNow()}, ${mDate.format("ddd D MMM YYYY HH:MM")}`
 }
