@@ -2,6 +2,12 @@ import {readdirSync, readFileSync} from "fs"
 import {join} from "path"
 import {DIARY_DIR, EXTERNAL_URL} from "../config"
 
+interface AudioEntry {
+  id: string
+  date: string
+  audioFileUrl: string
+}
+
 interface MarkdownEntry {
   id: string
   date: string
@@ -61,9 +67,34 @@ function getScannedEntriesForDay(day: string): MarkdownEntry[] {
   }
 }
 
+function getAudioEntry(file: string): AudioEntry {
+  const audioFileUrl = file.replace(DIARY_DIR, EXTERNAL_URL)
+  const date = file.replace(
+    /^.*\/(\d\d\d\d)\/(\d\d)\/(\d\d)\/audio-(\d\d)-(\d\d)\..*$/,
+    "$1-$2-$3 $4:$5",
+  )
+
+  return {id: date, date, audioFileUrl}
+}
+
+function getAudioEntriesForDay(day: string): AudioEntry[] {
+  try {
+    const dir = join(DIARY_DIR, "audio", day.replace(/-/g, "/"))
+    const files = readdirSync(dir).map(x => join(dir, x))
+    return files.map(file => getAudioEntry(file))
+  } catch (e) {
+    if (e.code === "ENOENT") {
+      return []
+    } else {
+      throw e
+    }
+  }
+}
+
 export function getEntriesForDays(days: string[]) {
   return days.flatMap(day => [
     ...getMarkdownEntriesForDay(day),
     ...getScannedEntriesForDay(day),
+    ...getAudioEntriesForDay(day),
   ])
 }

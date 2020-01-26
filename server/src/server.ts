@@ -13,6 +13,7 @@ app.use((req, res, next) => {
 })
 
 app.use("/scanned", express.static(join(DIARY_DIR, "scanned")))
+app.use("/audio", express.static(join(DIARY_DIR, "audio")))
 
 app.get("/layers", async (req, res) => {
   const layers = getLayerList()

@@ -47,7 +47,11 @@ export default function Summaries(props: Props) {
 
 function ShortSummary(props: WeekSummaryData & {onMouseEnter: () => void}) {
   const textSummaries = props.entries
-    .map(entry => entry.content.split("\n").filter(x => x.startsWith("##")))
+    .map(entry =>
+      ("content" in entry ? entry.content : "")
+        .split("\n")
+        .filter(x => x.startsWith("##")),
+    )
     .filter(x => x.length > 0)
 
   return (
