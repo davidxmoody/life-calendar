@@ -56,7 +56,9 @@ function getScannedMarkdownEntry(
 function getScannedEntriesForDay(day: string): MarkdownEntry[] {
   try {
     const dir = join(DIARY_DIR, "scanned", day.replace(/-/g, "/"))
-    const files = readdirSync(dir).map(x => join(dir, x))
+    const files = readdirSync(dir)
+      .filter(x => /.+\.(jpe?g|png|gif)$/i.test(x))
+      .map(x => join(dir, x))
     return [getScannedMarkdownEntry(day, files)]
   } catch (e) {
     if (e.code === "ENOENT") {
