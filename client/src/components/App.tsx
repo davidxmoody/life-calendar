@@ -7,7 +7,6 @@ import WeekSummary from "./WeekSummary"
 import LayerList from "./LayerList"
 import useLocalStorage from "../hooks/useLocalStorage"
 import RandomEntries from "./RandomEntries"
-import styled from "styled-components"
 import Summaries from "./Summaries"
 
 export default function App() {
@@ -35,15 +34,27 @@ export default function App() {
         onClickMenu={() => setDrawerOpen(x => !x)}
       />
 
-      <CalendarContainer>
+      <div style={{position: "fixed", top: 82, left: 18}}>
         <Calendar
           layerName={layerName}
           selectedWeekStart={selectedWeekStart}
           highlightedWeekStart={highlightedWeekStart}
         />
-      </CalendarContainer>
+      </div>
 
-      <ContentContainer>
+      <div
+        style={{
+          boxSizing: "border-box",
+          paddingTop: 88,
+          paddingLeft: 760,
+          paddingRight: 24,
+          paddingBottom: 24,
+          width: "100%",
+          minWidth: 1200,
+          maxWidth: 1700,
+          overflow: "hidden",
+        }}
+      >
         <LayerList activeLayerName={layerName} setLayerName={setLayerName} />
 
         <div style={{height: 16}} />
@@ -63,7 +74,7 @@ export default function App() {
         {showSummaries ? (
           <Summaries setHighlightedWeekStart={setHighlightedWeekStart} />
         ) : null}
-      </ContentContainer>
+      </div>
 
       <AppSideDrawer
         open={drawerOpen}
@@ -73,21 +84,3 @@ export default function App() {
     </div>
   )
 }
-
-const CalendarContainer = styled.div`
-  position: fixed;
-  top: 82px;
-  left: 18px;
-`
-
-const ContentContainer = styled.div`
-  box-sizing: border-box;
-  padding-top: 88px;
-  padding-left: 760px;
-  padding-right: 24px
-  padding-bottom: 24px;
-  width: 100%;
-  min-width: 1200px;
-  max-width: 1700px;
-  overflow: hidden;
-`

@@ -1,5 +1,4 @@
 import React, {useMemo, memo} from "react"
-import styled from "styled-components"
 import generateCalendarData from "../helpers/generateCalendarData"
 import lifeData from "../lifeData"
 import useToday from "../hooks/useToday"
@@ -22,7 +21,14 @@ export default memo(function Calendar(props: Props) {
   ])
 
   return (
-    <CalendarContainer
+    <div
+      style={{
+        flexGrow: 0,
+        flexShrink: 0,
+        padding: 3,
+        width: 710,
+        userSelect: "none",
+      }}
       onClickCapture={event => {
         try {
           const target: HTMLElement = event.target as any
@@ -38,7 +44,7 @@ export default memo(function Calendar(props: Props) {
       }}
     >
       {decades.map((decade, i) => (
-        <DecadeContainer key={i}>
+        <div key={i} style={{display: "flex"}}>
           {decade.years.map((year, j) => (
             <Year
               key={j}
@@ -65,25 +71,13 @@ export default memo(function Calendar(props: Props) {
                   : year.weeks[0].startDate > layerData.latest ||
                     year.weeks[year.weeks.length - 1].startDate <
                       layerData.earliest
-                    ? undefined
-                    : layerData.layer
+                  ? undefined
+                  : layerData.layer
               }
             />
           ))}
-        </DecadeContainer>
+        </div>
       ))}
-    </CalendarContainer>
+    </div>
   )
 })
-
-const CalendarContainer = styled.div`
-  flex-grow: 0;
-  flex-shrink: 0;
-  padding: 3px;
-  width: 710px;
-  user-select: none;
-`
-
-const DecadeContainer = styled.div`
-  display: flex;
-`
