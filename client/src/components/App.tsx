@@ -1,8 +1,6 @@
 import React, {useState} from "react"
 import {useRoute} from "wouter"
 import Calendar from "./Calendar"
-import AppTopBar from "./AppTopBar"
-import AppSideDrawer from "./AppSideDrawer"
 import WeekSummary from "./WeekSummary"
 import LayerList from "./LayerList"
 import useLocalStorage from "../hooks/useLocalStorage"
@@ -10,7 +8,6 @@ import RandomEntries from "./RandomEntries"
 import Summaries from "./Summaries"
 
 export default function App() {
-  const [drawerOpen, setDrawerOpen] = useState(false)
   const [layerName, setLayerName] = useLocalStorage(
     "layerName",
     "diary-entries",
@@ -29,12 +26,7 @@ export default function App() {
 
   return (
     <div>
-      <AppTopBar
-        title="Life calendar"
-        onClickMenu={() => setDrawerOpen(x => !x)}
-      />
-
-      <div style={{position: "fixed", top: 82, left: 18}}>
+      <div style={{position: "fixed", top: 18, left: 18}}>
         <Calendar
           layerName={layerName}
           selectedWeekStart={selectedWeekStart}
@@ -45,7 +37,7 @@ export default function App() {
       <div
         style={{
           boxSizing: "border-box",
-          paddingTop: 88,
+          paddingTop: 24,
           paddingLeft: 760,
           paddingRight: 24,
           paddingBottom: 24,
@@ -75,12 +67,6 @@ export default function App() {
           <Summaries setHighlightedWeekStart={setHighlightedWeekStart} />
         ) : null}
       </div>
-
-      <AppSideDrawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        setLayerName={setLayerName}
-      />
     </div>
   )
 }

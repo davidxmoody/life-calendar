@@ -2,7 +2,6 @@ import * as React from "react"
 import EntryComponent from "./EntryComponent"
 import useRandomEntries from "../hooks/useRandomEntries"
 import {useState, memo} from "react"
-import {Button, TextField} from "@material-ui/core"
 import {getWeekStart} from "../helpers/dates"
 
 interface Props {
@@ -19,16 +18,16 @@ export default memo(function RandomEntries(props: Props) {
   return (
     <div>
       <div style={{marginBottom: 16}}>
-        <Button onClick={() => setRandomKey(Math.random())}>More random</Button>
+        <button onClick={() => setRandomKey(Math.random())}>More random</button>
 
-        <TextField
+        <input
           placeholder="From date"
           style={{marginLeft: 16}}
           value={fromDate || ""}
           onChange={e => setFromDate(e.target.value)}
         />
 
-        <TextField
+        <input
           placeholder="To date"
           style={{marginLeft: 16}}
           value={toDate || ""}

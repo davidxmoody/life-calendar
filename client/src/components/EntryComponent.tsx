@@ -1,11 +1,5 @@
 import * as React from "react"
 import {Entry} from "../hooks/useWeekEntries"
-import {
-  ExpansionPanel,
-  ExpansionPanelSummary,
-  Typography,
-  ExpansionPanelDetails,
-} from "@material-ui/core"
 import getWordcount from "../helpers/getWordcount"
 import {useMemo} from "react"
 import Markdown from "./Markdown"
@@ -26,16 +20,14 @@ export default function EntryComponent(props: Props) {
   const wordcountString = wordcount > 20 ? `(${wordcount} words)` : ""
 
   return (
-    <ExpansionPanel defaultExpanded={true} onMouseEnter={props.onMouseEnter}>
-      <ExpansionPanelSummary
-        aria-controls="panel1a-content"
-        id="panel1a-header"
-      >
-        <Typography>
-          {prettyFormatDate(props.entry.date)} {wordcountString}
-        </Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails>
+    <div
+      onMouseEnter={props.onMouseEnter}
+      style={{border: "1px solid lightgrey", padding: 16, marginBottom: 16}}
+    >
+      <h4>
+        {prettyFormatDate(props.entry.date)} {wordcountString}
+      </h4>
+      <div>
         {"content" in props.entry ? (
           <Markdown source={props.entry.content} />
         ) : null}
@@ -43,7 +35,7 @@ export default function EntryComponent(props: Props) {
         {"audioFileUrl" in props.entry ? (
           <AudioPlayer sourceUrl={props.entry.audioFileUrl} />
         ) : null}
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </div>
+    </div>
   )
 }
