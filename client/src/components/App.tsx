@@ -4,7 +4,6 @@ import Calendar from "./Calendar"
 import WeekSummary from "./WeekSummary"
 import LayerList from "./LayerList"
 import useLocalStorage from "../hooks/useLocalStorage"
-import RandomEntries from "./RandomEntries"
 
 export default function App() {
   const [layerName, setLayerName] = useLocalStorage(
@@ -18,8 +17,6 @@ export default function App() {
 
   const [, weekParams] = useRoute("/weeks/:weekStart")
   const selectedWeekStart = (weekParams && weekParams.weekStart) || undefined
-
-  const [showRandom] = useRoute("/random")
 
   return (
     <div>
@@ -54,10 +51,6 @@ export default function App() {
             weekStart={selectedWeekStart}
             setHighlightedWeekStart={setHighlightedWeekStart}
           />
-        ) : null}
-
-        {showRandom ? (
-          <RandomEntries setHighlightedWeekStart={setHighlightedWeekStart} />
         ) : null}
       </div>
     </div>
