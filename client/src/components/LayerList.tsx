@@ -1,5 +1,6 @@
 import * as React from "react"
-import useLayerList from "../hooks/useLayerList"
+import {useQuery} from "react-query"
+import fetchLayerList from "../api/fetchLayerList"
 
 interface Props {
   activeLayerName: string
@@ -7,15 +8,15 @@ interface Props {
 }
 
 export default function LayerList(props: Props) {
-  const layerList = useLayerList()
+  const {data} = useQuery("layer-list", fetchLayerList)
 
-  if (!layerList) {
+  if (!data) {
     return null
   }
 
   return (
     <div style={{textOverflow: "wrap"}}>
-      {layerList.map(layerName => (
+      {data.map(layerName => (
         <a
           key={layerName}
           onClick={() => props.setLayerName(layerName)}

@@ -1,5 +1,4 @@
 import * as React from "react"
-import useWeekEntries from "../hooks/useWeekEntries"
 import EntryComponent from "./EntryComponent"
 import {Link} from "wouter"
 import {
@@ -8,6 +7,8 @@ import {
   getWeekStart,
 } from "../helpers/dates"
 import {memo} from "react"
+import {useQuery} from "react-query"
+import fetchWeekEntries from "../api/fetchWeekEntries"
 
 interface Props {
   weekStart: string
@@ -15,7 +16,7 @@ interface Props {
 }
 
 export default memo(function WeekSummary(props: Props) {
-  const entries = useWeekEntries(props.weekStart)
+  const {data} = useQuery(["week-summary", props.weekStart], fetchWeekEntries)
 
   return (
     <div>
@@ -29,7 +30,7 @@ export default memo(function WeekSummary(props: Props) {
         <Link href={`/weeks/${getNextWeekStart(props.weekStart)}`}>Next</Link>
       </div>
 
-      {(entries || []).map(entry => (
+      {(data || []).map(entry => (
         <EntryComponent
           key={entry.id}
           entry={entry}
