@@ -25,7 +25,7 @@ export default memo(function Year(props: Props) {
                   : week.startDate === props.highlightedWeekStart
                   ? "3px solid blue"
                   : undefined,
-              backgroundColor: week.era.baseColor,
+              backgroundColor: week.era.color,
               opacity:
                 0.3 + 0.7 * ((props.layer && props.layer[week.startDate]) || 0),
             }}
