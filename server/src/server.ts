@@ -7,7 +7,7 @@ import {join} from "path"
 
 const app = express()
 
-app.use((req, res, next) => {
+app.use((_req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*")
   next()
 })
@@ -15,7 +15,7 @@ app.use((req, res, next) => {
 app.use("/scanned", express.static(join(DIARY_DIR, "scanned")))
 app.use("/audio", express.static(join(DIARY_DIR, "audio")))
 
-app.get("/layers", async (req, res) => {
+app.get("/layers", async (_req, res) => {
   const layers = getLayerList()
   res.send(layers)
 })
@@ -37,9 +37,9 @@ app.get("/weeks/:date", async (req, res) => {
 
 app.get("/random", async (req, res) => {
   const days = getRandomDays({
-    limit: parseInt(req.query.limit, 10) || undefined,
-    from: req.query.from,
-    to: req.query.to,
+    limit: parseInt(req.query.limit as string, 10) || undefined,
+    from: req.query.from as string | undefined,
+    to: req.query.to as string | undefined,
   })
   const entries = getEntriesForDays(days)
   res.send(entries)
