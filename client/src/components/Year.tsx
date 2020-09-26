@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/anchor-has-content */
+
 import React, {memo} from "react"
 import {Week} from "../helpers/generateCalendarData"
 import {Layer} from "../api/fetchLayer"

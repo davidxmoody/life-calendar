@@ -16,8 +16,8 @@ export default function LayerList(props: Props) {
 
   return (
     <div style={{textOverflow: "wrap"}}>
-      {data.map(layerName => (
-        <a
+      {data.map((layerName) => (
+        <span
           key={layerName}
           onClick={() => props.setLayerName(layerName)}
           style={{
@@ -33,7 +33,7 @@ export default function LayerList(props: Props) {
           }}
         >
           {layerName}
-        </a>
+        </span>
       ))}
     </div>
   )
