@@ -1,7 +1,7 @@
 import * as express from "express"
 import {LISTEN_PORT, DIARY_DIR} from "./config"
 import {getLayerList, getLayerData} from "./db/layers"
-import {getDaysForWeek, getRandomDays} from "./date-helpers"
+import {getDaysForWeek} from "./date-helpers"
 import {getEntriesForDays} from "./db/entries"
 import {join} from "path"
 
@@ -31,16 +31,6 @@ app.get("/layers/:subdir/:layerName", async (req, res) => {
 
 app.get("/weeks/:date", async (req, res) => {
   const days = getDaysForWeek(req.params.date)
-  const entries = getEntriesForDays(days)
-  res.send(entries)
-})
-
-app.get("/random", async (req, res) => {
-  const days = getRandomDays({
-    limit: parseInt(req.query.limit as string, 10) || undefined,
-    from: req.query.from as string | undefined,
-    to: req.query.to as string | undefined,
-  })
   const entries = getEntriesForDays(days)
   res.send(entries)
 })
