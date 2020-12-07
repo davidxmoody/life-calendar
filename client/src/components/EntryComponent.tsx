@@ -1,5 +1,5 @@
 import * as React from "react"
-import {Entry} from "../api/fetchWeekEntries"
+import {Entry} from "../types"
 import getWordcount from "../helpers/getWordcount"
 import {useMemo} from "react"
 import Markdown from "./Markdown"
