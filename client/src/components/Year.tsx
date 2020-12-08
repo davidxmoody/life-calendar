@@ -2,13 +2,13 @@
 
 import React, {memo} from "react"
 import {Week} from "../helpers/generateCalendarData"
-import {Layer} from "../api/fetchLayer"
+import {LayerData} from "../types"
 
 interface Props {
   weeks: Week[]
   selectedWeekStart: string | undefined
   highlightedWeekStart: string | undefined
-  layer: undefined | Layer
+  layer: undefined | LayerData
 }
 
 export default memo(function Year(props: Props) {

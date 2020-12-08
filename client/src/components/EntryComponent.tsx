@@ -3,7 +3,7 @@ import {Entry} from "../types"
 import getWordcount from "../helpers/getWordcount"
 import {useMemo} from "react"
 import Markdown from "./Markdown"
-import {prettyFormatDate} from "../helpers/dates"
+import {prettyFormatDateTime} from "../helpers/dates"
 import AudioPlayer from "./AudioPlayer"
 
 interface Props {
@@ -25,15 +25,19 @@ export default function EntryComponent(props: Props) {
       style={{border: "1px solid lightgrey", padding: 16, marginBottom: 16}}
     >
       <h4>
-        {prettyFormatDate(props.entry.date)} {wordcountString}
+        {prettyFormatDateTime(props.entry)} {wordcountString}
       </h4>
       <div>
-        {"content" in props.entry ? (
+        {props.entry.type === "markdown" ? (
           <Markdown source={props.entry.content} />
         ) : null}
 
-        {"audioFileUrl" in props.entry ? (
-          <AudioPlayer sourceUrl={props.entry.audioFileUrl} />
+        {props.entry.type === "scanned" ? (
+          <Markdown source={`![](${props.entry.fileUrl})`} />
+        ) : null}
+
+        {props.entry.type === "audio" ? (
+          <AudioPlayer sourceUrl={props.entry.fileUrl} />
         ) : null}
       </div>
     </div>
