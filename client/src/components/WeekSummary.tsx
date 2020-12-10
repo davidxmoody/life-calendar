@@ -1,18 +1,13 @@
 import * as React from "react"
 import EntryComponent from "./EntryComponent"
 import {Link} from "wouter"
-import {
-  getPrevWeekStart,
-  getNextWeekStart,
-  getWeekStart,
-} from "../helpers/dates"
+import {getPrevWeekStart, getNextWeekStart} from "../helpers/dates"
 import {memo} from "react"
 import {useQuery} from "react-query"
 import fetchWeekEntries from "../api/fetchWeekEntries"
 
 interface Props {
   weekStart: string
-  setHighlightedWeekStart: (weekStart: string) => void
 }
 
 export default memo(function WeekSummary(props: Props) {
@@ -30,14 +25,8 @@ export default memo(function WeekSummary(props: Props) {
         <Link href={`/weeks/${getNextWeekStart(props.weekStart)}`}>Next</Link>
       </div>
 
-      {(data || []).map(entry => (
-        <EntryComponent
-          key={entry.id}
-          entry={entry}
-          onMouseEnter={() =>
-            props.setHighlightedWeekStart(getWeekStart(entry.date))
-          }
-        />
+      {(data || []).map((entry) => (
+        <EntryComponent key={entry.id} entry={entry} />
       ))}
     </div>
   )

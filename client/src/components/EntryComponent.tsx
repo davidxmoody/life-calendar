@@ -8,7 +8,6 @@ import AudioPlayer from "./AudioPlayer"
 
 interface Props {
   entry: Entry
-  onMouseEnter?: () => void
 }
 
 export default function EntryComponent(props: Props) {
@@ -20,10 +19,7 @@ export default function EntryComponent(props: Props) {
   const wordcountString = wordcount > 20 ? `(${wordcount} words)` : ""
 
   return (
-    <div
-      onMouseEnter={props.onMouseEnter}
-      style={{border: "1px solid lightgrey", padding: 16, marginBottom: 16}}
-    >
+    <div style={{border: "1px solid lightgrey", padding: 16, marginBottom: 16}}>
       <h4>
         {prettyFormatDateTime(props.entry)} {wordcountString}
       </h4>

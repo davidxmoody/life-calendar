@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React from "react"
 import {useRoute} from "wouter"
 import Calendar from "./Calendar"
 import WeekSummary from "./WeekSummary"
@@ -11,21 +11,13 @@ export default function App() {
     "diary-entries",
   )
 
-  const [highlightedWeekStart, setHighlightedWeekStart] = useState<
-    string | undefined
-  >(undefined)
-
   const [, weekParams] = useRoute("/weeks/:weekStart")
   const selectedWeekStart = (weekParams && weekParams.weekStart) || undefined
 
   return (
     <div>
       <div style={{position: "fixed", top: 18, left: 18}}>
-        <Calendar
-          layerName={layerName}
-          selectedWeekStart={selectedWeekStart}
-          highlightedWeekStart={highlightedWeekStart}
-        />
+        <Calendar layerName={layerName} selectedWeekStart={selectedWeekStart} />
       </div>
 
       <div
@@ -46,11 +38,7 @@ export default function App() {
         <div style={{height: 16}} />
 
         {selectedWeekStart ? (
-          <WeekSummary
-            key={selectedWeekStart}
-            weekStart={selectedWeekStart}
-            setHighlightedWeekStart={setHighlightedWeekStart}
-          />
+          <WeekSummary key={selectedWeekStart} weekStart={selectedWeekStart} />
         ) : null}
       </div>
     </div>

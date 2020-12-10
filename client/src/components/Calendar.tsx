@@ -9,7 +9,6 @@ import fetchLayer from "../api/fetchLayer"
 
 interface Props {
   selectedWeekStart: string | undefined
-  highlightedWeekStart: string | undefined
   layerName: string | undefined
 }
 
@@ -30,7 +29,7 @@ export default memo(function Calendar(props: Props) {
         width: 710,
         userSelect: "none",
       }}
-      onClickCapture={event => {
+      onClickCapture={(event) => {
         try {
           const target: HTMLElement = event.target as any
           const href = target.getAttribute("href")
@@ -56,14 +55,6 @@ export default memo(function Calendar(props: Props) {
                 props.selectedWeekStart <=
                   year.weeks[year.weeks.length - 1].startDate
                   ? props.selectedWeekStart
-                  : undefined
-              }
-              highlightedWeekStart={
-                props.highlightedWeekStart &&
-                props.highlightedWeekStart >= year.weeks[0].startDate &&
-                props.highlightedWeekStart <=
-                  year.weeks[year.weeks.length - 1].startDate
-                  ? props.highlightedWeekStart
                   : undefined
               }
               layer={
