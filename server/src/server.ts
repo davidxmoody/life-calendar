@@ -2,7 +2,7 @@ import * as express from "express"
 import {LISTEN_PORT, DIARY_DIR} from "./config"
 import {getLayerList, getLayerData} from "./db/layers"
 import {getDaysForWeek, getDaysInRange} from "./date-helpers"
-import {getEntriesForDays} from "./db/entries"
+import {getEntriesForDays, getEntriesModifiedSince} from "./db/entries"
 import {join} from "path"
 
 const app = express()
@@ -46,6 +46,13 @@ app.get("/entries", async (req, res) => {
 
   const days = getDaysInRange(from, to)
   const entries = getEntriesForDays(days)
+  res.send(entries)
+})
+
+app.get("/entries-since", async (req, res) => {
+  const since = parseInt(req.query.since as string, 10)
+
+  const entries = await getEntriesModifiedSince(since)
   res.send(entries)
 })
 
