@@ -52,8 +52,10 @@ const eras: Era[] = [
   },
 ]
 
-export default {
+const lifeData = {
   birthDate: "1990-07-04",
   deathDate: "2090-07-03",
   eras,
 }
+
+export default lifeData

@@ -18,7 +18,11 @@ function lerp(a: number, b: number, t: number) {
   return a * (1 - t) + b * t
 }
 
-export default (birthDate: string, today: string, date: string) => {
+export default function probabilityOfSurvival(
+  birthDate: string,
+  today: string,
+  date: string,
+) {
   if (today < birthDate) {
     throw new Error("today must be after birthDate")
   }
@@ -47,7 +51,7 @@ export default (birthDate: string, today: string, date: string) => {
 
   const totalPreNormalizedProb = adjustedProbs.reduce((a, b) => a + b, 0)
   const normalizedProbs = adjustedProbs.map(
-    prob => prob / totalPreNormalizedProb,
+    (prob) => prob / totalPreNormalizedProb,
   )
 
   const cumulativeProbs = []
