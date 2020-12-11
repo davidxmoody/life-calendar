@@ -1,25 +1,23 @@
 /* eslint-disable no-useless-escape */
 
-import * as React from "react"
-import {useQuery} from "react-query"
-import fetchLayerList from "../api/fetchLayerList"
+import useLayerIds from "../hooks/useLayerIds"
 
 interface Props {
-  activeLayerName: string
-  setLayerName: (layerName: string) => void
+  activeLayerId: string
+  setLayerId: (layerId: string) => void
 }
 
 export default function LayerList(props: Props) {
-  const {data} = useQuery("layer-list", fetchLayerList)
+  const layerIds = useLayerIds()
 
-  if (!data) {
+  if (!layerIds) {
     return null
   }
 
   const groups: Record<string, string[] | undefined> = {}
-  data.forEach((fullName) => {
-    const groupName = fullName.includes("/") ? fullName.replace(/\/.*/, "") : ""
-    const name = fullName.replace(/[^\/]*\//, "")
+  layerIds.forEach((layerId) => {
+    const groupName = layerId.includes("/") ? layerId.replace(/\/.*/, "") : ""
+    const name = layerId.replace(/[^\/]*\//, "")
     groups[groupName] = [...(groups[groupName] ?? []), name]
   })
 
@@ -32,17 +30,17 @@ export default function LayerList(props: Props) {
             <span
               key={name}
               onClick={() =>
-                props.setLayerName(groupName ? `${groupName}/${name}` : name)
+                props.setLayerId(groupName ? `${groupName}/${name}` : name)
               }
               style={{
                 display: "inline-block",
                 marginRight: 8,
                 fontStyle:
-                  props.activeLayerName === `${groupName}/${name}`
+                  props.activeLayerId === `${groupName}/${name}`
                     ? "italic"
                     : "normal",
                 textDecoration:
-                  props.activeLayerName === `${groupName}/${name}`
+                  props.activeLayerId === `${groupName}/${name}`
                     ? "none"
                     : "underline",
                 color: "blue",

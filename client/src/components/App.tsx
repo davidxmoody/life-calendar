@@ -6,10 +6,7 @@ import LayerList from "./LayerList"
 import useLocalStorage from "../hooks/useLocalStorage"
 
 export default function App() {
-  const [layerName, setLayerName] = useLocalStorage(
-    "layerName",
-    "diary-entries",
-  )
+  const [layerId, setLayerId] = useLocalStorage("layerId", "diary/all")
 
   const [, weekParams] = useRoute("/weeks/:weekStart")
   const selectedWeekStart = (weekParams && weekParams.weekStart) || undefined
@@ -17,7 +14,7 @@ export default function App() {
   return (
     <div>
       <div style={{position: "fixed", top: 18, left: 18}}>
-        <Calendar layerName={layerName} selectedWeekStart={selectedWeekStart} />
+        <Calendar layerId={layerId} selectedWeekStart={selectedWeekStart} />
       </div>
 
       <div
@@ -33,7 +30,7 @@ export default function App() {
           overflow: "hidden",
         }}
       >
-        <LayerList activeLayerName={layerName} setLayerName={setLayerName} />
+        <LayerList activeLayerId={layerId} setLayerId={setLayerId} />
 
         <div style={{height: 16}} />
 

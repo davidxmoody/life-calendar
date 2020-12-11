@@ -1,14 +1,17 @@
-import {openDB} from "idb"
+import {IDBPDatabase, openDB} from "idb"
+import fetchLayers from "../api/fetchLayers"
 import fetchEntries from "../api/fetchEntries"
 import lifeData from "../lifeData"
 
-export async function syncDatabase() {
-  const db = await openDB("entries", 2, {
+export let dbPromise: Promise<IDBPDatabase<unknown>>
+
+export async function init() {
+  dbPromise = openDB("data", 1, {
     upgrade(db, oldVersion) {
       switch (oldVersion) {
         case 0:
           db.createObjectStore("entries", {keyPath: "id"})
-        // TODO add index for day/week
+          db.createObjectStore("layers", {keyPath: "id"})
       }
     },
     blocked() {
@@ -21,7 +24,17 @@ export async function syncDatabase() {
       alert("Terminated")
     },
   })
+}
 
+export async function syncLayers() {
+  const layers = await fetchLayers()
+  const txLayers = (await dbPromise).transaction("layers", "readwrite")
+  for (const layer of layers) {
+    txLayers.store.put(layer)
+  }
+}
+
+export async function syncEntries() {
   const entries = await fetchEntries(
     null,
     lifeData.birthDate,
@@ -31,7 +44,7 @@ export async function syncDatabase() {
   console.log(`Fetched ${entries.length} entries`)
 
   try {
-    const tx = db.transaction("entries", "readwrite")
+    const tx = (await dbPromise).transaction("entries", "readwrite")
     for (const entry of entries) {
       console.log(`Putting entry ${entry.id}`)
       tx.store.put(entry)
@@ -40,3 +53,9 @@ export async function syncDatabase() {
     console.error("Error putting entries", e)
   }
 }
+
+;(window as any).init = init
+;(window as any).syncLayers = syncLayers
+;(window as any).syncEntries = syncEntries
+
+init()

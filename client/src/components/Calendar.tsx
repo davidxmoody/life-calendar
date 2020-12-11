@@ -4,18 +4,17 @@ import lifeData from "../lifeData"
 import useToday from "../hooks/useToday"
 import Year from "./Year"
 import {useLocation} from "wouter"
-import {useQuery} from "react-query"
-import fetchLayer from "../api/fetchLayer"
+import useLayerData from "../hooks/useLayerData"
 
 interface Props {
   selectedWeekStart: string | undefined
-  layerName: string | undefined
+  layerId: string | undefined
 }
 
 export default memo(function Calendar(props: Props) {
   const [, setLocation] = useLocation()
   const today = useToday()
-  const {data: layerData} = useQuery(["layer", props.layerName], fetchLayer)
+  const layerData = useLayerData(props.layerId)
   const {decades} = useMemo(() => generateCalendarData({today, ...lifeData}), [
     today,
   ])

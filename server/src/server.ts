@@ -1,6 +1,6 @@
 import * as express from "express"
 import {LISTEN_PORT, DIARY_DIR} from "./config"
-import {getLayerList, getLayerData} from "./db/layers"
+import {getLayers} from "./db/layers"
 import {getDaysForWeek, getDaysInRange} from "./date-helpers"
 import {getEntriesForDays, getEntriesModifiedSince} from "./db/entries"
 import {join} from "path"
@@ -16,17 +16,8 @@ app.use("/scanned", express.static(join(DIARY_DIR, "scanned")))
 app.use("/audio", express.static(join(DIARY_DIR, "audio")))
 
 app.get("/layers", async (_req, res) => {
-  const layers = getLayerList()
+  const layers = getLayers()
   res.send(layers)
-})
-
-app.get("/layers/:subdir/:layerName", async (req, res) => {
-  const layerData = getLayerData(req.params.subdir, req.params.layerName)
-  if (!layerData) {
-    res.sendStatus(404)
-  } else {
-    res.send(layerData)
-  }
 })
 
 app.get("/weeks/:date", async (req, res) => {
