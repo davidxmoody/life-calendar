@@ -8,7 +8,7 @@ import useLayerData from "../hooks/useLayerData"
 
 interface Props {
   selectedWeekStart: string | undefined
-  layerId: string | undefined
+  layerId: string | null
 }
 
 export default memo(function Calendar(props: Props) {

@@ -1,12 +1,15 @@
-import React from "react"
+import React, {useCallback} from "react"
 import {useRoute} from "wouter"
 import Calendar from "./Calendar"
 import WeekSummary from "./WeekSummary"
 import LayerList from "./LayerList"
-import useLocalStorage from "../hooks/useLocalStorage"
+import {useStore} from "../store"
 
 export default function App() {
-  const [layerId, setLayerId] = useLocalStorage("layerId", "diary/all")
+  const selectedLayerId = useStore(useCallback((s) => s.selectedLayerId, []))
+  const setSelectedLayerId = useStore(
+    useCallback((s) => s.setSelectedLayerId, []),
+  )
 
   const [, weekParams] = useRoute("/weeks/:weekStart")
   const selectedWeekStart = (weekParams && weekParams.weekStart) || undefined
@@ -14,7 +17,10 @@ export default function App() {
   return (
     <div>
       <div style={{position: "fixed", top: 18, left: 18}}>
-        <Calendar layerId={layerId} selectedWeekStart={selectedWeekStart} />
+        <Calendar
+          layerId={selectedLayerId}
+          selectedWeekStart={selectedWeekStart}
+        />
       </div>
 
       <div
@@ -30,7 +36,10 @@ export default function App() {
           overflow: "hidden",
         }}
       >
-        <LayerList activeLayerId={layerId} setLayerId={setLayerId} />
+        <LayerList
+          activeLayerId={selectedLayerId}
+          setLayerId={setSelectedLayerId}
+        />
 
         <div style={{height: 16}} />
 

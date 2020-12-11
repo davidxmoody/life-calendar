@@ -3,7 +3,7 @@
 import useLayerIds from "../hooks/useLayerIds"
 
 interface Props {
-  activeLayerId: string
+  activeLayerId: string | null
   setLayerId: (layerId: string) => void
 }
 

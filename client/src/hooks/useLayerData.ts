@@ -6,7 +6,7 @@ type ReturnVal =
   | undefined
   | {earliest: string; latest: string; layer: LayerData}
 
-export default function useLayerData(layerId: string | undefined): ReturnVal {
+export default function useLayerData(layerId: string | null): ReturnVal {
   const [data, setData] = useState<ReturnVal>(undefined)
 
   useEffect(() => {
