@@ -25,10 +25,12 @@ app.get("/sync", async (req, res) => {
   const sinceMsFromQs = parseInt(req.query.sinceMs as string, 10)
   const sinceMs = isNaN(sinceMsFromQs) ? null : sinceMsFromQs
 
+  const timestamp = new Date().getTime()
+
   const layers = await getLayers(sinceMs)
   const entries = await getEntries(sinceMs)
 
-  res.send({layers, entries})
+  res.send({timestamp, layers, entries})
 })
 
 app.listen(LISTEN_PORT, "localhost", () => {
