@@ -1,4 +1,4 @@
-import React, {useCallback} from "react"
+import {useCallback} from "react"
 import {useRoute} from "wouter"
 import Calendar from "./Calendar"
 import WeekSummary from "./WeekSummary"

@@ -1,4 +1,4 @@
-import React, {useMemo, memo} from "react"
+import {useMemo, memo} from "react"
 import generateCalendarData from "../helpers/generateCalendarData"
 import lifeData from "../lifeData"
 import useToday from "../hooks/useToday"
