@@ -1,7 +1,5 @@
 import {IDBPDatabase, openDB} from "idb"
-import fetchLayers from "../api/fetchLayers"
-import fetchEntries from "../api/fetchEntries"
-import lifeData from "../lifeData"
+import {REMOTE_URL} from "../config"
 
 export let dbPromise: Promise<IDBPDatabase<unknown>>
 
@@ -26,36 +24,26 @@ export async function init() {
   })
 }
 
-export async function syncLayers() {
-  const layers = await fetchLayers()
-  const txLayers = (await dbPromise).transaction("layers", "readwrite")
+export async function sync(sinceMs: number | null) {
+  const {entries, layers} = await fetch(
+    `${REMOTE_URL}/sync${sinceMs ? `?sinceMs=${sinceMs}` : ""}`,
+  ).then((res) => res.json())
+
+  const tx = (await dbPromise).transaction(["entries", "layers"], "readwrite")
+
+  for (const entry of entries) {
+    tx.objectStore("entries").put(entry)
+  }
+
   for (const layer of layers) {
-    txLayers.store.put(layer)
+    tx.objectStore("layers").put(layer)
   }
+
+  await tx.done
+
+  console.log(`Synced ${layers.length} layers and ${entries.length} entries`)
 }
 
-export async function syncEntries() {
-  const entries = await fetchEntries(
-    null,
-    lifeData.birthDate,
-    lifeData.deathDate,
-  )
-
-  console.log(`Fetched ${entries.length} entries`)
-
-  try {
-    const tx = (await dbPromise).transaction("entries", "readwrite")
-    for (const entry of entries) {
-      console.log(`Putting entry ${entry.id}`)
-      tx.store.put(entry)
-    }
-  } catch (e) {
-    console.error("Error putting entries", e)
-  }
-}
-
-;(window as any).init = init
-;(window as any).syncLayers = syncLayers
-;(window as any).syncEntries = syncEntries
+;(window as any).sync = sync
 
 init()

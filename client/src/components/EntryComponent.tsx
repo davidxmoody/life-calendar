@@ -5,6 +5,7 @@ import {useMemo} from "react"
 import Markdown from "./Markdown"
 import {prettyFormatDateTime} from "../helpers/dates"
 import AudioPlayer from "./AudioPlayer"
+import {REMOTE_URL} from "../config"
 
 interface Props {
   entry: Entry
@@ -29,7 +30,7 @@ export default function EntryComponent(props: Props) {
         ) : null}
 
         {props.entry.type === "scanned" ? (
-          <Markdown source={`![](${props.entry.fileUrl})`} />
+          <Markdown source={`![](${REMOTE_URL + props.entry.fileUrl})`} />
         ) : null}
 
         {props.entry.type === "audio" ? (

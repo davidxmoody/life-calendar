@@ -1,9 +1,15 @@
 import * as express from "express"
-import {LISTEN_PORT, DIARY_DIR} from "./config"
 import {getLayers} from "./db/layers"
-import {getDaysForWeek, getDaysInRange} from "./date-helpers"
-import {getEntriesForDays, getEntriesModifiedSince} from "./db/entries"
-import {join} from "path"
+import {getEntries} from "./db/entries"
+
+const LISTEN_PORT = 3001
+const DIARY_DIR = process.env.DIARY_DIR
+
+if (!DIARY_DIR) {
+  throw new Error("DIARY_DIR env var is not set")
+}
+
+process.chdir(DIARY_DIR)
 
 const app = express()
 
@@ -12,39 +18,17 @@ app.use((_req, res, next) => {
   next()
 })
 
-app.use("/scanned", express.static(join(DIARY_DIR, "scanned")))
-app.use("/audio", express.static(join(DIARY_DIR, "audio")))
+app.use("/scanned", express.static("scanned"))
+app.use("/audio", express.static("audio"))
 
-app.get("/layers", async (_req, res) => {
-  const layers = getLayers()
-  res.send(layers)
-})
+app.get("/sync", async (req, res) => {
+  const sinceMsFromQs = parseInt(req.query.sinceMs as string, 10)
+  const sinceMs = isNaN(sinceMsFromQs) ? null : sinceMsFromQs
 
-app.get("/weeks/:date", async (req, res) => {
-  const days = getDaysForWeek(req.params.date)
-  const entries = getEntriesForDays(days)
-  res.send(entries)
-})
+  const layers = await getLayers(sinceMs)
+  const entries = await getEntries(sinceMs)
 
-app.get("/entries", async (req, res) => {
-  const from = req.query.from as string
-  const to = req.query.to as string
-
-  if (!from || !to) {
-    res.sendStatus(400)
-    return
-  }
-
-  const days = getDaysInRange(from, to)
-  const entries = getEntriesForDays(days)
-  res.send(entries)
-})
-
-app.get("/entries-since", async (req, res) => {
-  const since = parseInt(req.query.since as string, 10)
-
-  const entries = await getEntriesModifiedSince(since)
-  res.send(entries)
+  res.send({layers, entries})
 })
 
 app.listen(LISTEN_PORT, "localhost", () => {

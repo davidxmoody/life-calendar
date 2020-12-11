@@ -1,6 +1,6 @@
 export interface MarkdownEntry {
-  type: "markdown"
   id: string
+  type: "markdown"
   date: string
 
   time: string
@@ -8,8 +8,8 @@ export interface MarkdownEntry {
 }
 
 export interface ScannedEntry {
-  type: "scanned"
   id: string
+  type: "scanned"
   date: string
 
   sequenceNumber: number
@@ -17,8 +17,8 @@ export interface ScannedEntry {
 }
 
 export interface AudioEntry {
-  type: "audio"
   id: string
+  type: "audio"
   date: string
 
   time: string
@@ -27,4 +27,7 @@ export interface AudioEntry {
 
 export type Entry = MarkdownEntry | ScannedEntry | AudioEntry
 
-export type LayerData = Record<string, number | undefined>
+export interface Layer {
+  id: string
+  data: Record<string, number | undefined>
+}

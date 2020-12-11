@@ -1,14 +1,18 @@
-import {readFileSync} from "fs"
-import glob = require("glob")
-import {join} from "path"
-import {LayerData} from "src/types"
-import {DIARY_DIR} from "../config"
+import {map as promiseMap} from "bluebird"
+import {readFile as readFileCallback} from "fs"
+import {Layer} from "src/types"
+import {promisify} from "util"
+import globSince from "./globSince"
 
-export function getLayers(): Array<{id: string; data: LayerData}> {
-  const files = glob.sync("layers/*/*.json", {cwd: DIARY_DIR})
+const readFile = promisify(readFileCallback)
 
-  return files.map((file) => ({
-    id: file.replace(/^layers\//, "").replace(/\.json$/, ""),
-    data: JSON.parse(readFileSync(join(DIARY_DIR, file), "utf8")),
-  }))
+export async function getLayers(sinceMs: number | null): Promise<Array<Layer>> {
+  return promiseMap(
+    globSince("layers/*/*.json", sinceMs),
+    async (file) => ({
+      id: file.replace(/^layers\//, "").replace(/\.json$/, ""),
+      data: JSON.parse(await readFile(file, "utf8")),
+    }),
+    {concurrency: 100},
+  )
 }
