@@ -25,9 +25,15 @@ export async function init() {
   })
 }
 
-export async function sync(sinceMs: number | null) {
+export async function sync(fullSync?: boolean) {
+  const lastSyncTimestamp: number | null = fullSync
+    ? null
+    : (await (await dbPromise).get("config", "lastSyncTimestamp")) ?? null
+
   const {timestamp, entries, layers} = await fetch(
-    `${REMOTE_URL}/sync${sinceMs ? `?sinceMs=${sinceMs}` : ""}`,
+    `${REMOTE_URL}/sync${
+      lastSyncTimestamp ? `?sinceMs=${lastSyncTimestamp}` : ""
+    }`,
   ).then((res) => res.json())
 
   const tx = (await dbPromise).transaction(
@@ -50,19 +56,6 @@ export async function sync(sinceMs: number | null) {
   alert(`Synced ${layers.length} layers and ${entries.length} entries`)
 }
 
-export async function fullSync() {
-  return sync(null)
-}
-
-export async function incrementalSync() {
-  const lastSyncTimestamp: number | null =
-    (await (await dbPromise).get("config", "lastSyncTimestamp")) ?? null
-
-  return sync(lastSyncTimestamp)
-}
-
 ;(window as any).sync = sync
-;(window as any).fullSync = fullSync
-;(window as any).incrementalSync = incrementalSync
 
 init()

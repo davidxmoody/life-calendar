@@ -1,10 +1,10 @@
-import {useCallback} from "react"
+import {useCallback, useState} from "react"
 import {useRoute} from "wouter"
 import Calendar from "./Calendar"
 import WeekSummary from "./WeekSummary"
 import LayerList from "./LayerList"
 import {useStore} from "../store"
-import {incrementalSync} from "../idb"
+import {sync} from "../idb"
 
 export default function App() {
   const selectedLayerId = useStore(useCallback((s) => s.selectedLayerId, []))
@@ -14,6 +14,8 @@ export default function App() {
 
   const [, weekParams] = useRoute("/weeks/:weekStart")
   const selectedWeekStart = (weekParams && weekParams.weekStart) || undefined
+
+  const [syncBusy, setSyncBusy] = useState(false)
 
   return (
     <div>
@@ -37,7 +39,17 @@ export default function App() {
           overflow: "hidden",
         }}
       >
-        <button onClick={() => incrementalSync()}>Sync</button>
+        <button
+          onClick={async () => {
+            setSyncBusy(true)
+            sync()
+              .catch((e) => alert("Sync error: " + e.message))
+              .then(() => setSyncBusy(false))
+          }}
+          disabled={syncBusy}
+        >
+          Sync {syncBusy ? "busy" : ""}
+        </button>
 
         <LayerList
           activeLayerId={selectedLayerId}
