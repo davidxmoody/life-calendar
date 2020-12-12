@@ -1,28 +1,24 @@
-import {IDBPDatabase, openDB} from "idb"
+import {openDB} from "idb"
 
-export let dbPromise: Promise<IDBPDatabase<unknown>>
-
-export async function init() {
-  dbPromise = openDB("data", 1, {
-    upgrade(db, oldVersion) {
-      switch (oldVersion) {
-        case 0:
-          db.createObjectStore("entries", {keyPath: "id"})
-          db.createObjectStore("layers", {keyPath: "id"})
-          db.createObjectStore("config")
-      }
-    },
-    blocked() {
-      alert("Blocked")
-    },
-    blocking() {
-      alert("Blocking")
-    },
-    terminated() {
-      alert("Terminated")
-    },
-  })
-}
+export const dbPromise = openDB("data", 1, {
+  upgrade(db, oldVersion) {
+    switch (oldVersion) {
+      case 0:
+        db.createObjectStore("entries", {keyPath: "id"})
+        db.createObjectStore("layers", {keyPath: "id"})
+        db.createObjectStore("config")
+    }
+  },
+  blocked() {
+    alert("Blocked")
+  },
+  blocking() {
+    alert("Blocking")
+  },
+  terminated() {
+    alert("Terminated")
+  },
+})
 
 export async function sync(fullSync?: boolean) {
   const lastSyncTimestamp: number | null = fullSync
@@ -52,9 +48,5 @@ export async function sync(fullSync?: boolean) {
 
   await tx.done
 
-  alert(`Synced ${layers.length} layers and ${entries.length} entries`)
+  return {numLayers: layers.length, numEntries: entries.length}
 }
-
-;(window as any).sync = sync
-
-init()

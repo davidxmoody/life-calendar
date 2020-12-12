@@ -16,6 +16,7 @@ export default function App() {
   const selectedWeekStart = (weekParams && weekParams.weekStart) || undefined
 
   const [syncBusy, setSyncBusy] = useState(false)
+  const [syncMessage, setSyncMessage] = useState("")
 
   return (
     <div>
@@ -43,12 +44,32 @@ export default function App() {
           onClick={async () => {
             setSyncBusy(true)
             sync()
+              .then(({numLayers, numEntries}) =>
+                setSyncMessage(
+                  numLayers || numEntries
+                    ? [
+                        numLayers
+                          ? `${numLayers} ${
+                              numLayers === 1 ? "layer" : "layers"
+                            }`
+                          : "",
+                        numEntries
+                          ? `${numEntries} ${
+                              numEntries === 1 ? "entry" : "entries"
+                            }`
+                          : "",
+                      ]
+                        .filter((x) => x)
+                        .join(", ")
+                    : "nothing",
+                ),
+              )
               .catch((e) => alert("Sync error: " + e.message))
               .then(() => setSyncBusy(false))
           }}
           disabled={syncBusy}
         >
-          Sync {syncBusy ? "busy" : ""}
+          Sync{syncBusy ? " (busy)" : syncMessage ? ` (${syncMessage})` : ""}
         </button>
 
         <LayerList
