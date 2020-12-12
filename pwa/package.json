@@ -35,7 +35,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "deploy": "npm run build && surge build"
+    "deploy": "npm run build && surge --domain life-calendar-app.surge.sh build"
   },
   "eslintConfig": {
     "extends": [
