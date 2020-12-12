@@ -4,6 +4,7 @@ import Calendar from "./Calendar"
 import WeekSummary from "./WeekSummary"
 import LayerList from "./LayerList"
 import {useStore} from "../store"
+import {incrementalSync} from "../idb"
 
 export default function App() {
   const selectedLayerId = useStore(useCallback((s) => s.selectedLayerId, []))
@@ -36,6 +37,8 @@ export default function App() {
           overflow: "hidden",
         }}
       >
+        <button onClick={() => incrementalSync()}>Sync</button>
+
         <LayerList
           activeLayerId={selectedLayerId}
           setLayerId={setSelectedLayerId}

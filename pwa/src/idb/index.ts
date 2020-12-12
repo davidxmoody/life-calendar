@@ -47,7 +47,7 @@ export async function sync(sinceMs: number | null) {
 
   await tx.done
 
-  console.log(`Synced ${layers.length} layers and ${entries.length} entries`)
+  alert(`Synced ${layers.length} layers and ${entries.length} entries`)
 }
 
 export async function fullSync() {
