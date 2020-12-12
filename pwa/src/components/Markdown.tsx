@@ -1,5 +1,4 @@
-import * as React from "react"
-import {memo} from "react"
+import {memo, ReactNode} from "react"
 import ReactMarkdown from "react-markdown"
 import {Link} from "wouter"
 import {getWeekStart} from "../helpers/dates"
@@ -19,7 +18,7 @@ export default memo(function Markdown(props: Props) {
   )
 })
 
-function CustomLink(props: {href: string; children: React.ReactNode}) {
+function CustomLink(props: {href: string; children: ReactNode}) {
   if (props.href.startsWith("/")) {
     return <Link href={props.href}>{props.children}</Link>
   }

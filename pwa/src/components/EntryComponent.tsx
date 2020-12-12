@@ -1,4 +1,3 @@
-import * as React from "react"
 import {Entry} from "../types"
 import getWordcount from "../helpers/getWordcount"
 import {useMemo} from "react"
