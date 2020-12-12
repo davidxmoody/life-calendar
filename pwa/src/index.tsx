@@ -5,6 +5,10 @@ import App from "./components/App"
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration"
 import reportWebVitals from "./reportWebVitals"
 
+if (!localStorage.REMOTE_URL) {
+  localStorage.REMOTE_URL = prompt("Please enter remote URL")
+}
+
 ReactDOM.render(
   <StrictMode>
     <App />

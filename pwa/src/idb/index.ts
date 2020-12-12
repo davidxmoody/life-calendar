@@ -1,5 +1,4 @@
 import {IDBPDatabase, openDB} from "idb"
-import {REMOTE_URL} from "../config"
 
 export let dbPromise: Promise<IDBPDatabase<unknown>>
 
@@ -31,7 +30,7 @@ export async function sync(fullSync?: boolean) {
     : (await (await dbPromise).get("config", "lastSyncTimestamp")) ?? null
 
   const {timestamp, entries, layers} = await fetch(
-    `${REMOTE_URL}/sync${
+    `${localStorage.REMOTE_URL}/sync${
       lastSyncTimestamp ? `?sinceMs=${lastSyncTimestamp}` : ""
     }`,
   ).then((res) => res.json())
