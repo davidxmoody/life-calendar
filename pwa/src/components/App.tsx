@@ -1,10 +1,10 @@
-import {useCallback, useState} from "react"
+import {useCallback} from "react"
 import {useRoute} from "wouter"
 import Calendar from "./Calendar"
 import WeekSummary from "./WeekSummary"
 import LayerList from "./LayerList"
 import {useStore} from "../store"
-import {sync} from "../idb"
+import SyncButton from "./SyncButton"
 
 export default function App() {
   const selectedLayerId = useStore(useCallback((s) => s.selectedLayerId, []))
@@ -14,9 +14,6 @@ export default function App() {
 
   const [, weekParams] = useRoute("/weeks/:weekStart")
   const selectedWeekStart = (weekParams && weekParams.weekStart) || undefined
-
-  const [syncBusy, setSyncBusy] = useState(false)
-  const [syncMessage, setSyncMessage] = useState("")
 
   return (
     <div>
@@ -40,37 +37,7 @@ export default function App() {
           overflow: "hidden",
         }}
       >
-        <button
-          onClick={async () => {
-            setSyncBusy(true)
-            sync()
-              .then(({numLayers, numEntries}) =>
-                setSyncMessage(
-                  numLayers || numEntries
-                    ? [
-                        numLayers
-                          ? `${numLayers} ${
-                              numLayers === 1 ? "layer" : "layers"
-                            }`
-                          : "",
-                        numEntries
-                          ? `${numEntries} ${
-                              numEntries === 1 ? "entry" : "entries"
-                            }`
-                          : "",
-                      ]
-                        .filter((x) => x)
-                        .join(", ")
-                    : "nothing",
-                ),
-              )
-              .catch((e) => alert("Sync error: " + e.message))
-              .then(() => setSyncBusy(false))
-          }}
-          disabled={syncBusy}
-        >
-          Sync{syncBusy ? " (busy)" : syncMessage ? ` (${syncMessage})` : ""}
-        </button>
+        <SyncButton />
 
         <LayerList
           activeLayerId={selectedLayerId}

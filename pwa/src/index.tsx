@@ -4,6 +4,10 @@ import "./index.css"
 import App from "./components/App"
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration"
 import reportWebVitals from "./reportWebVitals"
+import "fontsource-roboto/300.css"
+import "fontsource-roboto/400.css"
+import "fontsource-roboto/500.css"
+import "fontsource-roboto/700.css"
 
 if (!localStorage.REMOTE_URL) {
   localStorage.REMOTE_URL = prompt("Please enter remote URL")
