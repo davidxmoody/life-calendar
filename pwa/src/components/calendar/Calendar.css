@@ -76,7 +76,6 @@
 @media (max-width: 581px) {
   .calendar {
     width: 522px;
-    padding: 6px;
   }
   .calendar__week {
     width: 7px;
@@ -85,10 +84,6 @@
   .calendar__year {
     height: 72px;
     width: 48px;
-    margin-left: 2px;
-    margin-top: 2px;
-    margin-right: 1px;
-    margin-bottom: 1px;
   }
 }
 
@@ -96,7 +91,6 @@
 @media (max-width: 521px) {
   .calendar {
     width: 462px;
-    padding: 6px;
   }
   .calendar__week {
     width: 6px;
@@ -105,10 +99,6 @@
   .calendar__year {
     height: 63px;
     width: 42px;
-    margin-left: 2px;
-    margin-top: 2px;
-    margin-right: 1px;
-    margin-bottom: 1px;
   }
 }
 
@@ -116,7 +106,6 @@
 @media (max-width: 461px) {
   .calendar {
     width: 402px;
-    padding: 6px;
   }
   .calendar__week {
     width: 5px;
@@ -125,17 +114,15 @@
   .calendar__year {
     height: 54px;
     width: 36px;
-    margin-left: 2px;
-    margin-top: 2px;
-    margin-right: 1px;
-    margin-bottom: 1px;
+  }
+  .calendar__week--selected {
+    border: 1px solid black;
   }
 }
 
 /* 10 * (6 * 6 + 3) + 2 * 6 - 1 */
 @media (max-width: 401px) {
   .calendar {
-    padding: 6px;
     width: 331px;
   }
   .calendar__week {
@@ -155,7 +142,6 @@
 /* 10 * (6 * 5 + 2) + 2 * 6 - 1 */
 @media (max-width: 331px) {
   .calendar {
-    padding: 6px;
     width: 272px;
   }
   .calendar__week {
@@ -165,9 +151,5 @@
   .calendar__year {
     height: 36px;
     width: 24px;
-    margin-left: 1px;
-    margin-top: 1px;
-    margin-right: 1px;
-    margin-bottom: 1px;
   }
 }
