@@ -1,4 +1,7 @@
 .calendar {
+  margin: auto;
+  overflow: hidden;
+  width: 728px;
   padding: 9px;
   user-select: none;
 }
@@ -34,8 +37,11 @@
   border: 2px solid black;
 }
 
-/* 10 * (6 * 11 + 5) + 2 * 9 - 1*/
+/* 10 * (6 * 11 + 5) + 2 * 9 - 1 */
 @media (max-width: 727px) {
+  .calendar {
+    width: 668px;
+  }
   .calendar__week {
     width: 9px;
     height: 9px;
@@ -49,6 +55,7 @@
 /* 10 * (6 * 10 + 5) + 2 * 9 - 1 */
 @media (max-width: 667px) {
   .calendar {
+    width: 582px;
     padding: 6px;
   }
   .calendar__week {
@@ -68,6 +75,7 @@
 /* 10 * (6 * 9 + 3) + 2 * 6 - 1 */
 @media (max-width: 581px) {
   .calendar {
+    width: 522px;
     padding: 6px;
   }
   .calendar__week {
@@ -87,6 +95,7 @@
 /* 10 * (6 * 8 + 3) + 2 * 6 - 1 */
 @media (max-width: 521px) {
   .calendar {
+    width: 462px;
     padding: 6px;
   }
   .calendar__week {
@@ -106,6 +115,7 @@
 /* 10 * (6 * 7 + 3) + 2 * 6 - 1 */
 @media (max-width: 461px) {
   .calendar {
+    width: 402px;
     padding: 6px;
   }
   .calendar__week {
@@ -126,8 +136,7 @@
 @media (max-width: 401px) {
   .calendar {
     padding: 6px;
-    min-width: 331px;
-    overflow: hidden;
+    width: 331px;
   }
   .calendar__week {
     width: 4px;
@@ -136,6 +145,26 @@
   .calendar__year {
     height: 45px;
     width: 30px;
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-right: 1px;
+    margin-bottom: 1px;
+  }
+}
+
+/* 10 * (6 * 5 + 2) + 2 * 6 - 1 */
+@media (max-width: 331px) {
+  .calendar {
+    padding: 6px;
+    width: 272px;
+  }
+  .calendar__week {
+    width: 3px;
+    height: 3px;
+  }
+  .calendar__year {
+    height: 36px;
+    width: 24px;
     margin-left: 1px;
     margin-top: 1px;
     margin-right: 1px;
