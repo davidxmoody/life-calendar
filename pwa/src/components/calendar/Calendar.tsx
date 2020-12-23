@@ -1,10 +1,11 @@
 import {useMemo, memo} from "react"
-import generateCalendarData from "../helpers/generateCalendarData"
-import lifeData from "../lifeData"
-import useToday from "../hooks/useToday"
+import generateCalendarData from "../../helpers/generateCalendarData"
+import lifeData from "../../lifeData"
+import useToday from "../../hooks/useToday"
 import Year from "./Year"
 import {useLocation} from "wouter"
-import useLayerData from "../hooks/useLayerData"
+import useLayerData from "../../hooks/useLayerData"
+import "./Calendar.css"
 
 interface Props {
   selectedWeekStart: string | undefined
@@ -21,13 +22,7 @@ export default memo(function Calendar(props: Props) {
 
   return (
     <div
-      style={{
-        flexGrow: 0,
-        flexShrink: 0,
-        padding: 3,
-        width: 710,
-        userSelect: "none",
-      }}
+      className="calendar"
       onClickCapture={(event) => {
         try {
           const target: HTMLElement = event.target as any
@@ -43,7 +38,7 @@ export default memo(function Calendar(props: Props) {
       }}
     >
       {decades.map((decade, i) => (
-        <div key={i} style={{display: "flex"}}>
+        <div key={i} className="calendar__decade">
           {decade.years.map((year, j) => (
             <Year
               key={j}

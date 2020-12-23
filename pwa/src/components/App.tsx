@@ -1,6 +1,6 @@
 import React, {useCallback, useState} from "react"
 import {useRoute} from "wouter"
-import Calendar from "./Calendar"
+import Calendar from "./calendar/Calendar"
 import WeekSummary from "./WeekSummary"
 import LayerList from "./LayerList"
 import {useStore} from "../store"
@@ -22,12 +22,10 @@ export default function App() {
     <div>
       <TabBar tabName={tabName} onChange={setTabName} />
       <div style={{display: tabName === "calendar" ? "block" : "none"}}>
-        <div style={{padding: 16}}>
-          <Calendar
-            layerId={selectedLayerId}
-            selectedWeekStart={selectedWeekStart}
-          />
-        </div>
+        <Calendar
+          layerId={selectedLayerId}
+          selectedWeekStart={selectedWeekStart}
+        />
       </div>
       <div style={{display: tabName === "entries" ? "block" : "none"}}>
         <div style={{padding: 16, maxWidth: 900}}>

@@ -1,0 +1,144 @@
+.calendar {
+  padding: 9px;
+  user-select: none;
+}
+
+.calendar__decade {
+  display: flex;
+}
+
+.calendar__year {
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: 3px;
+  margin-top: 3px;
+  margin-right: 2px;
+  margin-bottom: 2px;
+  width: 66px;
+  height: 99px;
+}
+
+.calendar__week {
+  display: block;
+  box-sizing: border-box;
+  margin-right: 1px;
+  margin-bottom: 1px;
+  width: 10px;
+  height: 10px;
+  transition: opacity 0.3s;
+  background-color: #d9d9d9;
+}
+
+.calendar__week--selected {
+  border: 2px solid black;
+}
+
+/* 10 * (6 * 11 + 5) + 2 * 9 - 1*/
+@media (max-width: 727px) {
+  .calendar__week {
+    width: 9px;
+    height: 9px;
+  }
+  .calendar__year {
+    height: 90px;
+    width: 60px;
+  }
+}
+
+/* 10 * (6 * 10 + 5) + 2 * 9 - 1 */
+@media (max-width: 667px) {
+  .calendar {
+    padding: 6px;
+  }
+  .calendar__week {
+    width: 8px;
+    height: 8px;
+  }
+  .calendar__year {
+    height: 81px;
+    width: 54px;
+    margin-left: 2px;
+    margin-top: 2px;
+    margin-right: 1px;
+    margin-bottom: 1px;
+  }
+}
+
+/* 10 * (6 * 9 + 3) + 2 * 6 - 1 */
+@media (max-width: 581px) {
+  .calendar {
+    padding: 6px;
+  }
+  .calendar__week {
+    width: 7px;
+    height: 7px;
+  }
+  .calendar__year {
+    height: 72px;
+    width: 48px;
+    margin-left: 2px;
+    margin-top: 2px;
+    margin-right: 1px;
+    margin-bottom: 1px;
+  }
+}
+
+/* 10 * (6 * 8 + 3) + 2 * 6 - 1 */
+@media (max-width: 521px) {
+  .calendar {
+    padding: 6px;
+  }
+  .calendar__week {
+    width: 6px;
+    height: 6px;
+  }
+  .calendar__year {
+    height: 63px;
+    width: 42px;
+    margin-left: 2px;
+    margin-top: 2px;
+    margin-right: 1px;
+    margin-bottom: 1px;
+  }
+}
+
+/* 10 * (6 * 7 + 3) + 2 * 6 - 1 */
+@media (max-width: 461px) {
+  .calendar {
+    padding: 6px;
+  }
+  .calendar__week {
+    width: 5px;
+    height: 5px;
+  }
+  .calendar__year {
+    height: 54px;
+    width: 36px;
+    margin-left: 2px;
+    margin-top: 2px;
+    margin-right: 1px;
+    margin-bottom: 1px;
+  }
+}
+
+/* 10 * (6 * 6 + 3) + 2 * 6 - 1 */
+@media (max-width: 401px) {
+  .calendar {
+    padding: 6px;
+    min-width: 331px;
+    overflow: hidden;
+  }
+  .calendar__week {
+    width: 4px;
+    height: 4px;
+  }
+  .calendar__year {
+    height: 45px;
+    width: 30px;
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-right: 1px;
+    margin-bottom: 1px;
+  }
+}
