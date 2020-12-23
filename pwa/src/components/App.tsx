@@ -1,10 +1,11 @@
-import {useCallback} from "react"
+import React, {useCallback, useState} from "react"
 import {useRoute} from "wouter"
 import Calendar from "./Calendar"
 import WeekSummary from "./WeekSummary"
 import LayerList from "./LayerList"
 import {useStore} from "../store"
 import SyncButton from "./SyncButton"
+import TabBar, {TabName} from "./TabBar"
 
 export default function App() {
   const selectedLayerId = useStore(useCallback((s) => s.selectedLayerId, []))
@@ -15,41 +16,39 @@ export default function App() {
   const [, weekParams] = useRoute("/weeks/:weekStart")
   const selectedWeekStart = (weekParams && weekParams.weekStart) || undefined
 
+  const [tabName, setTabName] = useState<TabName>("calendar")
+
   return (
     <div>
-      <div style={{position: "fixed", top: 18, left: 18}}>
-        <Calendar
-          layerId={selectedLayerId}
-          selectedWeekStart={selectedWeekStart}
-        />
+      <TabBar tabName={tabName} onChange={setTabName} />
+      <div style={{display: tabName === "calendar" ? "block" : "none"}}>
+        <div style={{padding: 16}}>
+          <Calendar
+            layerId={selectedLayerId}
+            selectedWeekStart={selectedWeekStart}
+          />
+        </div>
       </div>
+      <div style={{display: tabName === "entries" ? "block" : "none"}}>
+        <div style={{padding: 16, maxWidth: 900}}>
+          <SyncButton />
 
-      <div
-        style={{
-          boxSizing: "border-box",
-          paddingTop: 24,
-          paddingLeft: 760,
-          paddingRight: 24,
-          paddingBottom: 24,
-          width: "100%",
-          minWidth: 1200,
-          maxWidth: 1700,
-          overflow: "hidden",
-        }}
-      >
-        <SyncButton />
+          <LayerList
+            activeLayerId={selectedLayerId}
+            setLayerId={setSelectedLayerId}
+          />
 
-        <LayerList
-          activeLayerId={selectedLayerId}
-          setLayerId={setSelectedLayerId}
-        />
+          <div style={{height: 16}} />
 
-        <div style={{height: 16}} />
-
-        {selectedWeekStart ? (
-          <WeekSummary key={selectedWeekStart} weekStart={selectedWeekStart} />
-        ) : null}
+          {selectedWeekStart ? (
+            <WeekSummary
+              key={selectedWeekStart}
+              weekStart={selectedWeekStart}
+            />
+          ) : null}
+        </div>
       </div>
+      )
     </div>
   )
 }
