@@ -46,7 +46,6 @@ export default function App() {
           ) : null}
         </div>
       </div>
-      )
     </div>
   )
 }
