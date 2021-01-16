@@ -1,15 +1,23 @@
 import * as express from "express"
 import {getLayers} from "./db/layers"
 import {getEntries} from "./db/entries"
+import {readFileSync} from "fs"
+import * as https from "https"
 
-const LISTEN_PORT = 3001
-const DIARY_DIR = process.env.DIARY_DIR
-
-if (!DIARY_DIR) {
-  throw new Error("DIARY_DIR env var is not set")
+if (
+  !process.env.LOCAL_SSL_KEY ||
+  !process.env.LOCAL_SSL_CERT ||
+  !process.env.DIARY_DIR
+) {
+  throw new Error("Missing required environmental config")
 }
 
-process.chdir(DIARY_DIR)
+const LISTEN_PORT = 8051
+
+const SSL_KEY = readFileSync(process.env.LOCAL_SSL_KEY)
+const SSL_CERT = readFileSync(process.env.LOCAL_SSL_CERT)
+
+process.chdir(process.env.DIARY_DIR)
 
 const app = express()
 
@@ -33,6 +41,4 @@ app.get("/sync", async (req, res) => {
   res.send({timestamp, layers, entries})
 })
 
-app.listen(LISTEN_PORT, "localhost", () => {
-  console.log(`Listening on port ${LISTEN_PORT}`)
-})
+https.createServer({key: SSL_KEY, cert: SSL_CERT}, app).listen(LISTEN_PORT)

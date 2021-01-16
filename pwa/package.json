@@ -37,7 +37,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "deploy": "npm run build && surge --domain life-calendar-app.surge.sh build"
+    "serve": "npm run build && http-server build -p 8050 --ssl --cert \"$LOCAL_SSL_CERT\" --key \"$LOCAL_SSL_KEY\""
   },
   "eslintConfig": {
     "extends": [

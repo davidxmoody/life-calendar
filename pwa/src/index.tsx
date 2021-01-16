@@ -9,10 +9,6 @@ import "fontsource-roboto/400.css"
 import "fontsource-roboto/500.css"
 import "fontsource-roboto/700.css"
 
-if (!localStorage.REMOTE_URL) {
-  localStorage.REMOTE_URL = prompt("Please enter remote URL")
-}
-
 ReactDOM.render(
   <StrictMode>
     <App />

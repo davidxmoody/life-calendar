@@ -1,4 +1,5 @@
 import {openDB} from "idb"
+import {REMOTE_URL} from "../config"
 
 export const dbPromise = openDB("data", 1, {
   upgrade(db, oldVersion) {
@@ -26,7 +27,7 @@ export async function sync(fullSync?: boolean) {
     : (await (await dbPromise).get("config", "lastSyncTimestamp")) ?? null
 
   const {timestamp, entries, layers} = await fetch(
-    `${localStorage.REMOTE_URL}/sync${
+    `${REMOTE_URL}/sync${
       lastSyncTimestamp ? `?sinceMs=${lastSyncTimestamp}` : ""
     }`,
   ).then((res) => res.json())
