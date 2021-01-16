@@ -5,7 +5,7 @@ import {clientsClaim} from "workbox-core"
 import {ExpirationPlugin} from "workbox-expiration"
 import {precacheAndRoute, createHandlerBoundToURL} from "workbox-precaching"
 import {registerRoute} from "workbox-routing"
-import {CacheFirst} from "workbox-strategies"
+import {StaleWhileRevalidate} from "workbox-strategies"
 
 declare const self: ServiceWorkerGlobalScope
 
@@ -48,7 +48,7 @@ registerRoute(
 
 registerRoute(
   ({url}) => /^\/(scanned|audio)\//.test(url.pathname),
-  new CacheFirst({
+  new StaleWhileRevalidate({
     cacheName: "media",
     plugins: [new ExpirationPlugin({maxEntries: 200})],
   }),
