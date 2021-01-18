@@ -21,7 +21,12 @@ export default function App() {
   return (
     <div>
       <TabBar tabName={tabName} onChange={setTabName} />
-      <div style={{display: tabName === "calendar" ? "block" : "none"}}>
+      <div
+        style={{
+          height: tabName === "calendar" ? "auto" : 0,
+          overflow: "hidden",
+        }}
+      >
         <Calendar
           layerId={selectedLayerId}
           selectedWeekStart={selectedWeekStart}
@@ -29,7 +34,9 @@ export default function App() {
       </div>
       <div style={{display: tabName === "entries" ? "block" : "none"}}>
         <div style={{padding: 16, maxWidth: 900}}>
-          <SyncButton />
+          <div style={{display: "flex", alignItems: "center"}}>
+            <SyncButton /> <small style={{marginLeft: 8}}>v1</small>
+          </div>
 
           <LayerList
             activeLayerId={selectedLayerId}
