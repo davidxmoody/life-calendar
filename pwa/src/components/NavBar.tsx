@@ -8,7 +8,17 @@ export default function NavBar() {
   const setSelectedTab = useStore(useCallback((s) => s.setSelectedTab, []))
 
   return (
-    <Box padding={4} display="flex" backgroundColor="blue.400">
+    <Box
+      display="flex"
+      alignItems="center"
+      p={4}
+      backgroundColor="blue.400"
+      position="fixed"
+      top={0}
+      left={0}
+      right={0}
+      zIndex="sticky"
+    >
       <Button
         colorScheme="blue"
         mr={4}

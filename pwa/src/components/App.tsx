@@ -6,6 +6,7 @@ import LayerList from "./LayerList"
 import {useStore} from "../store"
 import SyncButton from "./SyncButton"
 import NavBar from "./NavBar"
+import {Box} from "@chakra-ui/react"
 
 export default function App() {
   const selectedLayerId = useStore(useCallback((s) => s.selectedLayerId, []))
@@ -20,6 +21,9 @@ export default function App() {
   return (
     <div>
       <NavBar />
+
+      <Box height="72px" />
+
       <div
         style={{
           height: selectedTab === "calendar" ? "auto" : 0,
