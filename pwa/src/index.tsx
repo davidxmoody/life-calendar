@@ -1,13 +1,14 @@
-import {StrictMode} from "react"
+import React, {StrictMode} from "react"
 import ReactDOM from "react-dom"
 import "./index.css"
 import App from "./components/App"
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration"
 import reportWebVitals from "./reportWebVitals"
-import {ChakraProvider} from "@chakra-ui/react"
+import {ChakraProvider, ColorModeScript} from "@chakra-ui/react"
 
 ReactDOM.render(
   <StrictMode>
+    <ColorModeScript />
     <ChakraProvider>
       <App />
     </ChakraProvider>
