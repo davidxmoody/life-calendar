@@ -4,7 +4,6 @@ import Calendar from "./calendar/Calendar"
 import WeekSummary from "./WeekSummary"
 import LayerList from "./LayerList"
 import {useStore} from "../store"
-import SyncButton from "./SyncButton"
 import NavBar from "./NavBar"
 import {Box} from "@chakra-ui/react"
 
@@ -33,10 +32,6 @@ export default function App() {
 
       <Box display={selectedTab === "entries" ? "block" : "none"}>
         <Box p={[0, 4]} maxW="900px">
-          <Box display="flex" alignItems="center">
-            <SyncButton /> <small style={{marginLeft: 8}}>v1</small>
-          </Box>
-
           <Box mb={4}>
             <LayerList
               activeLayerId={selectedLayerId}

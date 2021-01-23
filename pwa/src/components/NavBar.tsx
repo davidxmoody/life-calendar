@@ -1,7 +1,8 @@
 import React, {useCallback} from "react"
-import {Box, Button, IconButton, useColorMode} from "@chakra-ui/react"
+import {Box, IconButton, Spacer, useColorMode} from "@chakra-ui/react"
 import {useStore} from "../store"
-import {MoonIcon, SunIcon} from "@chakra-ui/icons"
+import {CalendarIcon, MoonIcon, StarIcon, SunIcon} from "@chakra-ui/icons"
+import SyncButton from "./SyncButton"
 
 export default function NavBar() {
   const {colorMode, toggleColorMode} = useColorMode()
@@ -19,24 +20,30 @@ export default function NavBar() {
       right={0}
       zIndex="sticky"
     >
-      <Button
-        colorScheme="blue"
+      <IconButton
         mr={4}
+        colorScheme="blue"
+        aria-label="Calendar"
+        icon={<CalendarIcon />}
         onClick={() => setSelectedTab("calendar")}
-      >
-        Calendar
-      </Button>
-      <Button colorScheme="blue" onClick={() => setSelectedTab("entries")}>
-        Entries
-      </Button>
-
-      <Box flex={1} />
+      />
       <IconButton
         colorScheme="blue"
-        aria-label="Toggle mode"
+        aria-label="Entries"
+        icon={<StarIcon />}
+        onClick={() => setSelectedTab("entries")}
+      />
+
+      <Spacer />
+
+      <IconButton
+        mr={4}
+        colorScheme="blue"
+        aria-label="Toggle dark mode"
         icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
         onClick={toggleColorMode}
       />
+      <SyncButton />
     </Box>
   )
 }

@@ -1,41 +1,35 @@
-import {Button} from "@chakra-ui/react"
+import {CheckCircleIcon, RepeatIcon, WarningTwoIcon} from "@chakra-ui/icons"
+import {IconButton} from "@chakra-ui/react"
 import React, {useState} from "react"
 import {sync} from "../idb"
 
+type SyncState = "initial" | "loading" | "success" | "error"
+
 export default function SyncButton() {
-  const [syncBusy, setSyncBusy] = useState(false)
-  const [syncMessage, setSyncMessage] = useState("")
+  const [syncState, setSyncState] = useState<SyncState>("initial")
 
   function startSync() {
-    setSyncBusy(true)
+    setSyncState("loading")
     sync()
-      .then((x) => setSyncMessage(formatSyncMessage(x)))
-      .catch(() => setSyncMessage("error"))
-      .then(() => setSyncBusy(false))
+      .then(() => setSyncState("success"))
+      .catch(() => setSyncState("error"))
   }
 
   return (
-    <Button isLoading={syncBusy} colorScheme="teal" onClick={startSync}>
-      Sync{syncMessage ? ` (${syncMessage})` : ""}
-    </Button>
+    <IconButton
+      isLoading={syncState === "loading"}
+      colorScheme="blue"
+      aria-label="Sync"
+      icon={
+        syncState === "error" ? (
+          <WarningTwoIcon />
+        ) : syncState === "success" ? (
+          <CheckCircleIcon />
+        ) : (
+          <RepeatIcon />
+        )
+      }
+      onClick={startSync}
+    />
   )
-}
-
-function formatSyncMessage({
-  numLayers,
-  numEntries,
-}: {
-  numLayers: number
-  numEntries: number
-}): string {
-  return numLayers || numEntries
-    ? [
-        numLayers ? `${numLayers} ${numLayers === 1 ? "layer" : "layers"}` : "",
-        numEntries
-          ? `${numEntries} ${numEntries === 1 ? "entry" : "entries"}`
-          : "",
-      ]
-        .filter((x) => x)
-        .join(", ")
-    : "nothing"
 }
