@@ -1,57 +1,37 @@
-/* eslint-disable no-useless-escape */
-
+import React, {useCallback} from "react"
+import {ChevronDownIcon} from "@chakra-ui/icons"
+import {Button, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react"
 import useLayerIds from "../hooks/useLayerIds"
+import {useStore} from "../store"
 
-interface Props {
-  activeLayerId: string | null
-  setLayerId: (layerId: string) => void
-}
+export default function LayerList() {
+  const selectedLayerId = useStore(useCallback((s) => s.selectedLayerId, []))
+  const setSelectedLayerId = useStore(
+    useCallback((s) => s.setSelectedLayerId, []),
+  )
 
-export default function LayerList(props: Props) {
   const layerIds = useLayerIds()
 
   if (!layerIds) {
     return null
   }
 
-  const groups: Record<string, string[] | undefined> = {}
-  layerIds.forEach((layerId) => {
-    const groupName = layerId.includes("/") ? layerId.replace(/\/.*/, "") : ""
-    const name = layerId.replace(/[^\/]*\//, "")
-    groups[groupName] = [...(groups[groupName] ?? []), name]
-  })
-
   return (
-    <div style={{textOverflow: "wrap"}}>
-      {Object.keys(groups).map((groupName) => (
-        <p key={groupName}>
-          {`${groupName}: `}
-          {groups[groupName]!.map((name) => (
-            <span
-              key={name}
-              onClick={() =>
-                props.setLayerId(groupName ? `${groupName}/${name}` : name)
-              }
-              style={{
-                display: "inline-block",
-                marginRight: 8,
-                fontStyle:
-                  props.activeLayerId === `${groupName}/${name}`
-                    ? "italic"
-                    : "normal",
-                textDecoration:
-                  props.activeLayerId === `${groupName}/${name}`
-                    ? "none"
-                    : "underline",
-                color: "blue",
-                cursor: "pointer",
-              }}
-            >
-              {name}
-            </span>
-          ))}
-        </p>
-      ))}
-    </div>
+    <Menu>
+      <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+        {selectedLayerId}
+      </MenuButton>
+      <MenuList>
+        {layerIds.map((layerId) => (
+          <MenuItem
+            key={layerId}
+            onClick={() => setSelectedLayerId(layerId)}
+            fontWeight={layerId === selectedLayerId ? "bold" : "normal"}
+          >
+            {layerId}
+          </MenuItem>
+        ))}
+      </MenuList>
+    </Menu>
   )
 }

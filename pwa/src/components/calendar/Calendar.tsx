@@ -1,21 +1,22 @@
-import {useMemo, memo} from "react"
+import {useMemo, memo, useCallback} from "react"
 import generateCalendarData from "../../helpers/generateCalendarData"
 import lifeData from "../../lifeData"
 import useToday from "../../hooks/useToday"
 import Year from "./Year"
 import {useLocation} from "wouter"
 import useLayerData from "../../hooks/useLayerData"
+import {useStore} from "../../store"
 import "./Calendar.css"
 
 interface Props {
   selectedWeekStart: string | undefined
-  layerId: string | null
 }
 
 export default memo(function Calendar(props: Props) {
+  const layerId = useStore(useCallback((s) => s.selectedLayerId, []))
   const [, setLocation] = useLocation()
   const today = useToday()
-  const layerData = useLayerData(props.layerId)
+  const layerData = useLayerData(layerId)
   const {decades} = useMemo(() => generateCalendarData({today, ...lifeData}), [
     today,
   ])
