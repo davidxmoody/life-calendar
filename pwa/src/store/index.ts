@@ -6,6 +6,9 @@ type State = {
 }
 
 export const useStore = create<State>((set) => ({
-  selectedLayerId: null,
-  setSelectedLayerId: (x) => set({selectedLayerId: x}),
+  selectedLayerId: localStorage.selectedLayerId || null,
+  setSelectedLayerId: (selectedLayerId) => {
+    localStorage.selectedLayerId = selectedLayerId
+    set({selectedLayerId})
+  },
 }))

@@ -22,9 +22,11 @@ export const dbPromise = openDB("data", 1, {
 })
 
 export async function sync(fullSync?: boolean) {
+  const db = await dbPromise
+
   const lastSyncTimestamp: number | null = fullSync
     ? null
-    : (await (await dbPromise).get("config", "lastSyncTimestamp")) ?? null
+    : (await db.get("config", "lastSyncTimestamp")) ?? null
 
   const {timestamp, entries, layers} = await fetch(
     `${REMOTE_URL}/sync${
@@ -32,10 +34,7 @@ export async function sync(fullSync?: boolean) {
     }`,
   ).then((res) => res.json())
 
-  const tx = (await dbPromise).transaction(
-    ["entries", "layers", "config"],
-    "readwrite",
-  )
+  const tx = db.transaction(["entries", "layers", "config"], "readwrite")
 
   for (const entry of entries) {
     tx.objectStore("entries").put(entry)
