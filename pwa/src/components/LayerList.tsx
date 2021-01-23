@@ -17,7 +17,7 @@ export default function LayerList() {
   }
 
   return (
-    <Menu>
+    <Menu autoSelect={false}>
       <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
         {selectedLayerId}
       </MenuButton>
