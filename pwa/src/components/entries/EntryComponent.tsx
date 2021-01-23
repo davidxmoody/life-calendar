@@ -1,10 +1,10 @@
-import {Entry} from "../types"
-import getWordcount from "../helpers/getWordcount"
+import {Entry} from "../../types"
+import getWordcount from "../../helpers/getWordcount"
 import {useMemo} from "react"
 import Markdown from "./Markdown"
-import {prettyFormatDateTime} from "../helpers/dates"
+import {prettyFormatDateTime} from "../../helpers/dates"
 import AudioPlayer from "./AudioPlayer"
-import {REMOTE_URL} from "../config"
+import {REMOTE_URL} from "../../config"
 
 interface Props {
   entry: Entry

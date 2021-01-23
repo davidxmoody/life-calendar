@@ -1,4 +1,4 @@
-import {REMOTE_URL} from "../config"
+import {REMOTE_URL} from "../../config"
 
 interface Props {
   sourceUrl: string

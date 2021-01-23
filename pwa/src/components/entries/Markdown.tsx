@@ -1,7 +1,7 @@
 import {memo, ReactNode} from "react"
 import ReactMarkdown from "react-markdown"
 import {Link} from "wouter"
-import {getWeekStart} from "../helpers/dates"
+import {getWeekStart} from "../../helpers/dates"
 import "./Markdown.css"
 
 interface Props {

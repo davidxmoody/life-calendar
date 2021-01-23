@@ -1,4 +1,4 @@
-import EntryComponent from "./EntryComponent"
+import EntryComponent from "./entries/EntryComponent"
 import {Link} from "wouter"
 import {getPrevWeekStart, getNextWeekStart} from "../helpers/dates"
 import {memo} from "react"
