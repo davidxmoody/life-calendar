@@ -4,10 +4,13 @@ import "./index.css"
 import App from "./components/App"
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration"
 import reportWebVitals from "./reportWebVitals"
+import {ChakraProvider} from "@chakra-ui/react"
 
 ReactDOM.render(
   <StrictMode>
-    <App />
+    <ChakraProvider>
+      <App />
+    </ChakraProvider>
   </StrictMode>,
   document.getElementById("root"),
 )
