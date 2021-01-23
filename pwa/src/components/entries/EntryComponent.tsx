@@ -1,10 +1,11 @@
 import {Entry} from "../../types"
 import getWordcount from "../../helpers/getWordcount"
-import {useMemo} from "react"
+import React, {useMemo} from "react"
 import Markdown from "./Markdown"
 import {prettyFormatDateTime} from "../../helpers/dates"
 import AudioPlayer from "./AudioPlayer"
 import {REMOTE_URL} from "../../config"
+import {Box, Heading} from "@chakra-ui/react"
 
 interface Props {
   entry: Entry
@@ -19,23 +20,29 @@ export default function EntryComponent(props: Props) {
   const wordcountString = wordcount > 20 ? `(${wordcount} words)` : ""
 
   return (
-    <div style={{border: "1px solid lightgrey", padding: 16, marginBottom: 16}}>
-      <h4>
+    <Box border={["none", "1px solid lightgrey"]} p={[0, 4]}>
+      <Heading size="md" mb={2} px={2}>
         {prettyFormatDateTime(props.entry)} {wordcountString}
-      </h4>
-      <div>
+      </Heading>
+      <Box>
         {props.entry.type === "markdown" ? (
-          <Markdown source={props.entry.content} />
+          <Box mx={2}>
+            <Markdown source={props.entry.content} />
+          </Box>
         ) : null}
 
         {props.entry.type === "scanned" ? (
-          <Markdown source={`![](${REMOTE_URL + props.entry.fileUrl})`} />
+          <Box>
+            <Markdown source={`![](${REMOTE_URL + props.entry.fileUrl})`} />
+          </Box>
         ) : null}
 
         {props.entry.type === "audio" ? (
-          <AudioPlayer sourceUrl={props.entry.fileUrl} />
+          <Box mx={2}>
+            <AudioPlayer sourceUrl={props.entry.fileUrl} />
+          </Box>
         ) : null}
-      </div>
-    </div>
+      </Box>
+    </Box>
   )
 }

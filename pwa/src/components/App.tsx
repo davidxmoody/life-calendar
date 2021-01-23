@@ -19,34 +19,30 @@ export default function App() {
   const selectedWeekStart = (weekParams && weekParams.weekStart) || undefined
 
   return (
-    <div>
+    <>
       <NavBar />
 
       <Box height="72px" />
 
-      <div
-        style={{
-          height: selectedTab === "calendar" ? "auto" : 0,
-          overflow: "hidden",
-        }}
-      >
+      <Box height={selectedTab === "calendar" ? "auto" : 0} overflow="hidden">
         <Calendar
           layerId={selectedLayerId}
           selectedWeekStart={selectedWeekStart}
         />
-      </div>
-      <div style={{display: selectedTab === "entries" ? "block" : "none"}}>
-        <div style={{padding: 16, maxWidth: 900}}>
-          <div style={{display: "flex", alignItems: "center"}}>
+      </Box>
+
+      <Box display={selectedTab === "entries" ? "block" : "none"}>
+        <Box p={[0, 4]} maxW="900px">
+          <Box display="flex" alignItems="center">
             <SyncButton /> <small style={{marginLeft: 8}}>v1</small>
-          </div>
+          </Box>
 
-          <LayerList
-            activeLayerId={selectedLayerId}
-            setLayerId={setSelectedLayerId}
-          />
-
-          <div style={{height: 16}} />
+          <Box mb={4}>
+            <LayerList
+              activeLayerId={selectedLayerId}
+              setLayerId={setSelectedLayerId}
+            />
+          </Box>
 
           {selectedWeekStart ? (
             <WeekSummary
@@ -54,8 +50,8 @@ export default function App() {
               weekStart={selectedWeekStart}
             />
           ) : null}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </>
   )
 }
