@@ -21,7 +21,9 @@ export const dbPromise = openDB("data", 1, {
   },
 })
 
-export async function sync(fullSync?: boolean) {
+export async function sync(
+  fullSync?: boolean,
+): Promise<{numLayers: number; numEntries: number}> {
   const db = await dbPromise
 
   const lastSyncTimestamp: number | null = fullSync
