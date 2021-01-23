@@ -1,5 +1,3 @@
-import {AppBar, Tab, Tabs} from "@material-ui/core"
-
 export type TabName = "calendar" | "entries"
 
 interface Props {
@@ -9,14 +7,14 @@ interface Props {
 
 export default function TabBar(props: Props) {
   return (
-    <AppBar position="static">
-      <Tabs
-        value={props.tabName}
-        onChange={(_, newTabName) => props.onChange(newTabName)}
+    <div style={{padding: 16, backgroundColor: "lightblue"}}>
+      <button
+        style={{marginRight: 16}}
+        onClick={() => props.onChange("calendar")}
       >
-        <Tab value="calendar" label="Calendar" />
-        <Tab value="entries" label="Entries" />
-      </Tabs>
-    </AppBar>
+        Calendar
+      </button>
+      <button onClick={() => props.onChange("entries")}>Entries</button>
+    </div>
   )
 }
