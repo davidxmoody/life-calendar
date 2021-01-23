@@ -1,8 +1,13 @@
 import create from "zustand"
 
+export type TabName = "calendar" | "entries"
+
 type State = {
   selectedLayerId: string | null
   setSelectedLayerId: (selectedLayerId: string | null) => void
+
+  selectedTab: TabName
+  setSelectedTab: (selectedTab: TabName) => void
 }
 
 export const useStore = create<State>((set) => ({
@@ -10,5 +15,11 @@ export const useStore = create<State>((set) => ({
   setSelectedLayerId: (selectedLayerId) => {
     localStorage.selectedLayerId = selectedLayerId
     set({selectedLayerId})
+  },
+
+  selectedTab: localStorage.selectedTab || "calendar",
+  setSelectedTab: (selectedTab) => {
+    localStorage.selectedTab = selectedTab
+    set({selectedTab})
   },
 }))

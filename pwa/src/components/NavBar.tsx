@@ -1,24 +1,20 @@
+import {useCallback} from "react"
 import {useColorMode} from "@chakra-ui/react"
+import {useStore} from "../store"
 
-export type TabName = "calendar" | "entries"
-
-interface Props {
-  tabName: TabName
-  onChange: (newTabName: TabName) => void
-}
-
-export default function TabBar(props: Props) {
+export default function NavBar() {
   const {colorMode, toggleColorMode} = useColorMode()
+  const setSelectedTab = useStore(useCallback((s) => s.setSelectedTab, []))
 
   return (
     <div style={{padding: 16, backgroundColor: "lightblue", display: "flex"}}>
       <button
         style={{marginRight: 16}}
-        onClick={() => props.onChange("calendar")}
+        onClick={() => setSelectedTab("calendar")}
       >
         Calendar
       </button>
-      <button onClick={() => props.onChange("entries")}>Entries</button>
+      <button onClick={() => setSelectedTab("entries")}>Entries</button>
 
       <div style={{flex: 1}} />
       <button onClick={toggleColorMode}>

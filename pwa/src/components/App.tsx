@@ -1,29 +1,28 @@
-import React, {useCallback, useState} from "react"
+import React, {useCallback} from "react"
 import {useRoute} from "wouter"
 import Calendar from "./calendar/Calendar"
 import WeekSummary from "./WeekSummary"
 import LayerList from "./LayerList"
 import {useStore} from "../store"
 import SyncButton from "./SyncButton"
-import TabBar, {TabName} from "./TabBar"
+import NavBar from "./NavBar"
 
 export default function App() {
   const selectedLayerId = useStore(useCallback((s) => s.selectedLayerId, []))
   const setSelectedLayerId = useStore(
     useCallback((s) => s.setSelectedLayerId, []),
   )
+  const selectedTab = useStore(useCallback((s) => s.selectedTab, []))
 
   const [, weekParams] = useRoute("/weeks/:weekStart")
   const selectedWeekStart = (weekParams && weekParams.weekStart) || undefined
 
-  const [tabName, setTabName] = useState<TabName>("calendar")
-
   return (
     <div>
-      <TabBar tabName={tabName} onChange={setTabName} />
+      <NavBar />
       <div
         style={{
-          height: tabName === "calendar" ? "auto" : 0,
+          height: selectedTab === "calendar" ? "auto" : 0,
           overflow: "hidden",
         }}
       >
@@ -32,7 +31,7 @@ export default function App() {
           selectedWeekStart={selectedWeekStart}
         />
       </div>
-      <div style={{display: tabName === "entries" ? "block" : "none"}}>
+      <div style={{display: selectedTab === "entries" ? "block" : "none"}}>
         <div style={{padding: 16, maxWidth: 900}}>
           <div style={{display: "flex", alignItems: "center"}}>
             <SyncButton /> <small style={{marginLeft: 8}}>v1</small>
