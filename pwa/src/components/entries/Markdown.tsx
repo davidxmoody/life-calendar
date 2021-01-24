@@ -30,7 +30,9 @@ const renderers: Record<string, ElementType> = {
       {...props}
     />
   ),
-  image: (props: any) => <img style={{maxWidth: "100%"}} {...props} />,
+  image: (props: any) => (
+    <img style={{maxWidth: "100%"}} src={props.src} alt={props.alt} />
+  ),
   list: (props: any) => (
     <Box mb={paraMarginBottom} pl={5}>
       {React.createElement(ReactMarkdown.renderers.list as any, props)}
