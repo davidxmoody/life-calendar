@@ -4,6 +4,7 @@
   width: 728px;
   padding: 9px;
   user-select: none;
+  box-sizing: content-box;
 }
 
 .calendar__decade {
