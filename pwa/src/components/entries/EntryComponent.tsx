@@ -21,12 +21,12 @@ export default function EntryComponent(props: Props) {
 
   return (
     <Box border={["none", "1px solid lightgrey"]} p={[0, 4]}>
-      <Heading size="md" mb={2} px={2}>
+      <Heading size="md" mb={2} px={4}>
         {prettyFormatDateTime(props.entry)} {wordcountString}
       </Heading>
       <Box>
         {props.entry.type === "markdown" ? (
-          <Box mx={2}>
+          <Box mx={4}>
             <Markdown source={props.entry.content} />
           </Box>
         ) : null}
@@ -38,7 +38,7 @@ export default function EntryComponent(props: Props) {
         ) : null}
 
         {props.entry.type === "audio" ? (
-          <Box mx={2}>
+          <Box mx={4}>
             <AudioPlayer sourceUrl={props.entry.fileUrl} />
           </Box>
         ) : null}
