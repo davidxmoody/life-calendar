@@ -3,11 +3,16 @@ import generateCalendarData from "../../helpers/generateCalendarData"
 import lifeData from "../../lifeData"
 import useToday from "../../hooks/useToday"
 import drawCalendar from "./drawCalendar"
+import useLayerData from "../../hooks/useLayerData"
 
-export default memo(function Calendar() {
+interface Props {
+  layerId: string | null
+}
+
+export default memo(function Calendar(props: Props) {
   // const [, setLocation] = useLocation()
   const today = useToday()
-  // const layerData = useLayerData(props.layerId)
+  const layerData = useLayerData(props.layerId)
   const data = useMemo(() => generateCalendarData({today, ...lifeData}), [
     today,
   ])
@@ -25,10 +30,16 @@ export default memo(function Calendar() {
     if (ref.current) {
       const ctx = ref.current.getContext("2d")
       if (ctx) {
-        drawCalendar({ctx, data, width: drawWidth, height: drawHeight})
+        drawCalendar({
+          ctx,
+          data,
+          layerData,
+          width: drawWidth,
+          height: drawHeight,
+        })
       }
     }
-  }, [ref.current, data, drawWidth, drawHeight])
+  }, [ref.current, data, drawWidth, drawHeight, layerData])
 
   return (
     <canvas

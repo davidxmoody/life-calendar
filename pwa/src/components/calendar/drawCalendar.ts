@@ -1,13 +1,16 @@
 import {CalendarData} from "../../helpers/generateCalendarData"
+import {LayerData} from "../../types"
 
 export default function ({
   ctx,
   data,
+  layerData,
   width,
   height,
 }: {
   ctx: CanvasRenderingContext2D
   data: CalendarData
+  layerData: {earliest: string; latest: string; layer: LayerData} | undefined
   width: number
   height: number
 }) {
@@ -48,8 +51,20 @@ export default function ({
         const weekX = weekIndex % numWeeksPerRow
         const weekY = Math.floor(weekIndex / numWeeksPerRow)
 
-        ctx.fillStyle =
-          "era" in week ? week.era.color : `rgba(200, 200, 200, ${week.prob})`
+        if (layerData) {
+          ctx.fillStyle =
+            "era" in week
+              ? week.era.color.replace(
+                  /rgb\((.*)\)/,
+                  `rgba($1, ${
+                    0.3 + 0.7 * (layerData.layer[week.startDate] ?? 0)
+                  })`,
+                )
+              : `rgba(200, 200, 200, ${week.prob})`
+        } else {
+          ctx.fillStyle =
+            "era" in week ? week.era.color : `rgba(200, 200, 200, ${week.prob})`
+        }
         ctx.fillRect(
           weekX * weekWidthIncMargin,
           weekY * weekWidthIncMargin,

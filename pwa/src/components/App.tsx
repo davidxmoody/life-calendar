@@ -8,6 +8,7 @@ import {Box} from "@chakra-ui/react"
 import CanvasCalendar from "./calendar/CanvasCalendar"
 
 export default function App() {
+  const selectedLayerId = useStore(useCallback((s) => s.selectedLayerId, []))
   const selectedTab = useStore(useCallback((s) => s.selectedTab, []))
 
   const [, weekParams] = useRoute("/weeks/:weekStart")
@@ -24,7 +25,7 @@ export default function App() {
           <LayerList />
         </Box>
 
-        <CanvasCalendar />
+        <CanvasCalendar layerId={selectedLayerId} />
       </Box>
 
       <Box display={selectedTab === "entries" ? "block" : "none"}>
