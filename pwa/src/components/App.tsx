@@ -1,11 +1,11 @@
 import React, {useCallback} from "react"
 import {useRoute} from "wouter"
-import Calendar from "./calendar/Calendar"
 import WeekSummary from "./WeekSummary"
 import LayerList from "./LayerList"
 import {useStore} from "../store"
 import NavBar from "./NavBar"
 import {Box} from "@chakra-ui/react"
+import CanvasCalendar from "./calendar/CanvasCalendar"
 
 export default function App() {
   const selectedTab = useStore(useCallback((s) => s.selectedTab, []))
@@ -24,7 +24,7 @@ export default function App() {
           <LayerList />
         </Box>
 
-        <Calendar selectedWeekStart={selectedWeekStart} />
+        <CanvasCalendar />
       </Box>
 
       <Box display={selectedTab === "entries" ? "block" : "none"}>

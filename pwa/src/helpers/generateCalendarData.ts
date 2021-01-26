@@ -15,7 +15,7 @@ interface FutureWeek {
 
 export type Week = PastWeek | FutureWeek
 
-interface CalendarData {
+export interface CalendarData {
   decades: Array<{years: Array<{weeks: Array<Week>}>}>
 }
 
