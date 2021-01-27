@@ -60,10 +60,12 @@ export default function ({
                     0.3 + 0.7 * (layerData.layer[week.startDate] ?? 0)
                   })`,
                 )
-              : `rgba(200, 200, 200, ${week.prob})`
+              : `rgba(128, 128, 128, ${week.prob / 3})`
         } else {
           ctx.fillStyle =
-            "era" in week ? week.era.color : `rgba(200, 200, 200, ${week.prob})`
+            "era" in week
+              ? week.era.color
+              : `rgba(128, 128, 128, ${week.prob / 3})`
         }
         ctx.fillRect(
           weekX * weekWidthIncMargin,
