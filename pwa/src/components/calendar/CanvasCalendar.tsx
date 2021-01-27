@@ -19,7 +19,7 @@ export default memo(function Calendar(props: Props) {
 
   const ref = useRef<HTMLCanvasElement>(null)
 
-  const canvasWidth = window.innerWidth
+  const canvasWidth = Math.min(700, window.innerWidth)
   const canvasHeight = canvasWidth * 1.6
 
   const pixelRatio = window.devicePixelRatio || 1

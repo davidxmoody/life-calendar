@@ -25,7 +25,9 @@ export default function App() {
           <LayerList />
         </Box>
 
-        <CanvasCalendar layerId={selectedLayerId} />
+        <Box display="flex" justifyContent="center">
+          <CanvasCalendar layerId={selectedLayerId} />
+        </Box>
       </Box>
 
       <Box display={selectedTab === "entries" ? "block" : "none"}>
