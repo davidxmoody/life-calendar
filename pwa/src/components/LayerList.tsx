@@ -16,17 +16,26 @@ export default function LayerList() {
     return null
   }
 
+  const emptyLayerId = "NONE"
+  const layerIdsWithEmpty = [emptyLayerId, ...layerIds]
+
   return (
     <Menu autoSelect={false}>
       <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-        {selectedLayerId}
+        {selectedLayerId ?? emptyLayerId}
       </MenuButton>
       <MenuList>
-        {layerIds.map((layerId) => (
+        {layerIdsWithEmpty.map((layerId) => (
           <MenuItem
             key={layerId}
-            onClick={() => setSelectedLayerId(layerId)}
-            fontWeight={layerId === selectedLayerId ? "bold" : "normal"}
+            onClick={() =>
+              setSelectedLayerId(layerId === emptyLayerId ? null : layerId)
+            }
+            fontWeight={
+              (layerId === emptyLayerId ? null : layerId) === selectedLayerId
+                ? "bold"
+                : "normal"
+            }
           >
             {layerId}
           </MenuItem>

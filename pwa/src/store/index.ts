@@ -13,7 +13,11 @@ type State = {
 export const useStore = create<State>((set) => ({
   selectedLayerId: localStorage.selectedLayerId || null,
   setSelectedLayerId: (selectedLayerId) => {
-    localStorage.selectedLayerId = selectedLayerId
+    if (selectedLayerId) {
+      localStorage.selectedLayerId = selectedLayerId
+    } else {
+      localStorage.removeItem("selectedLayerId")
+    }
     set({selectedLayerId})
   },
 
