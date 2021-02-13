@@ -99,8 +99,8 @@ export default memo(function Calendar(props: Props) {
               context.fillRect(
                 dimensions.calendarOffset.x + rowIndex * dimensions.year.w,
                 dimensions.calendarOffset.y + colIndex * dimensions.year.h,
-                dimensions.year.w - dimensions.year.margin,
-                dimensions.year.h - dimensions.year.margin,
+                dimensions.year.w - dimensions.year.padding,
+                dimensions.year.h - dimensions.year.padding,
               )
 
               context.fillStyle = "rgba(200, 0, 0, 0.02)"
@@ -111,8 +111,8 @@ export default memo(function Calendar(props: Props) {
                 dimensions.calendarOffset.y +
                   colIndex * dimensions.year.h +
                   weekColIndex * dimensions.week.h,
-                dimensions.week.w - dimensions.week.margin,
-                dimensions.week.h - dimensions.week.margin,
+                dimensions.week.w - dimensions.week.padding,
+                dimensions.week.h - dimensions.week.padding,
               )
               context.restore()
             }

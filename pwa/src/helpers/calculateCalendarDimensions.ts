@@ -14,12 +14,12 @@ export interface CalendarDimensions {
   year: {
     w: number
     h: number
-    margin: number
+    padding: number
   }
   week: {
     w: number
     h: number
-    margin: number
+    padding: number
   }
 }
 
@@ -33,36 +33,36 @@ export default function ({
   const yearsPerRow = 10
   const weeksPerYearRow = 6
   const maxWidthPerYear = Math.floor(width / 10)
-  const weekMargin = 2
+  const weekPadding = 2
 
-  const yearMargin = Math.ceil(maxWidthPerYear / 20)
+  const yearPadding = Math.ceil(maxWidthPerYear / 20)
   const numWeeksPerRow = 6
 
-  const weekWidthIncMargin = Math.floor(
-    (maxWidthPerYear - yearMargin * 2) / numWeeksPerRow,
+  const weekWidthIncPadding = Math.floor(
+    (maxWidthPerYear - yearPadding * 2) / numWeeksPerRow,
   )
-  const yearWidthIncMargin =
-    weekWidthIncMargin * numWeeksPerRow + 2 * yearMargin
+  const yearWidthIncPadding =
+    weekWidthIncPadding * numWeeksPerRow + 2 * yearPadding
 
-  const yearHeightIncMargin =
-    weekWidthIncMargin * Math.ceil(53 / numWeeksPerRow) + 2 * yearMargin
+  const yearHeightIncPadding =
+    weekWidthIncPadding * Math.ceil(53 / numWeeksPerRow) + 2 * yearPadding
 
-  const calendarWidth = yearWidthIncMargin * 10
-  const leftOffset = Math.floor((width - calendarWidth + yearMargin) / 2)
+  const calendarWidth = yearWidthIncPadding * 10
+  const leftOffset = Math.floor((width - calendarWidth + yearPadding) / 2)
 
   return {
     canvasSize: {width, height},
     layout: {yearsPerRow, weeksPerYearRow},
     calendarOffset: {x: leftOffset, y: 0},
     year: {
-      w: yearWidthIncMargin,
-      h: yearHeightIncMargin,
-      margin: yearMargin,
+      w: yearWidthIncPadding,
+      h: yearHeightIncPadding,
+      padding: yearPadding,
     },
     week: {
-      w: weekWidthIncMargin,
-      h: weekWidthIncMargin,
-      margin: weekMargin,
+      w: weekWidthIncPadding,
+      h: weekWidthIncPadding,
+      padding: weekPadding,
     },
   }
 }

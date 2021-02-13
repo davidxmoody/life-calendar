@@ -51,8 +51,8 @@ export default function ({
         ctx.fillRect(
           weekX * dimensions.week.w,
           weekY * dimensions.week.h,
-          dimensions.week.w - dimensions.week.margin,
-          dimensions.week.h - dimensions.week.margin,
+          dimensions.week.w - dimensions.week.padding,
+          dimensions.week.h - dimensions.week.padding,
         )
       })
 
