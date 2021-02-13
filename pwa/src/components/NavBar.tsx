@@ -1,13 +1,24 @@
 import React, {useCallback} from "react"
-import {Box, IconButton, useColorMode} from "@chakra-ui/react"
+import {Box, IconButton, Spacer, useColorMode} from "@chakra-ui/react"
 import {useStore} from "../store"
-import {CalendarIcon, MoonIcon, SunIcon} from "@chakra-ui/icons"
+import {
+  CalendarIcon,
+  MoonIcon,
+  SunIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+} from "@chakra-ui/icons"
 import SyncButton from "./SyncButton"
 import LayerList from "./LayerList"
+import {Link, useRoute} from "wouter"
+import {getPrevWeekStart} from "../helpers/dates"
 
 export default function NavBar() {
   const {colorMode, toggleColorMode} = useColorMode()
+  const selectedTab = useStore(useCallback((s) => s.selectedTab, []))
   const setSelectedTab = useStore(useCallback((s) => s.setSelectedTab, []))
+  const [, weekParams] = useRoute("/weeks/:weekStart")
+  const selectedWeekStart = weekParams?.weekStart || undefined
 
   return (
     <Box
@@ -21,15 +32,36 @@ export default function NavBar() {
       right={0}
       zIndex="sticky"
     >
-      <IconButton
-        mr={4}
-        colorScheme="blue"
-        aria-label="Calendar"
-        icon={<CalendarIcon />}
-        onClick={() => setSelectedTab("calendar")}
-      />
-
-      <LayerList />
+      {selectedTab === "entries" ? (
+        <>
+          <IconButton
+            mr={4}
+            colorScheme="blue"
+            aria-label="Calendar"
+            icon={<CalendarIcon />}
+            onClick={() => setSelectedTab("calendar")}
+          />
+          <IconButton
+            as={Link}
+            href={`/weeks/${getPrevWeekStart(selectedWeekStart ?? "")}`}
+            mr={4}
+            colorScheme="blue"
+            aria-label="Previous week"
+            icon={<ArrowLeftIcon />}
+          />
+          <IconButton
+            as={Link}
+            href={`/weeks/${getPrevWeekStart(selectedWeekStart ?? "")}`}
+            mr={4}
+            colorScheme="blue"
+            aria-label="Next week"
+            icon={<ArrowRightIcon />}
+          />
+          <Spacer />
+        </>
+      ) : (
+        <LayerList />
+      )}
 
       <IconButton
         mx={4}
