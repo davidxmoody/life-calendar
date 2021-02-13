@@ -36,23 +36,18 @@ export default function ({
   const weeksPerYearCol = Math.ceil(maxWeeksInYear / weeksPerYearRow)
 
   const maxWidthPerYear = Math.floor(width / 10)
-  const weekPadding = 1
 
   const yearPadding = Math.ceil(maxWidthPerYear / 20)
-  const numWeeksPerRow = 6
 
-  const weekWidthIncPadding = Math.floor(
-    (maxWidthPerYear - yearPadding * 2) / numWeeksPerRow,
+  const weekSize = Math.floor(
+    (maxWidthPerYear - 2 * yearPadding) / weeksPerYearRow,
   )
-  const yearWidthIncPadding =
-    weekWidthIncPadding * numWeeksPerRow + 2 * yearPadding
 
-  const yearHeightIncPadding =
-    weekWidthIncPadding * Math.ceil(maxWeeksInYear / numWeeksPerRow) +
-    2 * yearPadding
+  const yearWidth = weekSize * weeksPerYearRow + 2 * yearPadding
+  const yearHeight = weekSize * weeksPerYearCol + 2 * yearPadding
 
-  const calendarWidth = yearWidthIncPadding * 10
-  const leftOffset = Math.floor((width - calendarWidth + yearPadding) / 2)
+  const calendarWidth = yearWidth * 10
+  const leftOffset = Math.floor((width - calendarWidth) / 2)
 
   return {
     layout: {
@@ -67,14 +62,14 @@ export default function ({
       py: 0,
     },
     year: {
-      w: yearWidthIncPadding,
-      h: yearHeightIncPadding,
+      w: yearWidth,
+      h: yearHeight,
       p: yearPadding,
     },
     week: {
-      w: weekWidthIncPadding,
-      h: weekWidthIncPadding,
-      p: weekPadding,
+      w: weekSize,
+      h: weekSize,
+      p: 1,
     },
   }
 }
