@@ -11,14 +11,14 @@ export interface CalendarDimensions {
     x: number
     y: number
   }
-  yearDimensions: {
-    widthIncMargin: number
-    heightIncMargin: number
+  year: {
+    w: number
+    h: number
     margin: number
   }
-  weekDimensions: {
-    widthIncMargin: number
-    heightIncMargin: number
+  week: {
+    w: number
+    h: number
     margin: number
   }
 }
@@ -54,14 +54,14 @@ export default function ({
     canvasSize: {width, height},
     layout: {yearsPerRow, weeksPerYearRow},
     calendarOffset: {x: leftOffset, y: 0},
-    yearDimensions: {
-      widthIncMargin: yearWidthIncMargin,
-      heightIncMargin: yearHeightIncMargin,
+    year: {
+      w: yearWidthIncMargin,
+      h: yearHeightIncMargin,
       margin: yearMargin,
     },
-    weekDimensions: {
-      widthIncMargin: weekWidthIncMargin,
-      heightIncMargin: weekWidthIncMargin,
+    week: {
+      w: weekWidthIncMargin,
+      h: weekWidthIncMargin,
       margin: weekMargin,
     },
   }

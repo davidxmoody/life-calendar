@@ -22,11 +22,11 @@ export default function ({
 
   data.decades.forEach((decade, decadeIndex) => {
     ctx.save()
-    ctx.translate(0, dimensions.yearDimensions.heightIncMargin * decadeIndex)
+    ctx.translate(0, dimensions.year.h * decadeIndex)
 
     decade.years.forEach((year, yearIndex) => {
       ctx.save()
-      ctx.translate(dimensions.yearDimensions.widthIncMargin * yearIndex, 0)
+      ctx.translate(dimensions.year.w * yearIndex, 0)
 
       year.weeks.forEach((week, weekIndex) => {
         const weekX = weekIndex % dimensions.layout.weeksPerYearRow
@@ -49,12 +49,10 @@ export default function ({
               : `rgba(128, 128, 128, ${week.prob / 3})`
         }
         ctx.fillRect(
-          weekX * dimensions.weekDimensions.widthIncMargin,
-          weekY * dimensions.weekDimensions.heightIncMargin,
-          dimensions.weekDimensions.widthIncMargin -
-            dimensions.weekDimensions.margin,
-          dimensions.weekDimensions.heightIncMargin -
-            dimensions.weekDimensions.margin,
+          weekX * dimensions.week.w,
+          weekY * dimensions.week.h,
+          dimensions.week.w - dimensions.week.margin,
+          dimensions.week.h - dimensions.week.margin,
         )
       })
 

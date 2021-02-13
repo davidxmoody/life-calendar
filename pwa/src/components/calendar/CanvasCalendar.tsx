@@ -80,44 +80,39 @@ export default memo(function Calendar(props: Props) {
             const x = (e.pageX - window.pageXOffset - rect.left) * pixelRatio
             const y = (e.pageY - window.pageYOffset - rect.top) * pixelRatio
 
-            const {
-              rowIndex,
-              colIndex,
-              weekRowIndex,
-              weekColIndex,
-            } = getWeekUnderCursor({
+            const result = getWeekUnderCursor({
               x,
               y,
               dimensions,
             })
+
+            if (!result) {
+              return
+            }
+
+            const {rowIndex, colIndex, weekRowIndex, weekColIndex} = result
 
             const context = ref.current?.getContext("2d")
             if (context) {
               context.save()
               context.fillStyle = "rgba(0, 200, 0, 0.005)"
               context.fillRect(
-                dimensions.calendarOffset.x +
-                  rowIndex * dimensions.yearDimensions.widthIncMargin,
-                dimensions.calendarOffset.y +
-                  colIndex * dimensions.yearDimensions.heightIncMargin,
-                dimensions.yearDimensions.widthIncMargin -
-                  dimensions.yearDimensions.margin,
-                dimensions.yearDimensions.heightIncMargin -
-                  dimensions.yearDimensions.margin,
+                dimensions.calendarOffset.x + rowIndex * dimensions.year.w,
+                dimensions.calendarOffset.y + colIndex * dimensions.year.h,
+                dimensions.year.w - dimensions.year.margin,
+                dimensions.year.h - dimensions.year.margin,
               )
 
               context.fillStyle = "rgba(200, 0, 0, 0.02)"
               context.fillRect(
                 dimensions.calendarOffset.x +
-                  rowIndex * dimensions.yearDimensions.widthIncMargin +
-                  weekRowIndex * dimensions.weekDimensions.widthIncMargin,
+                  rowIndex * dimensions.year.w +
+                  weekRowIndex * dimensions.week.w,
                 dimensions.calendarOffset.y +
-                  colIndex * dimensions.yearDimensions.heightIncMargin +
-                  weekColIndex * dimensions.weekDimensions.heightIncMargin,
-                dimensions.weekDimensions.widthIncMargin -
-                  dimensions.weekDimensions.margin,
-                dimensions.weekDimensions.heightIncMargin -
-                  dimensions.weekDimensions.margin,
+                  colIndex * dimensions.year.h +
+                  weekColIndex * dimensions.week.h,
+                dimensions.week.w - dimensions.week.margin,
+                dimensions.week.h - dimensions.week.margin,
               )
               context.restore()
             }
