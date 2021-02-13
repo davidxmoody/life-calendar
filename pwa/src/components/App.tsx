@@ -5,7 +5,7 @@ import LayerList from "./LayerList"
 import {useStore} from "../store"
 import NavBar from "./NavBar"
 import {Box} from "@chakra-ui/react"
-import CanvasCalendar from "./calendar/CanvasCalendar"
+import Calendar from "./calendar/Calendar"
 
 export default function App() {
   const selectedLayerId = useStore(useCallback((s) => s.selectedLayerId, []))
@@ -25,7 +25,7 @@ export default function App() {
           <LayerList />
         </Box>
 
-        <CanvasCalendar layerId={selectedLayerId} />
+        <Calendar layerId={selectedLayerId} />
       </Box>
 
       <Box display={selectedTab === "entries" ? "block" : "none"}>
