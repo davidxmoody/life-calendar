@@ -1,13 +1,16 @@
+import {CalendarDimensions} from "../../helpers/calculateCalendarDimensions"
 import {CalendarData} from "../../helpers/generateCalendarData"
 import {LayerData} from "../../types"
 
 export default function ({
+  dimensions,
   ctx,
   data,
   layerData,
   width,
   height,
 }: {
+  dimensions: CalendarDimensions
   ctx: CanvasRenderingContext2D
   data: CalendarData
   layerData: {earliest: string; latest: string; layer: LayerData} | undefined
@@ -19,37 +22,19 @@ export default function ({
 
   ctx.clearRect(0, 0, width, height)
 
-  const maxWidthPerYear = Math.floor(width / 10)
-
-  const yearMargin = Math.ceil(maxWidthPerYear / 20)
-  const numWeeksPerRow = 6
-
-  const weekWidthIncMargin = Math.floor(
-    (maxWidthPerYear - yearMargin * 2) / numWeeksPerRow,
-  )
-  const yearWidthIncMargin =
-    weekWidthIncMargin * numWeeksPerRow + 2 * yearMargin
-
-  const yearHeightIncMargin =
-    weekWidthIncMargin * Math.ceil(53 / numWeeksPerRow) + 2 * yearMargin
-
-  const calendarWidth = yearWidthIncMargin * 10
-  const leftOffset = Math.floor((width - calendarWidth + yearMargin) / 2)
-  ctx.translate(leftOffset, 0)
-
-  const weekMargin = 2
+  ctx.translate(dimensions.calendarOffset.x, dimensions.calendarOffset.y)
 
   data.decades.forEach((decade, decadeIndex) => {
     ctx.save()
-    ctx.translate(0, yearHeightIncMargin * decadeIndex)
+    ctx.translate(0, dimensions.yearDimensions.heightIncMargin * decadeIndex)
 
     decade.years.forEach((year, yearIndex) => {
       ctx.save()
-      ctx.translate(yearWidthIncMargin * yearIndex, 0)
+      ctx.translate(dimensions.yearDimensions.widthIncMargin * yearIndex, 0)
 
       year.weeks.forEach((week, weekIndex) => {
-        const weekX = weekIndex % numWeeksPerRow
-        const weekY = Math.floor(weekIndex / numWeeksPerRow)
+        const weekX = weekIndex % dimensions.layout.weeksPerYearRow
+        const weekY = Math.floor(weekIndex / dimensions.layout.weeksPerYearRow)
 
         if (layerData) {
           ctx.fillStyle =
@@ -68,10 +53,12 @@ export default function ({
               : `rgba(128, 128, 128, ${week.prob / 3})`
         }
         ctx.fillRect(
-          weekX * weekWidthIncMargin,
-          weekY * weekWidthIncMargin,
-          weekWidthIncMargin - weekMargin,
-          weekWidthIncMargin - weekMargin,
+          weekX * dimensions.weekDimensions.widthIncMargin,
+          weekY * dimensions.weekDimensions.heightIncMargin,
+          dimensions.weekDimensions.widthIncMargin -
+            dimensions.weekDimensions.margin,
+          dimensions.weekDimensions.heightIncMargin -
+            dimensions.weekDimensions.margin,
         )
       })
 

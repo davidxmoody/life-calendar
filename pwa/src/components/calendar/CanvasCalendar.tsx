@@ -5,6 +5,7 @@ import useToday from "../../hooks/useToday"
 import drawCalendar from "./drawCalendar"
 import useLayerData from "../../hooks/useLayerData"
 import {Box} from "@chakra-ui/react"
+import calculateCalendarDimensions from "../../helpers/calculateCalendarDimensions"
 
 interface Props {
   layerId: string | null
@@ -34,7 +35,9 @@ export default memo(function Calendar(props: Props) {
     if (ref.current) {
       const ctx = ref.current.getContext("2d")
       if (ctx) {
+        const dimensions = calculateCalendarDimensions({width: drawWidth})
         drawCalendar({
+          dimensions,
           ctx,
           data,
           layerData,
