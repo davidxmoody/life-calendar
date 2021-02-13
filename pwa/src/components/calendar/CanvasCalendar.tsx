@@ -13,7 +13,6 @@ interface Props {
 }
 
 export default memo(function Calendar(props: Props) {
-  // const [, setLocation] = useLocation()
   const [selectedYearIndex, setSelectedYearIndex] = useState<number | null>(
     null,
   )
@@ -32,7 +31,7 @@ export default memo(function Calendar(props: Props) {
   const drawWidth = pixelRatio * canvasWidth
   const drawHeight = pixelRatio * canvasHeight
 
-  const dimensions = calculateCalendarDimensions({
+  const d = calculateCalendarDimensions({
     width: drawWidth,
     height: drawHeight,
   })
@@ -41,15 +40,10 @@ export default memo(function Calendar(props: Props) {
     if (ref.current) {
       const ctx = ref.current.getContext("2d")
       if (ctx) {
-        drawCalendar({
-          dimensions,
-          ctx,
-          data,
-          layerData,
-        })
+        drawCalendar({d, ctx, data, layerData})
       }
     }
-  }, [ref.current, data, layerData, dimensions])
+  }, [ref.current, data, layerData, d])
 
   const transform = selectedYearIndex != null ? `scale(6)` : "scale(1)"
   const transformOrigin =
@@ -80,11 +74,7 @@ export default memo(function Calendar(props: Props) {
             const x = (e.pageX - window.pageXOffset - rect.left) * pixelRatio
             const y = (e.pageY - window.pageYOffset - rect.top) * pixelRatio
 
-            const result = getWeekUnderCursor({
-              x,
-              y,
-              dimensions,
-            })
+            const result = getWeekUnderCursor({x, y, d})
 
             if (!result) {
               return
@@ -97,22 +87,22 @@ export default memo(function Calendar(props: Props) {
               context.save()
               context.fillStyle = "rgba(0, 200, 0, 0.005)"
               context.fillRect(
-                dimensions.calendarOffset.x + rowIndex * dimensions.year.w,
-                dimensions.calendarOffset.y + colIndex * dimensions.year.h,
-                dimensions.year.w - dimensions.year.padding,
-                dimensions.year.h - dimensions.year.padding,
+                d.calendarOffset.x + rowIndex * d.year.w,
+                d.calendarOffset.y + colIndex * d.year.h,
+                d.year.w - d.year.padding,
+                d.year.h - d.year.padding,
               )
 
               context.fillStyle = "rgba(200, 0, 0, 0.02)"
               context.fillRect(
-                dimensions.calendarOffset.x +
-                  rowIndex * dimensions.year.w +
-                  weekRowIndex * dimensions.week.w,
-                dimensions.calendarOffset.y +
-                  colIndex * dimensions.year.h +
-                  weekColIndex * dimensions.week.h,
-                dimensions.week.w - dimensions.week.padding,
-                dimensions.week.h - dimensions.week.padding,
+                d.calendarOffset.x +
+                  rowIndex * d.year.w +
+                  weekRowIndex * d.week.w,
+                d.calendarOffset.y +
+                  colIndex * d.year.h +
+                  weekColIndex * d.week.h,
+                d.week.w - d.week.padding,
+                d.week.h - d.week.padding,
               )
               context.restore()
             }

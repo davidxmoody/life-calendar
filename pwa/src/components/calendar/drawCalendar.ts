@@ -3,12 +3,12 @@ import {CalendarData} from "../../helpers/generateCalendarData"
 import {LayerData} from "../../types"
 
 export default function ({
-  dimensions,
+  d,
   ctx,
   data,
   layerData,
 }: {
-  dimensions: CalendarDimensions
+  d: CalendarDimensions
   ctx: CanvasRenderingContext2D
   data: CalendarData
   layerData: {earliest: string; latest: string; layer: LayerData} | undefined
@@ -16,21 +16,21 @@ export default function ({
   console.time("drawCalendar")
   ctx.save()
 
-  ctx.clearRect(0, 0, dimensions.canvasSize.width, dimensions.canvasSize.height)
+  ctx.clearRect(0, 0, d.canvasSize.width, d.canvasSize.height)
 
-  ctx.translate(dimensions.calendarOffset.x, dimensions.calendarOffset.y)
+  ctx.translate(d.calendarOffset.x, d.calendarOffset.y)
 
   data.decades.forEach((decade, decadeIndex) => {
     ctx.save()
-    ctx.translate(0, dimensions.year.h * decadeIndex)
+    ctx.translate(0, d.year.h * decadeIndex)
 
     decade.years.forEach((year, yearIndex) => {
       ctx.save()
-      ctx.translate(dimensions.year.w * yearIndex, 0)
+      ctx.translate(d.year.w * yearIndex, 0)
 
       year.weeks.forEach((week, weekIndex) => {
-        const weekX = weekIndex % dimensions.layout.weeksPerYearRow
-        const weekY = Math.floor(weekIndex / dimensions.layout.weeksPerYearRow)
+        const weekX = weekIndex % d.layout.weeksPerYearRow
+        const weekY = Math.floor(weekIndex / d.layout.weeksPerYearRow)
 
         if (layerData) {
           ctx.fillStyle =
@@ -49,10 +49,10 @@ export default function ({
               : `rgba(128, 128, 128, ${week.prob / 3})`
         }
         ctx.fillRect(
-          weekX * dimensions.week.w,
-          weekY * dimensions.week.h,
-          dimensions.week.w - dimensions.week.padding,
-          dimensions.week.h - dimensions.week.padding,
+          weekX * d.week.w,
+          weekY * d.week.h,
+          d.week.w - d.week.padding,
+          d.week.h - d.week.padding,
         )
       })
 

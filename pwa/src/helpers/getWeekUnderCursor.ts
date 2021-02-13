@@ -3,11 +3,11 @@ import {CalendarDimensions} from "./calculateCalendarDimensions"
 export default function ({
   x,
   y,
-  dimensions: d,
+  d,
 }: {
   x: number
   y: number
-  dimensions: CalendarDimensions
+  d: CalendarDimensions
 }) {
   const xInCal = x - d.calendarOffset.x
   const yInCal = y - d.calendarOffset.y
