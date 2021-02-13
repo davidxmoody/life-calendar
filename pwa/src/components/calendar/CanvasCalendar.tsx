@@ -1,4 +1,11 @@
-import React, {useMemo, memo, useRef, useEffect, useState} from "react"
+import React, {
+  useMemo,
+  memo,
+  useRef,
+  useEffect,
+  useState,
+  useCallback,
+} from "react"
 import generateCalendarData from "../../helpers/generateCalendarData"
 import lifeData from "../../lifeData"
 import useToday from "../../hooks/useToday"
@@ -7,15 +14,20 @@ import useLayerData from "../../hooks/useLayerData"
 import {Box} from "@chakra-ui/react"
 import calculateCalendarDimensions from "../../helpers/calculateCalendarDimensions"
 import getWeekUnderCursor from "../../helpers/getWeekUnderCursor"
+import {useLocation} from "wouter"
+import {useStore} from "../../store"
 
 interface Props {
   layerId: string | null
 }
 
 export default memo(function Calendar(props: Props) {
-  const [selectedYearIndex, setSelectedYearIndex] = useState<number | null>(
-    null,
-  )
+  const [, setLocation] = useLocation()
+  const setSelectedTab = useStore(useCallback((s) => s.setSelectedTab, []))
+
+  const [selectedYearIndex /*, setSelectedYearIndex*/] = useState<
+    number | null
+  >(null)
   const today = useToday()
   const layerData = useLayerData(props.layerId)
   const data = useMemo(() => generateCalendarData({today, ...lifeData}), [
@@ -68,61 +80,68 @@ export default memo(function Calendar(props: Props) {
           ref={ref}
           width={drawWidth}
           height={drawHeight}
-          style={{width: canvasWidth, height: canvasHeight}}
-          onMouseMove={(e) => {
-            const rect = e.currentTarget.getBoundingClientRect()
-            const x = (e.pageX - window.pageXOffset - rect.left) * pixelRatio
-            const y = (e.pageY - window.pageYOffset - rect.top) * pixelRatio
+          style={{width: canvasWidth, height: canvasHeight, cursor: "pointer"}}
+          // onMouseMove={(e) => {
+          //   const rect = e.currentTarget.getBoundingClientRect()
+          //   const x = (e.pageX - window.pageXOffset - rect.left) * pixelRatio
+          //   const y = (e.pageY - window.pageYOffset - rect.top) * pixelRatio
 
-            const result = getWeekUnderCursor({x, y, d})
+          //   const result = getWeekUnderCursor({x, y, d})
 
-            if (!result) {
-              return
-            }
+          //   if (!result) {
+          //     return
+          //   }
 
-            const {rowIndex, colIndex, weekRowIndex, weekColIndex} = result
+          //   const {rowIndex, colIndex, weekRowIndex, weekColIndex} = result
 
-            const context = ref.current?.getContext("2d")
-            if (context) {
-              context.save()
-              // context.fillStyle = "rgba(0, 200, 0, 0.002)"
-              // context.fillRect(
-              //   d.canvas.px + rowIndex * d.year.w,
-              //   d.canvas.py + colIndex * d.year.h,
-              //   d.year.w,
-              //   d.year.h,
-              // )
-
-              context.fillStyle = "rgba(200, 0, 0, 0.02)"
-              context.fillRect(
-                d.canvas.px +
-                  rowIndex * d.year.w +
-                  d.year.p +
-                  weekRowIndex * d.week.w,
-                d.canvas.py +
-                  colIndex * d.year.h +
-                  d.year.p +
-                  weekColIndex * d.week.h,
-                d.week.w,
-                d.week.h,
-              )
-              context.restore()
-            }
-          }}
+          //   const context = ref.current?.getContext("2d")
+          //   if (context) {
+          //     context.save()
+          //     context.fillStyle = "rgba(200, 0, 0, 0.02)"
+          //     context.fillRect(
+          //       d.canvas.px +
+          //         rowIndex * d.year.w +
+          //         d.year.p +
+          //         weekRowIndex * d.week.w,
+          //       d.canvas.py +
+          //         colIndex * d.year.h +
+          //         d.year.p +
+          //         weekColIndex * d.week.h,
+          //       d.week.w,
+          //       d.week.h,
+          //     )
+          //     context.restore()
+          //   }
+          // }}
           onClick={(e) => {
-            if (selectedYearIndex != null) {
-              setSelectedYearIndex(null)
-              return
-            }
+            // if (selectedYearIndex != null) {
+            //   setSelectedYearIndex(null)
+            //   return
+            // }
 
             const rect = e.currentTarget.getBoundingClientRect()
             const x = (e.pageX - window.pageXOffset - rect.left) * pixelRatio
             const y = (e.pageY - window.pageYOffset - rect.top) * pixelRatio
 
-            const yearIndex =
-              10 * Math.floor((y / drawHeight) * 10) +
-              Math.floor((x / drawWidth) * 10)
-            setSelectedYearIndex(yearIndex)
+            const c = getWeekUnderCursor({x, y, d})
+
+            if (!c) {
+              return
+            }
+
+            // setSelectedYearIndex(underCursor.yearIndex)
+
+            const week =
+              data.decades[c.colIndex].years[c.rowIndex].weeks[
+                c.weekColIndex * d.layout.weeksPerYearRow + c.weekRowIndex
+              ]
+
+            if (!week) {
+              return
+            }
+
+            setLocation(`/weeks/${week.startDate}`)
+            setSelectedTab("entries")
           }}
         />
       </Box>
