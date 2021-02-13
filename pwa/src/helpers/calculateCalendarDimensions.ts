@@ -59,7 +59,7 @@ export default function ({
       w: width,
       h: height,
       px: leftOffset,
-      py: 0,
+      py: leftOffset,
     },
     year: {
       w: yearWidth,
