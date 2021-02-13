@@ -1,5 +1,5 @@
 import {CalendarDimensions} from "../../helpers/calculateCalendarDimensions"
-import {CalendarData} from "../../helpers/generateCalendarData"
+import {CalendarData, Week} from "../../helpers/generateCalendarData"
 import {LayerData} from "../../types"
 
 export default function ({
@@ -11,7 +11,7 @@ export default function ({
   d: CalendarDimensions
   ctx: CanvasRenderingContext2D
   data: CalendarData
-  layerData: {earliest: string; latest: string; layer: LayerData} | undefined
+  layerData: LayerData | undefined
 }) {
   console.time("drawCalendar")
   ctx.save()
@@ -32,27 +32,13 @@ export default function ({
         const weekX = weekIndex % d.layout.weeksPerYearRow
         const weekY = Math.floor(weekIndex / d.layout.weeksPerYearRow)
 
-        if (layerData) {
-          ctx.fillStyle =
-            "era" in week
-              ? week.era.color.replace(
-                  /rgb\((.*)\)/,
-                  `rgba($1, ${
-                    0.3 + 0.7 * (layerData.layer[week.startDate] ?? 0)
-                  })`,
-                )
-              : `rgba(128, 128, 128, ${week.prob / 3})`
-        } else {
-          ctx.fillStyle =
-            "era" in week
-              ? week.era.color
-              : `rgba(128, 128, 128, ${week.prob / 3})`
-        }
+        ctx.fillStyle = getWeekColor(layerData, week)
+
         ctx.fillRect(
           weekX * d.week.w,
           weekY * d.week.h,
-          d.week.w - d.week.padding,
-          d.week.h - d.week.padding,
+          d.week.w - d.week.p,
+          d.week.h - d.week.p,
         )
       })
 
@@ -64,4 +50,19 @@ export default function ({
 
   ctx.restore()
   console.timeEnd("drawCalendar")
+}
+
+function getWeekColor(layerData: LayerData | undefined, week: Week) {
+  if (layerData) {
+    return "era" in week
+      ? week.era.color.replace(
+          /rgb\((.*)\)/,
+          `rgba($1, ${0.3 + 0.7 * (layerData[week.startDate] ?? 0)})`,
+        )
+      : `rgba(128, 128, 128, ${week.prob / 3})`
+  }
+
+  return "era" in week
+    ? week.era.color
+    : `rgba(128, 128, 128, ${week.prob / 3})`
 }

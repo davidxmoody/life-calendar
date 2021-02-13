@@ -40,7 +40,7 @@ export default memo(function Calendar(props: Props) {
     if (ref.current) {
       const ctx = ref.current.getContext("2d")
       if (ctx) {
-        drawCalendar({d, ctx, data, layerData})
+        drawCalendar({d, ctx, data, layerData: layerData?.layer})
       }
     }
   }, [ref.current, data, layerData, d])
@@ -89,16 +89,16 @@ export default memo(function Calendar(props: Props) {
               context.fillRect(
                 d.canvas.px + rowIndex * d.year.w,
                 d.canvas.py + colIndex * d.year.h,
-                d.year.w - d.year.padding,
-                d.year.h - d.year.padding,
+                d.year.w - d.year.p,
+                d.year.h - d.year.p,
               )
 
               context.fillStyle = "rgba(200, 0, 0, 0.02)"
               context.fillRect(
                 d.canvas.px + rowIndex * d.year.w + weekRowIndex * d.week.w,
                 d.canvas.py + colIndex * d.year.h + weekColIndex * d.week.h,
-                d.week.w - d.week.padding,
-                d.week.h - d.week.padding,
+                d.week.w - d.week.p,
+                d.week.h - d.week.p,
               )
               context.restore()
             }

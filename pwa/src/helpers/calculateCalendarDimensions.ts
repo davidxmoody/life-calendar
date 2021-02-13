@@ -1,23 +1,23 @@
 export interface CalendarDimensions {
+  layout: {
+    yearsPerRow: number
+    weeksPerYearRow: number
+  }
   canvas: {
     w: number
     h: number
     px: number
     py: number
   }
-  layout: {
-    yearsPerRow: number
-    weeksPerYearRow: number
-  }
   year: {
     w: number
     h: number
-    padding: number
+    p: number
   }
   week: {
     w: number
     h: number
-    padding: number
+    p: number
   }
 }
 
@@ -49,22 +49,25 @@ export default function ({
   const leftOffset = Math.floor((width - calendarWidth + yearPadding) / 2)
 
   return {
+    layout: {
+      yearsPerRow,
+      weeksPerYearRow,
+    },
     canvas: {
       w: width,
       h: height,
       px: leftOffset,
       py: 0,
     },
-    layout: {yearsPerRow, weeksPerYearRow},
     year: {
       w: yearWidthIncPadding,
       h: yearHeightIncPadding,
-      padding: yearPadding,
+      p: yearPadding,
     },
     week: {
       w: weekWidthIncPadding,
       h: weekWidthIncPadding,
-      padding: weekPadding,
+      p: weekPadding,
     },
   }
 }
