@@ -1,4 +1,8 @@
 export interface CalendarDimensions {
+  canvasSize: {
+    width: number
+    height: number
+  }
   layout: {
     yearsPerRow: number
     weeksPerYearRow: number
@@ -21,10 +25,10 @@ export interface CalendarDimensions {
 
 export default function ({
   width,
-}: // height, // TODO
-{
+  height,
+}: {
   width: number
-  // height: number
+  height: number
 }): CalendarDimensions {
   const yearsPerRow = 10
   const weeksPerYearRow = 6
@@ -47,6 +51,7 @@ export default function ({
   const leftOffset = Math.floor((width - calendarWidth + yearMargin) / 2)
 
   return {
+    canvasSize: {width, height},
     layout: {yearsPerRow, weeksPerYearRow},
     calendarOffset: {x: leftOffset, y: 0},
     yearDimensions: {

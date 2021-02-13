@@ -7,20 +7,16 @@ export default function ({
   ctx,
   data,
   layerData,
-  width,
-  height,
 }: {
   dimensions: CalendarDimensions
   ctx: CanvasRenderingContext2D
   data: CalendarData
   layerData: {earliest: string; latest: string; layer: LayerData} | undefined
-  width: number
-  height: number
 }) {
   console.time("drawCalendar")
   ctx.save()
 
-  ctx.clearRect(0, 0, width, height)
+  ctx.clearRect(0, 0, dimensions.canvasSize.width, dimensions.canvasSize.height)
 
   ctx.translate(dimensions.calendarOffset.x, dimensions.calendarOffset.y)
 

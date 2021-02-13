@@ -6,6 +6,7 @@ import drawCalendar from "./drawCalendar"
 import useLayerData from "../../hooks/useLayerData"
 import {Box} from "@chakra-ui/react"
 import calculateCalendarDimensions from "../../helpers/calculateCalendarDimensions"
+import getWeekUnderCursor from "../../helpers/getWeekUnderCursor"
 
 interface Props {
   layerId: string | null
@@ -31,22 +32,24 @@ export default memo(function Calendar(props: Props) {
   const drawWidth = pixelRatio * canvasWidth
   const drawHeight = pixelRatio * canvasHeight
 
+  const dimensions = calculateCalendarDimensions({
+    width: drawWidth,
+    height: drawHeight,
+  })
+
   useEffect(() => {
     if (ref.current) {
       const ctx = ref.current.getContext("2d")
       if (ctx) {
-        const dimensions = calculateCalendarDimensions({width: drawWidth})
         drawCalendar({
           dimensions,
           ctx,
           data,
           layerData,
-          width: drawWidth,
-          height: drawHeight,
         })
       }
     }
-  }, [ref.current, data, drawWidth, drawHeight, layerData])
+  }, [ref.current, data, layerData, dimensions])
 
   const transform = selectedYearIndex != null ? `scale(6)` : "scale(1)"
   const transformOrigin =
@@ -72,6 +75,53 @@ export default memo(function Calendar(props: Props) {
           width={drawWidth}
           height={drawHeight}
           style={{width: canvasWidth, height: canvasHeight}}
+          onMouseMove={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect()
+            const x = (e.pageX - window.pageXOffset - rect.left) * pixelRatio
+            const y = (e.pageY - window.pageYOffset - rect.top) * pixelRatio
+
+            const {
+              rowIndex,
+              colIndex,
+              weekRowIndex,
+              weekColIndex,
+            } = getWeekUnderCursor({
+              x,
+              y,
+              dimensions,
+            })
+
+            const context = ref.current?.getContext("2d")
+            if (context) {
+              context.save()
+              context.fillStyle = "rgba(0, 200, 0, 0.005)"
+              context.fillRect(
+                dimensions.calendarOffset.x +
+                  rowIndex * dimensions.yearDimensions.widthIncMargin,
+                dimensions.calendarOffset.y +
+                  colIndex * dimensions.yearDimensions.heightIncMargin,
+                dimensions.yearDimensions.widthIncMargin -
+                  dimensions.yearDimensions.margin,
+                dimensions.yearDimensions.heightIncMargin -
+                  dimensions.yearDimensions.margin,
+              )
+
+              context.fillStyle = "rgba(200, 0, 0, 0.02)"
+              context.fillRect(
+                dimensions.calendarOffset.x +
+                  rowIndex * dimensions.yearDimensions.widthIncMargin +
+                  weekRowIndex * dimensions.weekDimensions.widthIncMargin,
+                dimensions.calendarOffset.y +
+                  colIndex * dimensions.yearDimensions.heightIncMargin +
+                  weekColIndex * dimensions.weekDimensions.heightIncMargin,
+                dimensions.weekDimensions.widthIncMargin -
+                  dimensions.weekDimensions.margin,
+                dimensions.weekDimensions.heightIncMargin -
+                  dimensions.weekDimensions.margin,
+              )
+              context.restore()
+            }
+          }}
           onClick={(e) => {
             if (selectedYearIndex != null) {
               setSelectedYearIndex(null)
