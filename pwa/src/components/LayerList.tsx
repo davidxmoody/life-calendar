@@ -10,11 +10,7 @@ export default function LayerList() {
     useCallback((s) => s.setSelectedLayerId, []),
   )
 
-  const layerIds = useLayerIds()
-
-  if (!layerIds) {
-    return null
-  }
+  const layerIds = useLayerIds() ?? []
 
   const emptyLayerId = "NONE"
   const layerIdsWithEmpty = [emptyLayerId, ...layerIds]
