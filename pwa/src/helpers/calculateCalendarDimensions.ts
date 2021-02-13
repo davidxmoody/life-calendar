@@ -2,6 +2,7 @@ export interface CalendarDimensions {
   layout: {
     yearsPerRow: number
     weeksPerYearRow: number
+    weeksPerYearCol: number
   }
   canvas: {
     w: number
@@ -28,8 +29,12 @@ export default function ({
   width: number
   height: number
 }): CalendarDimensions {
+  const maxWeeksInYear = 53
+
   const yearsPerRow = 10
   const weeksPerYearRow = 6
+  const weeksPerYearCol = Math.ceil(maxWeeksInYear / weeksPerYearRow)
+
   const maxWidthPerYear = Math.floor(width / 10)
   const weekPadding = 1
 
@@ -43,7 +48,8 @@ export default function ({
     weekWidthIncPadding * numWeeksPerRow + 2 * yearPadding
 
   const yearHeightIncPadding =
-    weekWidthIncPadding * Math.ceil(53 / numWeeksPerRow) + 2 * yearPadding
+    weekWidthIncPadding * Math.ceil(maxWeeksInYear / numWeeksPerRow) +
+    2 * yearPadding
 
   const calendarWidth = yearWidthIncPadding * 10
   const leftOffset = Math.floor((width - calendarWidth + yearPadding) / 2)
@@ -52,6 +58,7 @@ export default function ({
     layout: {
       yearsPerRow,
       weeksPerYearRow,
+      weeksPerYearCol,
     },
     canvas: {
       w: width,
