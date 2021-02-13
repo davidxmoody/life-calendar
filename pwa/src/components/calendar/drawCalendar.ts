@@ -16,9 +16,9 @@ export default function ({
   console.time("drawCalendar")
   ctx.save()
 
-  ctx.clearRect(0, 0, d.canvasSize.width, d.canvasSize.height)
+  ctx.clearRect(0, 0, d.canvas.w, d.canvas.h)
 
-  ctx.translate(d.calendarOffset.x, d.calendarOffset.y)
+  ctx.translate(d.canvas.px, d.canvas.py)
 
   data.decades.forEach((decade, decadeIndex) => {
     ctx.save()

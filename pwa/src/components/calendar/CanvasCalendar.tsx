@@ -87,20 +87,16 @@ export default memo(function Calendar(props: Props) {
               context.save()
               context.fillStyle = "rgba(0, 200, 0, 0.005)"
               context.fillRect(
-                d.calendarOffset.x + rowIndex * d.year.w,
-                d.calendarOffset.y + colIndex * d.year.h,
+                d.canvas.px + rowIndex * d.year.w,
+                d.canvas.py + colIndex * d.year.h,
                 d.year.w - d.year.padding,
                 d.year.h - d.year.padding,
               )
 
               context.fillStyle = "rgba(200, 0, 0, 0.02)"
               context.fillRect(
-                d.calendarOffset.x +
-                  rowIndex * d.year.w +
-                  weekRowIndex * d.week.w,
-                d.calendarOffset.y +
-                  colIndex * d.year.h +
-                  weekColIndex * d.week.h,
+                d.canvas.px + rowIndex * d.year.w + weekRowIndex * d.week.w,
+                d.canvas.py + colIndex * d.year.h + weekColIndex * d.week.h,
                 d.week.w - d.week.padding,
                 d.week.h - d.week.padding,
               )

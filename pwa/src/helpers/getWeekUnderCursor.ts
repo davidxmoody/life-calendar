@@ -9,8 +9,8 @@ export default function ({
   y: number
   d: CalendarDimensions
 }) {
-  const xInCal = x - d.calendarOffset.x
-  const yInCal = y - d.calendarOffset.y
+  const xInCal = x - d.canvas.px
+  const yInCal = y - d.canvas.py
 
   const rowIndex = Math.floor(xInCal / d.year.w)
   const colIndex = Math.floor(yInCal / d.year.h)
