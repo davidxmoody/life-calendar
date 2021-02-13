@@ -1,6 +1,6 @@
 import create from "zustand"
 
-export type TabName = "calendar" | "entries"
+type TabName = "calendar" | "entries"
 
 type State = {
   selectedLayerId: string | null
