@@ -1,7 +1,6 @@
 import React, {useCallback} from "react"
 import {useRoute} from "wouter"
 import WeekSummary from "./WeekSummary"
-import LayerList from "./LayerList"
 import {useStore} from "../store"
 import NavBar from "./NavBar"
 import {Box} from "@chakra-ui/react"
@@ -21,10 +20,6 @@ export default function App() {
       <Box height="72px" />
 
       <Box height={selectedTab === "calendar" ? "auto" : 0} overflow="hidden">
-        <Box m={4}>
-          <LayerList />
-        </Box>
-
         <Calendar layerId={selectedLayerId} />
       </Box>
 

@@ -17,7 +17,13 @@ export default function LayerList() {
 
   return (
     <Menu autoSelect={false}>
-      <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+      <MenuButton
+        colorScheme="blue"
+        as={Button}
+        rightIcon={<ChevronDownIcon />}
+        flex={1}
+        isTruncated
+      >
         {selectedLayerId ?? emptyLayerId}
       </MenuButton>
       <MenuList>
