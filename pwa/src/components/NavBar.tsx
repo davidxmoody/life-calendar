@@ -10,7 +10,7 @@ import {
 import SyncButton from "./SyncButton"
 import LayerList from "./LayerList"
 import {Link, useRoute} from "wouter"
-import {getPrevWeekStart} from "../helpers/dates"
+import {getNextWeekStart, getPrevWeekStart} from "../helpers/dates"
 
 export default function NavBar() {
   const {colorMode, toggleColorMode} = useColorMode()
@@ -49,7 +49,7 @@ export default function NavBar() {
           />
           <IconButton
             as={Link}
-            href={`/weeks/${getPrevWeekStart(selectedWeekStart ?? "")}`}
+            href={`/weeks/${getNextWeekStart(selectedWeekStart ?? "")}`}
             mr={4}
             colorScheme="blue"
             aria-label="Next week"
