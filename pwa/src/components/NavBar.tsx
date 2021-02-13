@@ -1,6 +1,5 @@
-import React, {useCallback} from "react"
+import React from "react"
 import {Box, IconButton, Spacer, useColorMode} from "@chakra-ui/react"
-import {useStore} from "../store"
 import {
   CalendarIcon,
   MoonIcon,
@@ -15,10 +14,8 @@ import {getPrevWeekStart} from "../helpers/dates"
 
 export default function NavBar() {
   const {colorMode, toggleColorMode} = useColorMode()
-  const selectedTab = useStore(useCallback((s) => s.selectedTab, []))
-  const setSelectedTab = useStore(useCallback((s) => s.setSelectedTab, []))
   const [, weekParams] = useRoute("/weeks/:weekStart")
-  const selectedWeekStart = weekParams?.weekStart || undefined
+  const selectedWeekStart = weekParams?.weekStart
 
   return (
     <Box
@@ -32,14 +29,15 @@ export default function NavBar() {
       right={0}
       zIndex="sticky"
     >
-      {selectedTab === "entries" ? (
+      {selectedWeekStart ? (
         <>
           <IconButton
+            as={Link}
+            href="/"
             mr={4}
             colorScheme="blue"
             aria-label="Calendar"
             icon={<CalendarIcon />}
-            onClick={() => setSelectedTab("calendar")}
           />
           <IconButton
             as={Link}

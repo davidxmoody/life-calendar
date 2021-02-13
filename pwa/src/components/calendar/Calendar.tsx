@@ -23,7 +23,6 @@ interface Props {
 
 export default memo(function Calendar(props: Props) {
   const [, setLocation] = useLocation()
-  const setSelectedTab = useStore(useCallback((s) => s.setSelectedTab, []))
 
   const [selectedYearIndex /*, setSelectedYearIndex*/] = useState<
     number | null
@@ -141,7 +140,6 @@ export default memo(function Calendar(props: Props) {
             }
 
             setLocation(`/weeks/${week.startDate}`)
-            setSelectedTab("entries")
           }}
         />
       </Box>

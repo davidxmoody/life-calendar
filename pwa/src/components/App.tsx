@@ -8,10 +8,9 @@ import Calendar from "./calendar/Calendar"
 
 export default function App() {
   const selectedLayerId = useStore(useCallback((s) => s.selectedLayerId, []))
-  const selectedTab = useStore(useCallback((s) => s.selectedTab, []))
 
   const [, weekParams] = useRoute("/weeks/:weekStart")
-  const selectedWeekStart = (weekParams && weekParams.weekStart) || undefined
+  const selectedWeekStart = weekParams?.weekStart
 
   return (
     <>
@@ -19,11 +18,11 @@ export default function App() {
 
       <Box height="72px" />
 
-      <Box height={selectedTab === "calendar" ? "auto" : 0} overflow="hidden">
+      <Box height={selectedWeekStart ? 0 : "auto"} overflow="hidden">
         <Calendar layerId={selectedLayerId} />
       </Box>
 
-      <Box display={selectedTab === "entries" ? "block" : "none"}>
+      <Box display={selectedWeekStart ? "block" : "none"}>
         <Box p={[0, 4]} maxW="900px">
           {selectedWeekStart ? (
             <WeekSummary
