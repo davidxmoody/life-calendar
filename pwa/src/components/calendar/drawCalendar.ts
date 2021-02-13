@@ -17,16 +17,15 @@ export default function ({
   ctx.save()
 
   ctx.clearRect(0, 0, d.canvas.w, d.canvas.h)
-
   ctx.translate(d.canvas.px, d.canvas.py)
 
   data.decades.forEach((decade, decadeIndex) => {
-    ctx.save()
-    ctx.translate(0, d.year.h * decadeIndex)
-
     decade.years.forEach((year, yearIndex) => {
       ctx.save()
-      ctx.translate(d.year.w * yearIndex, 0)
+      ctx.translate(
+        d.year.w * yearIndex + d.year.p,
+        d.year.h * decadeIndex + d.year.p,
+      )
 
       year.weeks.forEach((week, weekIndex) => {
         const weekX = weekIndex % d.layout.weeksPerYearRow
@@ -35,17 +34,15 @@ export default function ({
         ctx.fillStyle = getWeekColor(layerData, week)
 
         ctx.fillRect(
-          weekX * d.week.w,
-          weekY * d.week.h,
-          d.week.w - d.week.p,
-          d.week.h - d.week.p,
+          weekX * d.week.w + d.week.p,
+          weekY * d.week.h + d.week.p,
+          d.week.w - d.week.p * 2,
+          d.week.h - d.week.p * 2,
         )
       })
 
       ctx.restore()
     })
-
-    ctx.restore()
   })
 
   ctx.restore()

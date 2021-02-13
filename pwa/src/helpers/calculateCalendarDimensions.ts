@@ -31,7 +31,7 @@ export default function ({
   const yearsPerRow = 10
   const weeksPerYearRow = 6
   const maxWidthPerYear = Math.floor(width / 10)
-  const weekPadding = 2
+  const weekPadding = 1
 
   const yearPadding = Math.ceil(maxWidthPerYear / 20)
   const numWeeksPerRow = 6
