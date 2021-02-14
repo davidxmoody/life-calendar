@@ -1,11 +1,4 @@
-import React, {
-  useMemo,
-  memo,
-  useRef,
-  useEffect,
-  useState,
-  useCallback,
-} from "react"
+import React, {useMemo, memo, useRef, useEffect, useState} from "react"
 import generateCalendarData from "../../helpers/generateCalendarData"
 import lifeData from "../../lifeData"
 import useToday from "../../hooks/useToday"
@@ -15,7 +8,6 @@ import {Box} from "@chakra-ui/react"
 import calculateCalendarDimensions from "../../helpers/calculateCalendarDimensions"
 import getWeekUnderCursor from "../../helpers/getWeekUnderCursor"
 import {useLocation} from "wouter"
-import {useStore} from "../../store"
 
 interface Props {
   layerId: string | null
@@ -135,7 +127,7 @@ export default memo(function Calendar(props: Props) {
                 c.weekColIndex * d.layout.weeksPerYearRow + c.weekRowIndex
               ]
 
-            if (!week) {
+            if (!week || week.startDate > today) {
               return
             }
 
