@@ -67,9 +67,11 @@ const renderers: Record<string, ElementType> = {
 
 export default memo(function Markdown(props: Props) {
   return (
-    <ReactMarkdown renderers={renderers}>
-      {addDateLinks(props.source)}
-    </ReactMarkdown>
+    <Box textAlign="justify">
+      <ReactMarkdown renderers={renderers}>
+        {addDateLinks(props.source)}
+      </ReactMarkdown>
+    </Box>
   )
 })
 

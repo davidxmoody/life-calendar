@@ -11,9 +11,13 @@ export default memo(function WeekSummary(props: Props) {
   const entries = useWeekEntries(props.weekStart)
 
   return (
-    <Box>
-      {(entries || []).map((entry) => (
-        <Box key={entry.id} mb={8}>
+    <Box mb={16}>
+      {(entries || []).map((entry, index) => (
+        <Box
+          key={entry.id}
+          mb={8}
+          borderTop={index === 0 ? "none" : ["1px solid grey", "none"]}
+        >
           <EntryComponent entry={entry} />
         </Box>
       ))}

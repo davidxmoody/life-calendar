@@ -21,7 +21,7 @@ export default function EntryComponent(props: Props) {
 
   return (
     <Box border={["none", "1px solid lightgrey"]} p={[0, 4]}>
-      <Heading size="md" mb={2} px={4}>
+      <Heading size="sm" mb={2} px={4} mt={4}>
         {prettyFormatDateTime(props.entry)} {wordcountString}
       </Heading>
       <Box>

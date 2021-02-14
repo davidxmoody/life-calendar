@@ -23,9 +23,8 @@ export function prettyFormatDateTime({
   date: string
   time?: string
 }): string {
-  const mDate = moment(time ? date + " " + time : date)
-
-  return `${mDate.fromNow()}, ${mDate.format(
-    "ddd D MMM YYYY" + (time ? " HH:mm" : ""),
-  )}`
+  if (!time) {
+    return moment(date).format("ddd D MMM YYYY")
+  }
+  return moment(`${date} ${time}`).format("ddd D MMM YYYY HH:mm")
 }
