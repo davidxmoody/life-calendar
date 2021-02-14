@@ -9,6 +9,7 @@ interface Props {
 }
 
 const paraMarginBottom = 5
+const codeBackgroudColor = "rgba(120, 120, 120, 0.5)"
 
 const renderers: Record<string, ElementType> = {
   link: CustomLink,
@@ -25,7 +26,8 @@ const renderers: Record<string, ElementType> = {
     <Text
       pl={4}
       fontStyle="italic"
-      borderLeft="8px solid #eee"
+      borderColor={codeBackgroudColor}
+      borderLeftWidth="8px"
       opacity={0.7}
       {...props}
     />
@@ -43,7 +45,7 @@ const renderers: Record<string, ElementType> = {
       display="block"
       as="code"
       mb={paraMarginBottom}
-      backgroundColor="#eee"
+      backgroundColor={codeBackgroudColor}
       py={2}
       px={3}
       borderRadius={3}
@@ -52,7 +54,12 @@ const renderers: Record<string, ElementType> = {
     </Box>
   ),
   inlineCode: (props: {children: any}) => (
-    <Box as="code" backgroundColor="#eee">
+    <Box
+      as="code"
+      backgroundColor={codeBackgroudColor}
+      borderRadius="sm"
+      px={1}
+    >
       {props.children}
     </Box>
   ),
