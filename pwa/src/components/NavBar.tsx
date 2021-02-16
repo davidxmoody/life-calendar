@@ -1,5 +1,5 @@
 import React from "react"
-import {Box, IconButton, Spacer, useColorMode} from "@chakra-ui/react"
+import {Box, Flex, IconButton, Spacer, useColorMode} from "@chakra-ui/react"
 import {
   CalendarIcon,
   MoonIcon,
@@ -58,7 +58,9 @@ export default function NavBar() {
           <Spacer />
         </>
       ) : (
-        <LayerList />
+        <Flex flex={1}>
+          <LayerList />
+        </Flex>
       )}
 
       <IconButton

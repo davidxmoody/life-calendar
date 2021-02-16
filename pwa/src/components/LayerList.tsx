@@ -22,6 +22,7 @@ export default function LayerList() {
         as={Button}
         rightIcon={<ChevronDownIcon />}
         flex={1}
+        maxW="300px"
         isTruncated
       >
         {selectedLayerId ?? emptyLayerId}
