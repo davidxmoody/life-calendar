@@ -1,30 +1,41 @@
-import {CheckCircleIcon, RepeatIcon, WarningTwoIcon} from "@chakra-ui/icons"
-import {IconButton} from "@chakra-ui/react"
-import React, {useState} from "react"
+import {RepeatIcon, WarningTwoIcon} from "@chakra-ui/icons"
+import {IconButton, Text} from "@chakra-ui/react"
+import React, {useEffect, useState} from "react"
 import {sync} from "../idb"
 
-type SyncState = "initial" | "loading" | "success" | "error"
+type SyncState =
+  | {type: "initial"}
+  | {type: "loading"}
+  | {type: "success"; num: number}
+  | {type: "error"}
 
 export default function SyncButton() {
-  const [syncState, setSyncState] = useState<SyncState>("initial")
+  const [syncState, setSyncState] = useState<SyncState>({type: "initial"})
 
   function startSync() {
-    setSyncState("loading")
+    setSyncState({type: "loading"})
     sync()
-      .then(() => setSyncState("success"))
-      .catch(() => setSyncState("error"))
+      .then((num) => setSyncState({type: "success", num}))
+      .catch(() => setSyncState({type: "error"}))
   }
+
+  useEffect(() => {
+    if (syncState.type === "success" || syncState.type === "error") {
+      const t = setTimeout(() => setSyncState({type: "initial"}), 5000)
+      return () => clearTimeout(t)
+    }
+  }, [syncState])
 
   return (
     <IconButton
-      isLoading={syncState === "loading"}
+      isLoading={syncState.type === "loading"}
       colorScheme="blue"
       aria-label="Sync"
       icon={
-        syncState === "error" ? (
+        syncState.type === "error" ? (
           <WarningTwoIcon />
-        ) : syncState === "success" ? (
-          <CheckCircleIcon />
+        ) : syncState.type === "success" ? (
+          <Text>{formatShortNum(syncState.num)}</Text>
         ) : (
           <RepeatIcon />
         )
@@ -32,4 +43,8 @@ export default function SyncButton() {
       onClick={startSync}
     />
   )
+}
+
+function formatShortNum(num: number) {
+  return num >= 1000 ? `${Math.round(num / 1000)}k` : `${num}`
 }

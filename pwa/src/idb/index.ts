@@ -21,9 +21,7 @@ export const dbPromise = openDB("data", 1, {
   },
 })
 
-export async function sync(
-  fullSync?: boolean,
-): Promise<{numLayers: number; numEntries: number}> {
+export async function sync(fullSync?: boolean): Promise<number> {
   const db = await dbPromise
 
   const lastSyncTimestamp: number | null = fullSync
@@ -50,5 +48,5 @@ export async function sync(
 
   await tx.done
 
-  return {numLayers: layers.length, numEntries: entries.length}
+  return layers.length + entries.length
 }
