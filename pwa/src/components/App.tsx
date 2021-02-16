@@ -23,7 +23,7 @@ export default function App() {
       </Box>
 
       <Box display={selectedWeekStart ? "block" : "none"}>
-        <Box p={[0, 4]} maxW="900px">
+        <Box p={[0, 4]} maxW="900px" margin="auto">
           {selectedWeekStart ? (
             <WeekSummary
               key={selectedWeekStart}

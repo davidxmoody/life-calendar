@@ -48,6 +48,7 @@ export default function ({
 
   const calendarWidth = yearWidth * 10
   const leftOffset = Math.floor((width - calendarWidth) / 2)
+  const topOffset = Math.max(leftOffset, 16)
 
   return {
     layout: {
@@ -59,7 +60,7 @@ export default function ({
       w: width,
       h: height,
       px: leftOffset,
-      py: leftOffset,
+      py: topOffset,
     },
     year: {
       w: yearWidth,
