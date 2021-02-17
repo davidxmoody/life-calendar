@@ -1,8 +1,8 @@
 import React, {ElementType, memo, ReactNode} from "react"
 import ReactMarkdown from "react-markdown"
-import {Link} from "wouter"
+import {Link as WouterLink} from "wouter"
 import {getWeekStart} from "../../helpers/dates"
-import {Box, Heading, Text} from "@chakra-ui/react"
+import {Box, Heading, Link, Text} from "@chakra-ui/react"
 
 interface Props {
   source: string
@@ -12,7 +12,20 @@ const paraMarginBottom = 5
 const codeBackgroudColor = "rgba(120, 120, 120, 0.5)"
 
 const renderers: Record<string, ElementType> = {
-  link: CustomLink,
+  link: (props: {href: string; children: ReactNode}) => {
+    if (props.href.startsWith("/")) {
+      return (
+        <Link as={WouterLink} href={props.href} color="teal.500">
+          {props.children}
+        </Link>
+      )
+    }
+    return (
+      <Link href={props.href} isExternal color="teal.500">
+        {props.children}
+      </Link>
+    )
+  },
   paragraph: (props: any) => <Text mb={paraMarginBottom} {...props} />,
   heading: (props: {level: number; children: any}) => (
     <Heading
@@ -65,6 +78,13 @@ const renderers: Record<string, ElementType> = {
   ),
 }
 
+function addDateLinks(source: string): string {
+  return source.replaceAll(
+    /\b\d{4}-\d{2}-\d{2}\b/g,
+    (match) => `[${match}](/weeks/${getWeekStart(match)})`,
+  )
+}
+
 export default memo(function Markdown(props: Props) {
   return (
     <Box textAlign="justify">
@@ -74,22 +94,3 @@ export default memo(function Markdown(props: Props) {
     </Box>
   )
 })
-
-function CustomLink(props: {href: string; children: ReactNode}) {
-  if (props.href.startsWith("/")) {
-    return <Link href={props.href}>{props.children}</Link>
-  }
-
-  return (
-    <a href={props.href} target="_blank" rel="noopener noreferrer">
-      {props.children}
-    </a>
-  )
-}
-
-function addDateLinks(source: string): string {
-  return source.replaceAll(
-    /\b\d{4}-\d{2}-\d{2}\b/g,
-    (match) => `[${match}](/weeks/${getWeekStart(match)})`,
-  )
-}
