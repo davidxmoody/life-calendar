@@ -87,10 +87,8 @@ function addDateLinks(source: string): string {
 
 export default memo(function Markdown(props: Props) {
   return (
-    <Box textAlign="justify">
-      <ReactMarkdown renderers={renderers}>
-        {addDateLinks(props.source)}
-      </ReactMarkdown>
-    </Box>
+    <ReactMarkdown renderers={renderers}>
+      {addDateLinks(props.source)}
+    </ReactMarkdown>
   )
 })
