@@ -1,5 +1,6 @@
 import {openDB} from "idb"
 import {REMOTE_URL} from "../config"
+import {MarkdownEntry} from "../types"
 
 export const dbPromise = openDB("data", 1, {
   upgrade(db, oldVersion) {
@@ -50,3 +51,25 @@ export async function sync(fullSync?: boolean): Promise<number> {
 
   return layers.length + entries.length
 }
+
+export async function search(
+  term: string,
+  limit: number = 100,
+): Promise<MarkdownEntry[]> {
+  const db = await dbPromise
+
+  const results = []
+
+  let cursor = await db.transaction("entries").store.openCursor(null, "prev")
+
+  while (cursor && results.length < limit) {
+    if (cursor.value.content.includes(term)) {
+      results.push(cursor.value as MarkdownEntry)
+    }
+    cursor = await cursor.continue()
+  }
+
+  return results
+}
+
+;(window as any).search = search
