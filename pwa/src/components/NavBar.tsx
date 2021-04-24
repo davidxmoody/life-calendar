@@ -1,21 +1,21 @@
 import React from "react"
-import {Box, Flex, IconButton, Spacer, useColorMode} from "@chakra-ui/react"
+import {Box, Flex, IconButton, Spacer, useDisclosure} from "@chakra-ui/react"
 import {
   CalendarIcon,
-  MoonIcon,
-  SunIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
+  SettingsIcon,
 } from "@chakra-ui/icons"
-import SyncButton from "./SyncButton"
 import LayerList from "./LayerList"
 import {Link, useRoute} from "wouter"
 import {getNextWeekStart, getPrevWeekStart} from "../helpers/dates"
+import SettingsModal from "./SettingsModal"
 
 export default function NavBar() {
-  const {colorMode, toggleColorMode} = useColorMode()
   const [, weekParams] = useRoute("/weeks/:weekStart")
   const selectedWeekStart = weekParams?.weekStart
+
+  const {isOpen, onOpen, onClose} = useDisclosure()
 
   return (
     <Box
@@ -64,13 +64,14 @@ export default function NavBar() {
       )}
 
       <IconButton
-        mx={4}
+        ml={4}
         colorScheme="blue"
-        aria-label="Toggle dark mode"
-        icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
-        onClick={toggleColorMode}
+        aria-label="Settings"
+        icon={<SettingsIcon />}
+        onClick={onOpen}
       />
-      <SyncButton />
+
+      <SettingsModal isOpen={isOpen} onClose={onClose} />
     </Box>
   )
 }
