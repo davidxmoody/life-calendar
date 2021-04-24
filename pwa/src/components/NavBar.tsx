@@ -5,17 +5,20 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
   SettingsIcon,
+  ViewIcon,
 } from "@chakra-ui/icons"
 import LayerList from "./LayerList"
 import {Link, useRoute} from "wouter"
 import {getNextWeekStart, getPrevWeekStart} from "../helpers/dates"
 import SettingsModal from "./SettingsModal"
+import JumpToModal from "./JumpToModal"
 
 export default function NavBar() {
   const [, weekParams] = useRoute("/weeks/:weekStart")
   const selectedWeekStart = weekParams?.weekStart
 
-  const {isOpen, onOpen, onClose} = useDisclosure()
+  const settingsModal = useDisclosure()
+  const jumpToModal = useDisclosure()
 
   return (
     <Box
@@ -67,11 +70,23 @@ export default function NavBar() {
         ml={4}
         colorScheme="blue"
         aria-label="Settings"
-        icon={<SettingsIcon />}
-        onClick={onOpen}
+        icon={<ViewIcon />}
+        onClick={jumpToModal.onOpen}
       />
 
-      <SettingsModal isOpen={isOpen} onClose={onClose} />
+      <IconButton
+        ml={4}
+        colorScheme="blue"
+        aria-label="Settings"
+        icon={<SettingsIcon />}
+        onClick={settingsModal.onOpen}
+      />
+
+      <JumpToModal isOpen={jumpToModal.isOpen} onClose={jumpToModal.onClose} />
+      <SettingsModal
+        isOpen={settingsModal.isOpen}
+        onClose={settingsModal.onClose}
+      />
     </Box>
   )
 }
