@@ -7,20 +7,38 @@ export default function ({
   ctx,
   data,
   layerData,
+  incremental,
 }: {
   d: CalendarDimensions
   ctx: CanvasRenderingContext2D
   data: CalendarData
   layerData: LayerData | undefined
+  incremental: boolean
 }) {
-  console.time("drawCalendar")
+  console.time(`drawCalendar ${incremental ? "incremental" : ""}`)
   ctx.save()
 
-  ctx.clearRect(0, 0, d.canvas.w, d.canvas.h)
+  if (!incremental) {
+    ctx.clearRect(0, 0, d.canvas.w, d.canvas.h)
+  }
+
   ctx.translate(d.canvas.px, d.canvas.py)
 
   data.decades.forEach((decade, decadeIndex) => {
     decade.years.forEach((year, yearIndex) => {
+      if (incremental) {
+        if ("era" in year.weeks[0]) {
+          ctx.clearRect(
+            d.year.w * yearIndex,
+            d.year.h * decadeIndex,
+            d.year.w,
+            d.year.h,
+          )
+        } else {
+          return
+        }
+      }
+
       ctx.save()
       ctx.translate(
         d.year.w * yearIndex + d.year.p,
@@ -46,7 +64,7 @@ export default function ({
   })
 
   ctx.restore()
-  console.timeEnd("drawCalendar")
+  console.timeEnd(`drawCalendar ${incremental ? "incremental" : ""}`)
 }
 
 function getWeekColor(layerData: LayerData | undefined, week: Week) {

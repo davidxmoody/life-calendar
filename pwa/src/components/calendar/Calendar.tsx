@@ -40,6 +40,8 @@ export default memo(function Calendar(props: Props) {
     [drawWidth, drawHeight],
   )
 
+  const lastDraw = useRef<typeof d | undefined>()
+
   useEffect(() => {
     if (props.layerId && !layerData) {
       return
@@ -48,7 +50,9 @@ export default memo(function Calendar(props: Props) {
     if (ref.current) {
       const ctx = ref.current.getContext("2d")
       if (ctx) {
-        drawCalendar({d, ctx, data, layerData})
+        const incremental = lastDraw.current === d
+        drawCalendar({d, ctx, data, layerData, incremental})
+        lastDraw.current = d
       }
     }
   }, [ref.current, data, layerData, d])
