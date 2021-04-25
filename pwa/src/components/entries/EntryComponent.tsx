@@ -1,5 +1,4 @@
 import {Entry} from "../../types"
-import getWordcount from "../../helpers/getWordcount"
 import React, {useMemo} from "react"
 import Markdown from "./Markdown"
 import {prettyFormatDateTime} from "../../helpers/dates"
@@ -12,18 +11,12 @@ interface Props {
 }
 
 export default function EntryComponent(props: Props) {
-  const wordcount = useMemo(
-    () => ("content" in props.entry ? getWordcount(props.entry.content) : 0),
-    [props.entry],
-  )
-  const wordcountString = wordcount > 20 ? `(${wordcount} words)` : ""
-
   const {isOpen, onToggle} = useDisclosure({defaultIsOpen: false})
 
   return (
     <Box border={["none", "1px solid lightgrey"]} p={[0, 4]}>
       <Button mb={4} mx={4} mt={4} onClick={onToggle}>
-        {prettyFormatDateTime(props.entry)} {wordcountString}
+        {prettyFormatDateTime(props.entry)}
       </Button>
       <Box>
         {props.entry.type === "markdown" ? (
