@@ -12,7 +12,7 @@ export default function LayerList() {
 
   const layerIds = useLayerIds() ?? []
 
-  const emptyLayerId = "NONE"
+  const emptyLayerId = "no-layer"
   const layerIdsWithEmpty = [emptyLayerId, ...layerIds]
 
   return (

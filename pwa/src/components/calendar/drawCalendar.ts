@@ -15,7 +15,7 @@ export default function drawCalendar({
   layerData: LayerData | undefined
   incremental: boolean
 }) {
-  console.time(`drawCalendar ${incremental ? "incremental" : ""}`)
+  console.time(`drawCalendar ${incremental ? "inc" : ""}`)
   ctx.save()
 
   if (!incremental) {
@@ -49,7 +49,13 @@ export default function drawCalendar({
         const weekX = weekIndex % d.layout.weeksPerYearRow
         const weekY = Math.floor(weekIndex / d.layout.weeksPerYearRow)
 
-        ctx.fillStyle = getWeekColor(layerData, week)
+        ctx.fillStyle = getWeekColor(
+          layerData,
+          week,
+          decadeIndex,
+          yearIndex,
+          weekIndex,
+        )
 
         ctx.fillRect(
           weekX * d.week.w + d.week.p,
@@ -64,20 +70,25 @@ export default function drawCalendar({
   })
 
   ctx.restore()
-  console.timeEnd(`drawCalendar ${incremental ? "incremental" : ""}`)
+  console.timeEnd(`drawCalendar ${incremental ? "inc" : ""}`)
 }
 
-function getWeekColor(layerData: LayerData | undefined, week: Week) {
-  if (layerData) {
-    return "era" in week
-      ? week.era.color.replace(
-          /rgb\((.*)\)/,
-          `rgba($1, ${0.3 + 0.7 * (layerData[week.startDate] ?? 0)})`,
-        )
-      : `rgba(128, 128, 128, ${week.prob / 3})`
+function getWeekColor(
+  layerData: LayerData | undefined,
+  week: Week,
+  decadeIndex: number,
+  yearIndex: number,
+  weekIndex: number,
+) {
+  if (!("era" in week)) {
+    return `rgba(128, 128, 128, ${week.prob / 3})`
   }
 
-  return "era" in week
-    ? week.era.color
-    : `rgba(128, 128, 128, ${week.prob / 3})`
+  const opacity = layerData
+    ? 0.3 + 0.7 * (layerData[week.startDate] ?? 0)
+    : 0.6 +
+      (0.4 / (40 * 6 * 9)) *
+        (decadeIndex * 10 * 9 * 6 + yearIndex * 9 * 6 + weekIndex)
+
+  return week.era.color.replace(/rgb\((.*)\)/, `rgba($1, ${opacity})`)
 }
