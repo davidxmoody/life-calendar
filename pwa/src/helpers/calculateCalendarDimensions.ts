@@ -22,7 +22,7 @@ export interface CalendarDimensions {
   }
 }
 
-export default function ({
+export default function calculateCalendarDimensions({
   width,
   height,
 }: {

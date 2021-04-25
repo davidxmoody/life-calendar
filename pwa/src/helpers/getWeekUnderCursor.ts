@@ -1,6 +1,6 @@
 import {CalendarDimensions} from "./calculateCalendarDimensions"
 
-export default function ({
+export default function getWeekUnderCursor({
   x,
   y,
   d,

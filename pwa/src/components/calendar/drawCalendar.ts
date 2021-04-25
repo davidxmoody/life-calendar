@@ -2,7 +2,7 @@ import {CalendarDimensions} from "../../helpers/calculateCalendarDimensions"
 import {CalendarData, Week} from "../../helpers/generateCalendarData"
 import {LayerData} from "../../types"
 
-export default function ({
+export default function drawCalendar({
   d,
   ctx,
   data,

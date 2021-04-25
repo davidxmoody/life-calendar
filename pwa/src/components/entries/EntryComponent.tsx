@@ -1,5 +1,5 @@
 import {Entry} from "../../types"
-import React, {useMemo} from "react"
+import React from "react"
 import Markdown from "./Markdown"
 import {prettyFormatDateTime} from "../../helpers/dates"
 import AudioPlayer from "./AudioPlayer"
