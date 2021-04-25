@@ -44,7 +44,7 @@ export default memo(function Calendar(props: Props) {
     if (ref.current) {
       const ctx = ref.current.getContext("2d")
       if (ctx) {
-        drawCalendar({d, ctx, data, layerData: layerData?.layer})
+        drawCalendar({d, ctx, data, layerData})
       }
     }
   }, [ref.current, data, layerData, d])

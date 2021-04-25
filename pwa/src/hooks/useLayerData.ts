@@ -2,12 +2,10 @@ import {useEffect, useState} from "react"
 import {dbPromise} from "../idb"
 import {LayerData} from "../types"
 
-type ReturnVal =
-  | undefined
-  | {earliest: string; latest: string; layer: LayerData}
-
-export default function useLayerData(layerId: string | null): ReturnVal {
-  const [data, setData] = useState<ReturnVal>(undefined)
+export default function useLayerData(
+  layerId: string | null,
+): LayerData | undefined {
+  const [data, setData] = useState<LayerData | undefined>(undefined)
 
   useEffect(() => {
     if (layerId) {
@@ -18,11 +16,7 @@ export default function useLayerData(layerId: string | null): ReturnVal {
             setData(undefined)
             return
           }
-          const layer = newData?.data
-          const allWeeks = Object.keys(layer).sort()
-          const earliest = allWeeks[0]
-          const latest = allWeeks[allWeeks.length - 1]
-          setData({layer, earliest, latest})
+          setData(newData?.data)
         }),
       )
     } else {
