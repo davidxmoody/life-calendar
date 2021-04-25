@@ -5,7 +5,7 @@ import Markdown from "./Markdown"
 import {prettyFormatDateTime} from "../../helpers/dates"
 import AudioPlayer from "./AudioPlayer"
 import {REMOTE_URL} from "../../config"
-import {Box, Heading} from "@chakra-ui/react"
+import {Box, Button, useDisclosure} from "@chakra-ui/react"
 
 interface Props {
   entry: Entry
@@ -16,18 +16,25 @@ export default function EntryComponent(props: Props) {
     () => ("content" in props.entry ? getWordcount(props.entry.content) : 0),
     [props.entry],
   )
-
   const wordcountString = wordcount > 20 ? `(${wordcount} words)` : ""
+
+  const {isOpen, onToggle} = useDisclosure({defaultIsOpen: false})
 
   return (
     <Box border={["none", "1px solid lightgrey"]} p={[0, 4]}>
-      <Heading size="sm" mb={2} px={4} mt={4}>
+      <Button mb={4} mx={4} mt={4} onClick={onToggle}>
         {prettyFormatDateTime(props.entry)} {wordcountString}
-      </Heading>
+      </Button>
       <Box>
         {props.entry.type === "markdown" ? (
           <Box mx={4}>
-            <Markdown source={props.entry.content} />
+            <Markdown
+              source={
+                isOpen
+                  ? props.entry.content
+                  : getSummaryMarkdown(props.entry.content)
+              }
+            />
           </Box>
         ) : null}
 
@@ -45,4 +52,19 @@ export default function EntryComponent(props: Props) {
       </Box>
     </Box>
   )
+}
+
+function getSummaryMarkdown(markdown: string) {
+  return markdown
+    .split("\n")
+    .map((line) => {
+      if (line.startsWith("#")) {
+        return "\n" + line.replace(/#*/, "####") + "\n\n"
+      }
+      if (line === "") {
+        return " "
+      }
+      return line.replace(/[\S]+[\s]?/g, ".").replace(/\.\.\./g, ".")
+    })
+    .join("")
 }
