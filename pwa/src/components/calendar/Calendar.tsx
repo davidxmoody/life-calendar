@@ -41,6 +41,10 @@ export default memo(function Calendar(props: Props) {
   )
 
   useEffect(() => {
+    if (props.layerId && !layerData) {
+      return
+    }
+
     if (ref.current) {
       const ctx = ref.current.getContext("2d")
       if (ctx) {
