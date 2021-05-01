@@ -22,6 +22,7 @@ export default function Day(props: Props) {
         position="sticky"
         top="72px"
         bg="blue.900"
+        zIndex="sticky"
       >
         <Button mb={4} mx={4} mt={4} onClick={onToggle}>
           {prettyFormatDateTime({date: props.date})}
