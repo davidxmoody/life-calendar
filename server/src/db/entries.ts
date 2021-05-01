@@ -24,7 +24,7 @@ async function getMarkdownEntry(file: string): Promise<MarkdownEntry> {
   }
 }
 
-function getScannedEntry(file: string): ScannedEntry {
+async function getScannedEntry(file: string): Promise<ScannedEntry> {
   const fileUrl = `/${file}`
   const [date, sequenceNumberStr] = file
     .replace(
@@ -34,12 +34,20 @@ function getScannedEntry(file: string): ScannedEntry {
     .split("___")
   const sequenceNumber = parseInt(sequenceNumberStr, 10)
 
+  const metaFile = file.replace(/^scanned/, "scanned-meta") + ".json"
+  const {averageColor, width, height} = JSON.parse(
+    await readFile(metaFile, "utf-8"),
+  )
+
   return {
     id: `${date}-scanned-${sequenceNumber}`,
     type: "scanned",
     date,
     sequenceNumber,
     fileUrl,
+    averageColor,
+    width,
+    height,
   }
 }
 
@@ -68,9 +76,11 @@ export async function getEntries(sinceMs: number | null): Promise<Entry[]> {
     {concurrency: 100},
   )
 
-  const scannedEntries = (
-    await globSince("scanned/????/??/??/scanned-??.*", sinceMs)
-  ).map(getScannedEntry)
+  const scannedEntries = await promiseMap(
+    globSince("scanned/????/??/??/scanned-??.*", sinceMs),
+    getScannedEntry,
+    {concurrency: 100},
+  )
 
   const audioEntries = (
     await globSince("audio/????/??/??/audio-??-??.*", sinceMs)

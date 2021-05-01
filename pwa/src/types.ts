@@ -14,6 +14,9 @@ export interface ScannedEntry {
 
   sequenceNumber: number
   fileUrl: string
+  averageColor: string
+  width: number
+  height: number
 }
 
 export interface AudioEntry {

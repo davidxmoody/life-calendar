@@ -1,10 +1,10 @@
 import {Box, Button, useDisclosure} from "@chakra-ui/react"
 import * as React from "react"
-import {REMOTE_URL} from "../../config"
 import {prettyFormatDateTime} from "../../helpers/dates"
 import {Entry} from "../../types"
 import AudioPlayer from "./AudioPlayer"
 import Markdown from "./Markdown"
+import ScannedPage from "./ScannedPage"
 
 interface Props {
   date: string
@@ -52,13 +52,7 @@ export default function Day(props: Props) {
               ) : null}
 
               {entry.type === "scanned" ? (
-                isOpen ? (
-                  <Box>
-                    <Markdown source={`![](${REMOTE_URL + entry.fileUrl})`} />
-                  </Box>
-                ) : (
-                  <Box w={8} h={12} bg="white" mb={4} mx={4} />
-                )
+                <ScannedPage entry={entry} isExpanded={isOpen} />
               ) : null}
 
               {entry.type === "audio" ? (
