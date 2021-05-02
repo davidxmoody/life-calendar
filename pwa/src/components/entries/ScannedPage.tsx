@@ -24,7 +24,6 @@ export default function ScannedPage(props: Props) {
             src={src}
             width="100%"
             height="100%"
-            fallback={<Box>Error loading</Box>}
           />
         ) : null}
       </Box>
