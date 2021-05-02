@@ -12,13 +12,13 @@ export const dbPromise = openDB("data", 1, {
     }
   },
   blocked() {
-    alert("Blocked")
+    alert("IDB blocked")
   },
   blocking() {
-    alert("Blocking")
+    alert("IDB blocking")
   },
   terminated() {
-    alert("Terminated")
+    alert("IDB terminated")
   },
 })
 

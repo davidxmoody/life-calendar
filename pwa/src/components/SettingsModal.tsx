@@ -1,6 +1,6 @@
 import * as React from "react"
 import {
-  IconButton,
+  Button,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -32,12 +32,15 @@ export default function SettingsModal(props: Props) {
           <Stack spacing={4}>
             <SyncButton />
 
-            <IconButton
+            <SyncButton fullSync />
+
+            <Button
               colorScheme="blue"
-              aria-label="Toggle dark mode"
-              icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+              leftIcon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
               onClick={toggleColorMode}
-            />
+            >
+              Toggle dark mode
+            </Button>
           </Stack>
         </ModalBody>
 
