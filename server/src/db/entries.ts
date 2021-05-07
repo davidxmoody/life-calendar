@@ -39,6 +39,9 @@ async function getScannedEntry(file: string): Promise<ScannedEntry> {
     await readFile(metaFile, "utf-8"),
   )
 
+  const headings: string[] | null =
+    JSON.parse(await readFile("scanned-headings.json", "utf-8"))[file] ?? null
+
   return {
     id: `${date}-scanned-${sequenceNumber}`,
     type: "scanned",
@@ -48,6 +51,7 @@ async function getScannedEntry(file: string): Promise<ScannedEntry> {
     averageColor,
     width,
     height,
+    headings,
   }
 }
 

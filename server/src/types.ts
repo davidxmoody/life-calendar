@@ -17,6 +17,7 @@ export interface ScannedEntry {
   averageColor: string
   width: number
   height: number
+  headings: string[] | null
 }
 
 export interface AudioEntry {
