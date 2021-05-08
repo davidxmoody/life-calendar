@@ -15,15 +15,11 @@ export default function ScannedPage(props: Props) {
     <Flex mb={4} alignItems="center" px={props.isExpanded ? 0 : 3}>
       <AspectRatio
         ratio={props.entry.width / props.entry.height}
-        w={props.isExpanded ? "100%" : "40px"}
+        w={props.isExpanded ? "100%" : "60px"}
         bg={props.entry.averageColor}
         flexShrink={0}
       >
-        <Box>
-          {props.isExpanded ? (
-            <Image src={src} width="100%" height="100%" />
-          ) : null}
-        </Box>
+        <Image src={src} width="100%" height="100%" />
       </AspectRatio>
       {!props.isExpanded && props.entry.headings ? (
         <Box ml={3}>
