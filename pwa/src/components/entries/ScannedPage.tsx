@@ -10,6 +10,11 @@ interface Props {
 
 export default function ScannedPage(props: Props) {
   const src = REMOTE_URL + props.entry.fileUrl
+  const thumbnailSrc =
+    REMOTE_URL +
+    props.entry.fileUrl
+      .replace(/\/scanned\//, "/thumbnails/")
+      .replace(/\..*$/, ".jpg")
 
   return (
     <Flex mb={4} alignItems="center" px={props.isExpanded ? 0 : 3}>
@@ -19,7 +24,17 @@ export default function ScannedPage(props: Props) {
         bg={props.entry.averageColor}
         flexShrink={0}
       >
-        <Image src={src} width="100%" height="100%" />
+        <Box position="relative" width="100%" height="100%">
+          <Image
+            src={thumbnailSrc}
+            position="absolute"
+            width="100%"
+            height="100%"
+          />
+          {props.isExpanded ? (
+            <Image src={src} position="absolute" width="100%" height="100%" />
+          ) : null}
+        </Box>
       </AspectRatio>
       {!props.isExpanded && props.entry.headings ? (
         <Box ml={3}>
