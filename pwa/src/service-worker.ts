@@ -47,10 +47,12 @@ registerRoute(
 )
 
 registerRoute(
-  ({url}) => /^\/(scanned|audio)\//.test(url.pathname),
+  ({url}) => /^\/scanned\//.test(url.pathname),
   new StaleWhileRevalidate({
     cacheName: "media",
-    plugins: [new ExpirationPlugin({maxEntries: 200})],
+    plugins: [
+      new ExpirationPlugin({purgeOnQuotaError: true, maxEntries: 1000}),
+    ],
   }),
 )
 
