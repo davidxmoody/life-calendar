@@ -1,6 +1,6 @@
 import {AspectRatio, Box, Flex, Image} from "@chakra-ui/react"
 import * as React from "react"
-import {REMOTE_URL} from "../../config"
+import {getScannedUrl, getThumbnailUrl} from "../../helpers/getImageUrls"
 import {ScannedEntry} from "../../types"
 
 interface Props {
@@ -9,13 +9,6 @@ interface Props {
 }
 
 export default function ScannedPage(props: Props) {
-  const src = REMOTE_URL + props.entry.fileUrl
-  const thumbnailSrc =
-    REMOTE_URL +
-    props.entry.fileUrl
-      .replace(/\/scanned\//, "/thumbnails/")
-      .replace(/\..*$/, ".jpg")
-
   return (
     <Flex mb={4} alignItems="center" px={props.isExpanded ? 0 : 3}>
       <AspectRatio
@@ -26,13 +19,18 @@ export default function ScannedPage(props: Props) {
       >
         <Box position="relative" width="100%" height="100%">
           <Image
-            src={thumbnailSrc}
+            src={getThumbnailUrl(props.entry)}
             position="absolute"
             width="100%"
             height="100%"
           />
           {props.isExpanded ? (
-            <Image src={src} position="absolute" width="100%" height="100%" />
+            <Image
+              src={getScannedUrl(props.entry)}
+              position="absolute"
+              width="100%"
+              height="100%"
+            />
           ) : null}
         </Box>
       </AspectRatio>

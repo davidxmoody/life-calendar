@@ -16,7 +16,10 @@ export default function SyncButton(props: {fullSync?: boolean}) {
     setSyncState({type: "loading"})
     sync(props.fullSync)
       .then((num) => setSyncState({type: "success", num}))
-      .catch(() => setSyncState({type: "error"}))
+      .catch((error) => {
+        console.error(error)
+        setSyncState({type: "error"})
+      })
   }
 
   return (

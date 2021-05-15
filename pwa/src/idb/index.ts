@@ -1,6 +1,7 @@
 import {openDB} from "idb"
 import {REMOTE_URL} from "../config"
-import {MarkdownEntry} from "../types"
+import {getThumbnailUrl} from "../helpers/getImageUrls"
+import {Entry, LayerData, MarkdownEntry} from "../types"
 
 export const dbPromise = openDB("data", 1, {
   upgrade(db, oldVersion) {
@@ -29,7 +30,11 @@ export async function sync(fullSync?: boolean): Promise<number> {
     ? null
     : (await db.get("config", "lastSyncTimestamp")) ?? null
 
-  const {timestamp, entries, layers} = await fetch(
+  const {
+    timestamp,
+    entries,
+    layers,
+  }: {timestamp: number; entries: Entry[]; layers: LayerData[]} = await fetch(
     `${REMOTE_URL}/sync${
       lastSyncTimestamp ? `?sinceMs=${lastSyncTimestamp}` : ""
     }`,
@@ -48,6 +53,18 @@ export async function sync(fullSync?: boolean): Promise<number> {
   tx.objectStore("config").put(timestamp, "lastSyncTimestamp")
 
   await tx.done
+
+  const thumbnailCache = await caches.open("thumbnails")
+  const thumbnailUrls = entries.flatMap((e) =>
+    e.type === "scanned" ? [getThumbnailUrl(e)] : [],
+  )
+  const chunkSize = 20
+  let added = 0
+  while (added < thumbnailUrls.length) {
+    const toAdd = thumbnailUrls.slice(added, added + chunkSize)
+    await thumbnailCache.addAll(toAdd)
+    added = added + toAdd.length
+  }
 
   return layers.length + entries.length
 }
