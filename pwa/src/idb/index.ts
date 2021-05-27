@@ -90,3 +90,20 @@ export async function search(
 }
 
 ;(window as any).search = search
+
+export interface Stats {
+  numEntries: number
+  numLayers: number
+  lastSyncTimestamp: number | null
+}
+
+export async function getStats(): Promise<Stats> {
+  const db = await dbPromise
+
+  const numEntries = await db.count("entries")
+  const numLayers = await db.count("layers")
+  const lastSyncTimestamp: number | null =
+    (await db.get("config", "lastSyncTimestamp")) ?? null
+
+  return {numEntries, numLayers, lastSyncTimestamp}
+}

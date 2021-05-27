@@ -3,13 +3,18 @@ import {Button} from "@chakra-ui/react"
 import React, {useState} from "react"
 import {sync} from "../idb"
 
+interface Props {
+  fullSync?: boolean
+  onFinish?: () => void
+}
+
 type SyncState =
   | {type: "initial"}
   | {type: "loading"}
   | {type: "success"; num: number}
   | {type: "error"}
 
-export default function SyncButton(props: {fullSync?: boolean}) {
+export default function SyncButton(props: Props) {
   const [syncState, setSyncState] = useState<SyncState>({type: "initial"})
 
   function startSync() {
@@ -20,6 +25,7 @@ export default function SyncButton(props: {fullSync?: boolean}) {
         console.error(error)
         setSyncState({type: "error"})
       })
+      .then(() => props.onFinish?.())
   }
 
   return (

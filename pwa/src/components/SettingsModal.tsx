@@ -10,9 +10,11 @@ import {
   ModalOverlay,
   Stack,
   useColorMode,
+  Text,
 } from "@chakra-ui/react"
 import SyncButton from "./SyncButton"
 import {MoonIcon, SunIcon} from "@chakra-ui/icons"
+import useStats from "../hooks/useStats"
 
 interface Props {
   isOpen: boolean
@@ -22,6 +24,8 @@ interface Props {
 export default function SettingsModal(props: Props) {
   const {colorMode, toggleColorMode} = useColorMode()
 
+  const {stats, refresh} = useStats(props.isOpen)
+
   return (
     <Modal isOpen={props.isOpen} onClose={props.onClose} size="xs">
       <ModalOverlay />
@@ -30,9 +34,16 @@ export default function SettingsModal(props: Props) {
         <ModalCloseButton />
         <ModalBody>
           <Stack spacing={4}>
-            <SyncButton />
+            <Text>
+              Stats:{" "}
+              {stats
+                ? `${stats.numEntries.toLocaleString()} entries, ${stats.numLayers.toLocaleString()} layers`
+                : "Loading..."}
+            </Text>
 
-            <SyncButton fullSync />
+            <SyncButton onFinish={refresh} />
+
+            <SyncButton fullSync onFinish={refresh} />
 
             <Button
               colorScheme="blue"
