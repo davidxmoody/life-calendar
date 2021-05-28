@@ -37,7 +37,7 @@ export default function SettingsModal(props: Props) {
             <Text>
               Stats:{" "}
               {stats
-                ? `${stats.numEntries.toLocaleString()} entries, ${stats.numLayers.toLocaleString()} layers`
+                ? `${stats.numEntries.toLocaleString()} entries, ${stats.numLayers.toLocaleString()} layers, ${stats.numImages.toLocaleString()} images, ${stats.numThumbnails.toLocaleString()} thumbnails`
                 : "Loading..."}
             </Text>
 

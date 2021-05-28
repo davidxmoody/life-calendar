@@ -95,6 +95,8 @@ export interface Stats {
   numEntries: number
   numLayers: number
   lastSyncTimestamp: number | null
+  numImages: number
+  numThumbnails: number
 }
 
 export async function getStats(): Promise<Stats> {
@@ -105,5 +107,9 @@ export async function getStats(): Promise<Stats> {
   const lastSyncTimestamp: number | null =
     (await db.get("config", "lastSyncTimestamp")) ?? null
 
-  return {numEntries, numLayers, lastSyncTimestamp}
+  const numImages = (await (await caches.open("media")).keys()).length
+
+  const numThumbnails = (await (await caches.open("thumbnails")).keys()).length
+
+  return {numEntries, numLayers, lastSyncTimestamp, numImages, numThumbnails}
 }
