@@ -3,13 +3,15 @@ import {REMOTE_URL} from "../config"
 import {getThumbnailUrl} from "../helpers/getImageUrls"
 import {Entry, LayerData, MarkdownEntry} from "../types"
 
-export const dbPromise = openDB("data", 1, {
-  upgrade(db, oldVersion) {
+export const dbPromise = openDB("data", 2, {
+  upgrade(db, oldVersion, _newVersion, transaction) {
     switch (oldVersion) {
       case 0:
         db.createObjectStore("entries", {keyPath: "id"})
         db.createObjectStore("layers", {keyPath: "id"})
         db.createObjectStore("config")
+      case 1:
+        transaction.objectStore("entries").createIndex("type", "type")
     }
   },
   blocked() {
@@ -92,24 +94,38 @@ export async function search(
 ;(window as any).search = search
 
 export interface Stats {
-  numEntries: number
-  numLayers: number
   lastSyncTimestamp: number | null
-  numImages: number
-  numThumbnails: number
+  markdown: number
+  scanned: number
+  audio: number
+  layers: number
+  thumbnails: number
+  images: number
 }
 
 export async function getStats(): Promise<Stats> {
   const db = await dbPromise
 
-  const numEntries = await db.count("entries")
-  const numLayers = await db.count("layers")
   const lastSyncTimestamp: number | null =
     (await db.get("config", "lastSyncTimestamp")) ?? null
 
-  const numImages = (await (await caches.open("media")).keys()).length
+  const layers = await db.count("layers")
 
-  const numThumbnails = (await (await caches.open("thumbnails")).keys()).length
+  const markdown = await db.countFromIndex("entries", "type", "markdown")
+  const scanned = await db.countFromIndex("entries", "type", "scanned")
+  const audio = await db.countFromIndex("entries", "type", "audio")
 
-  return {numEntries, numLayers, lastSyncTimestamp, numImages, numThumbnails}
+  const images = (await (await caches.open("media")).keys()).length
+
+  const thumbnails = (await (await caches.open("thumbnails")).keys()).length
+
+  return {
+    lastSyncTimestamp,
+    markdown,
+    scanned,
+    audio,
+    layers,
+    thumbnails,
+    images,
+  }
 }

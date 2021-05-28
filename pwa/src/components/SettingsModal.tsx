@@ -5,12 +5,13 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Stack,
   useColorMode,
-  Text,
+  UnorderedList,
+  ListItem,
+  Box,
 } from "@chakra-ui/react"
 import SyncButton from "./SyncButton"
 import {MoonIcon, SunIcon} from "@chakra-ui/icons"
@@ -33,14 +34,7 @@ export default function SettingsModal(props: Props) {
         <ModalHeader>Settings</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Stack spacing={4}>
-            <Text>
-              Stats:{" "}
-              {stats
-                ? `${stats.numEntries.toLocaleString()} entries, ${stats.numLayers.toLocaleString()} layers, ${stats.numImages.toLocaleString()} images, ${stats.numThumbnails.toLocaleString()} thumbnails`
-                : "Loading..."}
-            </Text>
-
+          <Stack spacing={4} mb={2}>
             <SyncButton onFinish={refresh} />
 
             <SyncButton fullSync onFinish={refresh} />
@@ -52,10 +46,29 @@ export default function SettingsModal(props: Props) {
             >
               Toggle dark mode
             </Button>
+
+            <Box>
+              <UnorderedList>
+                {stats ? (
+                  ([
+                    "layers",
+                    "audio",
+                    "markdown",
+                    "scanned",
+                    "thumbnails",
+                    "images",
+                  ] as const).map((t) => (
+                    <ListItem key={t}>
+                      {stats[t].toLocaleString()} {t}
+                    </ListItem>
+                  ))
+                ) : (
+                  <ListItem>Loading stats...</ListItem>
+                )}
+              </UnorderedList>
+            </Box>
           </Stack>
         </ModalBody>
-
-        <ModalFooter></ModalFooter>
       </ModalContent>
     </Modal>
   )
