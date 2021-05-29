@@ -1,5 +1,7 @@
+import {CheckCircleIcon, WarningIcon} from "@chakra-ui/icons"
 import {AspectRatio, Box, Flex, Image} from "@chakra-ui/react"
 import * as React from "react"
+import {useEffect, useState} from "react"
 import {getScannedUrl, getThumbnailUrl} from "../../helpers/getImageUrls"
 import {ScannedEntry} from "../../types"
 
@@ -9,6 +11,15 @@ interface Props {
 }
 
 export default function ScannedPage(props: Props) {
+  const [isCached, setIsCached] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    caches
+      .open("media")
+      .then((cache) => cache.match(getScannedUrl(props.entry)))
+      .then((result) => setIsCached(!!result))
+  }, [])
+
   return (
     <Flex mb={4} alignItems="center" px={props.isExpanded ? 0 : 3}>
       <AspectRatio
@@ -24,12 +35,26 @@ export default function ScannedPage(props: Props) {
             width="100%"
             height="100%"
           />
+          <Box
+            position="absolute"
+            display="flex"
+            bottom={1}
+            left={1}
+            color="blue.900"
+          >
+            {isCached === true ? (
+              <CheckCircleIcon />
+            ) : isCached === false ? (
+              <WarningIcon />
+            ) : null}
+          </Box>
           {props.isExpanded ? (
             <Image
               src={getScannedUrl(props.entry)}
               position="absolute"
               width="100%"
               height="100%"
+              onLoad={() => setIsCached(true)}
             />
           ) : null}
         </Box>
