@@ -1,13 +1,13 @@
-import React, {useCallback} from "react"
 import {useRoute} from "wouter"
 import WeekSummary from "./WeekSummary"
-import {useStore} from "../store"
 import NavBar from "./NavBar"
 import {Box} from "@chakra-ui/react"
 import Calendar from "./calendar/Calendar"
+import {useAtom} from "jotai"
+import {selectedLayerIdAtom} from "../atoms"
 
 export default function App() {
-  const selectedLayerId = useStore(useCallback((s) => s.selectedLayerId, []))
+  const [selectedLayerId] = useAtom(selectedLayerIdAtom)
 
   const [, weekParams] = useRoute("/weeks/:weekStart")
   const selectedWeekStart = weekParams?.weekStart

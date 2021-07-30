@@ -5,6 +5,7 @@ import App from "./components/App"
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration"
 import {ChakraProvider, ColorModeScript} from "@chakra-ui/react"
 import {extendTheme} from "@chakra-ui/react"
+import {Provider as JotaiProvider} from "jotai"
 
 const theme = extendTheme({
   shadows: {
@@ -16,7 +17,9 @@ ReactDOM.render(
   <StrictMode>
     <ColorModeScript />
     <ChakraProvider theme={theme}>
-      <App />
+      <JotaiProvider>
+        <App />
+      </JotaiProvider>
     </ChakraProvider>
   </StrictMode>,
   document.getElementById("root"),

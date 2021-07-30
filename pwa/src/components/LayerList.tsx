@@ -1,14 +1,11 @@
-import React, {useCallback} from "react"
 import {ChevronDownIcon} from "@chakra-ui/icons"
 import {Button, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react"
 import useLayerIds from "../hooks/useLayerIds"
-import {useStore} from "../store"
+import {useAtom} from "jotai"
+import {selectedLayerIdAtom} from "../atoms"
 
 export default function LayerList() {
-  const selectedLayerId = useStore(useCallback((s) => s.selectedLayerId, []))
-  const setSelectedLayerId = useStore(
-    useCallback((s) => s.setSelectedLayerId, []),
-  )
+  const [selectedLayerId, setSelectedLayerId] = useAtom(selectedLayerIdAtom)
 
   const layerIds = useLayerIds() ?? []
 
