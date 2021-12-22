@@ -42,7 +42,7 @@ async function getScannedEntry(file: string): Promise<ScannedEntry> {
   )
 
   return {
-    id: `${date}-scanned-${sequenceNumber}`,
+    id: `${date}-scanned-${sequenceNumber.toString().padStart(2, "0")}`,
     type: "scanned",
     date,
     sequenceNumber,
