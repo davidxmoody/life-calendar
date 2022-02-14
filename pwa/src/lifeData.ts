@@ -50,6 +50,11 @@ const eras: Era[] = [
     name: "Candide",
     color: "rgb(217, 72, 1)",
   },
+  {
+    startDate: "2021-11-01",
+    name: "After Candide",
+    color: "rgb(49, 163, 84)",
+  },
 ]
 
 const lifeData = {
