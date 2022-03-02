@@ -18,19 +18,21 @@ export default function App() {
 
       <Box height="72px" />
 
-      <Box height={selectedWeekStart ? 0 : "auto"} overflow="hidden">
+      <Box
+        position="fixed"
+        top="72px"
+        bottom={0}
+        left={0}
+        overflow="hidden"
+        height={[selectedWeekStart ? 0 : "auto", "auto"]}
+      >
         <Calendar layerId={selectedLayerId} />
       </Box>
 
-      <Box display={selectedWeekStart ? "block" : "none"}>
-        <Box p={[0, 4]} maxW="900px" margin="auto">
-          {selectedWeekStart ? (
-            <WeekSummary
-              key={selectedWeekStart}
-              weekStart={selectedWeekStart}
-            />
-          ) : null}
-        </Box>
+      <Box flex={1} p={[0, 4]} maxW="900px" ml={[0, 480]}>
+        {selectedWeekStart ? (
+          <WeekSummary key={selectedWeekStart} weekStart={selectedWeekStart} />
+        ) : null}
       </Box>
     </>
   )

@@ -24,8 +24,14 @@ export default memo(function Calendar(props: Props) {
 
   const ref = useRef<HTMLCanvasElement>(null)
 
-  const canvasWidth = Math.min(700, window.innerWidth)
-  const canvasHeight = canvasWidth * 1.4
+  const ratio = 1.46
+  let canvasHeight = window.innerHeight - 72
+  let canvasWidth = Math.floor(canvasHeight / ratio)
+
+  if (canvasWidth > window.innerWidth) {
+    canvasWidth = Math.min(700, window.innerWidth)
+    canvasHeight = canvasWidth * ratio
+  }
 
   const pixelRatio = window.devicePixelRatio || 1
   const drawWidth = pixelRatio * canvasWidth
@@ -58,35 +64,33 @@ export default memo(function Calendar(props: Props) {
   }, [ref.current, data, layerData, d])
 
   return (
-    <Box display="flex" justifyContent="center" overflow="hidden">
-      <canvas
-        ref={ref}
-        width={drawWidth}
-        height={drawHeight}
-        style={{width: canvasWidth, height: canvasHeight, cursor: "pointer"}}
-        onClick={(e) => {
-          const rect = e.currentTarget.getBoundingClientRect()
-          const x = (e.pageX - window.pageXOffset - rect.left) * pixelRatio
-          const y = (e.pageY - window.pageYOffset - rect.top) * pixelRatio
+    <canvas
+      ref={ref}
+      width={drawWidth}
+      height={drawHeight}
+      style={{width: canvasWidth, height: canvasHeight, cursor: "pointer"}}
+      onClick={(e) => {
+        const rect = e.currentTarget.getBoundingClientRect()
+        const x = (e.pageX - window.pageXOffset - rect.left) * pixelRatio
+        const y = (e.pageY - window.pageYOffset - rect.top) * pixelRatio
 
-          const c = getWeekUnderCursor({x, y, d})
+        const c = getWeekUnderCursor({x, y, d})
 
-          if (!c) {
-            return
-          }
+        if (!c) {
+          return
+        }
 
-          const week =
-            data.decades[c.colIndex].years[c.rowIndex].weeks[
-              c.weekColIndex * d.layout.weeksPerYearRow + c.weekRowIndex
-            ]
+        const week =
+          data.decades[c.colIndex].years[c.rowIndex].weeks[
+            c.weekColIndex * d.layout.weeksPerYearRow + c.weekRowIndex
+          ]
 
-          if (!week || week.startDate > today) {
-            return
-          }
+        if (!week || week.startDate > today) {
+          return
+        }
 
-          setLocation(`/weeks/${week.startDate}`)
-        }}
-      />
-    </Box>
+        setLocation(`/weeks/${week.startDate}`)
+      }}
+    />
   )
 })
