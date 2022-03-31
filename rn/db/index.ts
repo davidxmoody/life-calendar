@@ -7,6 +7,8 @@ export interface SyncStats {
   todo?: number // TODO
 }
 
+const db = SQLite.openDatabase("entries.db")
+
 export async function sync(fullSync?: boolean): Promise<SyncStats> {
   fullSync // TODO
   const lastSyncTimestamp = 1646295527000 // TODO
@@ -23,8 +25,6 @@ export async function sync(fullSync?: boolean): Promise<SyncStats> {
 
   console.log("num entries", entries.length)
 
-  const db = SQLite.openDatabase("entries.db")
-
   db.transaction((tx) => {
     tx.executeSql(
       `CREATE TABLE IF NOT EXISTS markdown (
@@ -39,7 +39,7 @@ export async function sync(fullSync?: boolean): Promise<SyncStats> {
       },
       (err, err2) => {
         console.log("SQL error", err, err2)
-        return true
+        return false
       },
     )
 
@@ -60,7 +60,7 @@ export async function sync(fullSync?: boolean): Promise<SyncStats> {
       },
       (err, err2) => {
         console.log("SQL error scanned", err, err2)
-        return true
+        return false
       },
     )
 
@@ -106,4 +106,20 @@ export async function sync(fullSync?: boolean): Promise<SyncStats> {
   })
 
   return {}
+}
+
+export function getEntries(): Promise<Entry[]> {
+  return new Promise((resolve, reject) => {
+    db.readTransaction((tx) => {
+      tx.executeSql(
+        `SELECT * FROM markdown;`,
+        [],
+        (_tx, result) => resolve(result.rows._array),
+        (_tx, err) => {
+          reject(err)
+          return false
+        },
+      )
+    })
+  })
 }
