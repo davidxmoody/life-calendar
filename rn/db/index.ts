@@ -43,6 +43,27 @@ export async function sync(fullSync?: boolean): Promise<SyncStats> {
       },
     )
 
+    tx.executeSql(
+      `CREATE TABLE IF NOT EXISTS scanned (
+        date TEXT NOT NULL CHECK (date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'),
+        seq_no INTEGER NOT NULL,
+        file_path TEXT NOT NULL,
+        average_color TEXT NOT NULL,
+        width INTEGER NOT NULL,
+        height INTEGER NOT NULL,
+        headings_json TEXT NOT NULL,
+        PRIMARY KEY (date, seq_no)
+      );`,
+      [],
+      () => {
+        console.log("scanned table created")
+      },
+      (err, err2) => {
+        console.log("SQL error scanned", err, err2)
+        return true
+      },
+    )
+
     for (const entry of entries) {
       if (entry.type === "markdown") {
         tx.executeSql(
@@ -54,6 +75,33 @@ export async function sync(fullSync?: boolean): Promise<SyncStats> {
           },
         )
       }
+
+      if (entry.type === "scanned") {
+        tx.executeSql(
+          `INSERT INTO scanned (date, seq_no, file_path, average_color, width, height, headings_json)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+          ON CONFLICT DO UPDATE SET
+            file_path=excluded.file_path,
+            average_color=excluded.average_color,
+            width=excluded.width,
+            height=excluded.height,
+            headings_json=excluded.headings_json;`,
+          [
+            entry.date,
+            entry.sequenceNumber,
+            entry.fileUrl,
+            entry.averageColor,
+            entry.width,
+            entry.height,
+            JSON.stringify(entry.headings ?? []),
+          ],
+          () => {
+            console.log("scanned entry inserted")
+          },
+        )
+      }
+
+      // TODO handle audio entries and also import old audio entries too
     }
   })
 
