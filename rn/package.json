@@ -25,6 +25,7 @@
     "expo-font": "~10.0.4",
     "expo-linking": "~3.0.0",
     "expo-splash-screen": "~0.14.0",
+    "expo-sqlite": "^10.1.1",
     "expo-status-bar": "~1.2.0",
     "expo-web-browser": "~10.1.0",
     "react": "17.0.1",
