@@ -21,7 +21,8 @@ process.chdir(process.env.DIARY_DIR)
 
 const app = express()
 
-app.use((_req, res, next) => {
+app.use((req, res, next) => {
+  console.log(req.path)
   res.header("Access-Control-Allow-Origin", "*")
   next()
 })
