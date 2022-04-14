@@ -2,7 +2,6 @@
 
 import {openDB} from "idb"
 import {REMOTE_URL} from "../config"
-import {getThumbnailUrl} from "../helpers/getImageUrls"
 import {Entry, LayerData, MarkdownEntry} from "../types"
 
 export const dbPromise = openDB("data", 2, {
@@ -58,18 +57,6 @@ export async function sync(fullSync?: boolean): Promise<number> {
 
   await tx.done
 
-  const thumbnailCache = await caches.open("thumbnails")
-  const thumbnailUrls = entries.flatMap((e) =>
-    e.type === "scanned" ? [getThumbnailUrl(e)] : [],
-  )
-  const chunkSize = 20
-  let added = 0
-  while (added < thumbnailUrls.length) {
-    const toAdd = thumbnailUrls.slice(added, added + chunkSize)
-    await thumbnailCache.addAll(toAdd)
-    added = added + toAdd.length
-  }
-
   return layers.length + entries.length
 }
 
@@ -101,7 +88,6 @@ export interface Stats {
   scanned: number
   audio: number
   layers: number
-  thumbnails: number
   images: number
 }
 
@@ -119,15 +105,12 @@ export async function getStats(): Promise<Stats> {
 
   const images = (await (await caches.open("media")).keys()).length
 
-  const thumbnails = (await (await caches.open("thumbnails")).keys()).length
-
   return {
     lastSyncTimestamp,
     markdown,
     scanned,
     audio,
     layers,
-    thumbnails,
     images,
   }
 }

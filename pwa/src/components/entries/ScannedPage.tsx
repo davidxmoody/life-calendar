@@ -1,8 +1,7 @@
-import {CheckCircleIcon, WarningIcon} from "@chakra-ui/icons"
 import {AspectRatio, Box, Flex, Image} from "@chakra-ui/react"
 import * as React from "react"
 import {useEffect, useState} from "react"
-import {getScannedUrl, getThumbnailUrl} from "../../helpers/getImageUrls"
+import {getScannedUrl} from "../../helpers/getImageUrls"
 import {ScannedEntry} from "../../types"
 
 interface Props {
@@ -29,26 +28,7 @@ export default function ScannedPage(props: Props) {
         flexShrink={0}
       >
         <Box position="relative" width="100%" height="100%">
-          <Image
-            src={getThumbnailUrl(props.entry)}
-            position="absolute"
-            width="100%"
-            height="100%"
-          />
-          <Box
-            position="absolute"
-            display="flex"
-            bottom={1}
-            left={1}
-            color="blue.900"
-          >
-            {isCached === true ? (
-              <CheckCircleIcon />
-            ) : isCached === false ? (
-              <WarningIcon />
-            ) : null}
-          </Box>
-          {props.isExpanded ? (
+          {props.isExpanded || isCached ? (
             <Image
               src={getScannedUrl(props.entry)}
               position="absolute"

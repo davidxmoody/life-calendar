@@ -28,7 +28,6 @@ app.use((req, res, next) => {
 })
 
 app.use("/scanned", express.static("scanned"))
-app.use("/thumbnails", express.static("thumbnails"))
 app.use("/audio", express.static("audio"))
 
 app.get("/sync", async (req, res) => {

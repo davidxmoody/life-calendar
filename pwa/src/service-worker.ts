@@ -56,11 +56,6 @@ registerRoute(
   }),
 )
 
-registerRoute(
-  ({url}) => /^\/thumbnails\//.test(url.pathname),
-  new StaleWhileRevalidate({cacheName: "thumbnails"}),
-)
-
 // This allows the web app to trigger skipWaiting via
 // registration.waiting.postMessage({type: 'SKIP_WAITING'})
 self.addEventListener("message", (event) => {

@@ -50,14 +50,15 @@ export default function SettingsModal(props: Props) {
             <Box>
               <UnorderedList>
                 {stats ? (
-                  ([
-                    "layers",
-                    "audio",
-                    "markdown",
-                    "scanned",
-                    "thumbnails",
-                    "images",
-                  ] as const).map((t) => (
+                  (
+                    [
+                      "layers",
+                      "audio",
+                      "markdown",
+                      "scanned",
+                      "images",
+                    ] as const
+                  ).map((t) => (
                     <ListItem key={t}>
                       {stats[t].toLocaleString()} {t}
                     </ListItem>
