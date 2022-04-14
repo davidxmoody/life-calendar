@@ -1,3 +1,5 @@
+/* eslint-disable no-fallthrough */
+
 import {openDB} from "idb"
 import {REMOTE_URL} from "../config"
 import {getThumbnailUrl} from "../helpers/getImageUrls"

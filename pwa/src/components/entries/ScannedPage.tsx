@@ -18,7 +18,7 @@ export default function ScannedPage(props: Props) {
       .open("media")
       .then((cache) => cache.match(getScannedUrl(props.entry)))
       .then((result) => setIsCached(!!result))
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Flex mb={4} alignItems="center" px={props.isExpanded ? 0 : 3}>

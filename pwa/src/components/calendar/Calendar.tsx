@@ -4,7 +4,6 @@ import lifeData from "../../lifeData"
 import useToday from "../../hooks/useToday"
 import drawCalendar from "./drawCalendar"
 import useLayerData from "../../hooks/useLayerData"
-import {Box} from "@chakra-ui/react"
 import calculateCalendarDimensions from "../../helpers/calculateCalendarDimensions"
 import getWeekUnderCursor from "../../helpers/getWeekUnderCursor"
 import {useLocation} from "wouter"
@@ -18,9 +17,10 @@ export default memo(function Calendar(props: Props) {
 
   const today = useToday()
   const layerData = useLayerData(props.layerId)
-  const data = useMemo(() => generateCalendarData({today, ...lifeData}), [
-    today,
-  ])
+  const data = useMemo(
+    () => generateCalendarData({today, ...lifeData}),
+    [today],
+  )
 
   const ref = useRef<HTMLCanvasElement>(null)
 
@@ -61,7 +61,7 @@ export default memo(function Calendar(props: Props) {
         lastDraw.current = d
       }
     }
-  }, [ref.current, data, layerData, d])
+  }, [ref.current, data, layerData, d]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <canvas
