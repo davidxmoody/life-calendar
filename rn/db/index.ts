@@ -1,5 +1,5 @@
 import * as SQLite from "expo-sqlite"
-import {Entry, LayerData} from "../types"
+import {Entry, LayerData, MarkdownEntry, ScannedEntry} from "../types"
 
 const REMOTE_URL = "https://192.168.0.26:8051"
 
@@ -7,7 +7,7 @@ export interface SyncStats {
   todo?: number // TODO
 }
 
-const db = SQLite.openDatabase("entries.db")
+const db = SQLite.openDatabase("entries2.db")
 
 export async function sync(fullSync?: boolean): Promise<SyncStats> {
   fullSync // TODO
@@ -108,13 +108,19 @@ export async function sync(fullSync?: boolean): Promise<SyncStats> {
   return {}
 }
 
-export function getEntries(): Promise<Entry[]> {
+export async function getEntries(): Promise<Entry[]> {
+  const markdown = await getMarkdownEntries()
+  const scanned = await getScannedEntries()
+  return [...markdown, ...scanned]
+}
+
+function getMarkdownEntries(): Promise<MarkdownEntry[]> {
   return new Promise((resolve, reject) => {
     db.readTransaction((tx) => {
       tx.executeSql(
         `SELECT * FROM markdown;`,
         [],
-        (_tx, result) => resolve(result.rows._array),
+        (_tx, result) => resolve(result.rows._array.map(formatMarkdownEntry)),
         (_tx, err) => {
           reject(err)
           return false
@@ -122,4 +128,46 @@ export function getEntries(): Promise<Entry[]> {
       )
     })
   })
+}
+
+function getScannedEntries(): Promise<ScannedEntry[]> {
+  return new Promise((resolve, reject) => {
+    db.readTransaction((tx) => {
+      tx.executeSql(
+        `SELECT * FROM scanned;`,
+        [],
+        (_tx, result) => resolve(result.rows._array.map(formatScannedEntry)),
+        (_tx, err) => {
+          reject(err)
+          return false
+        },
+      )
+    })
+  })
+}
+
+function formatMarkdownEntry(dbEntry: any): MarkdownEntry {
+  console.log("format markdown", dbEntry)
+  return {
+    id: `${dbEntry.date}-markdown-${dbEntry.time}`,
+    type: "markdown",
+    date: dbEntry.date,
+    time: dbEntry.time,
+    content: dbEntry.content,
+  }
+}
+
+function formatScannedEntry(dbEntry: any): ScannedEntry {
+  console.log("format scanned", dbEntry)
+  return {
+    id: `${dbEntry.date}-scanned-${dbEntry.seq_no.toString().padStart(2, "0")}`,
+    type: "scanned",
+    date: dbEntry.date,
+    sequenceNumber: dbEntry.seq_no,
+    fileUrl: dbEntry.file_path,
+    averageColor: dbEntry.average_color,
+    width: dbEntry.width,
+    height: dbEntry.height,
+    headings: JSON.parse(dbEntry.headings_json),
+  }
 }

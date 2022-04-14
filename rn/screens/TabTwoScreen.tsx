@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react"
-import {FlatList, StyleSheet, View} from "react-native"
+import {FlatList, View} from "react-native"
+import Markdown from "@flowchase/react-native-markdown-display"
 
 import {Text} from "../components/Themed"
 import {getEntries} from "../db"
@@ -14,11 +15,18 @@ export default function TabTwoScreen() {
 
   return (
     <FlatList
-      style={styles.container}
+      keyExtractor={(item) => item.id}
       renderItem={({item, index}) => {
         return (
           <View key={index}>
-            <Text>{JSON.stringify(item)}</Text>
+            {item.type === "markdown" ? (
+              <View style={{backgroundColor: "white"}}>
+                <Text>Hello {item.date}</Text>
+                <Markdown>{item.content}</Markdown>
+              </View>
+            ) : (
+              <Text>{JSON.stringify(item)}</Text>
+            )}
           </View>
         )
       }}
@@ -26,9 +34,3 @@ export default function TabTwoScreen() {
     />
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-})
