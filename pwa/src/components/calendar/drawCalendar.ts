@@ -81,7 +81,7 @@ function getWeekColor(
   weekIndex: number,
 ) {
   if (!("era" in week)) {
-    return `rgba(128, 128, 128, ${week.prob / 3})`
+    return `rgba(128, 128, 128, ${Math.max(0.03, week.prob / 3)})`
   }
 
   const opacity = layerData

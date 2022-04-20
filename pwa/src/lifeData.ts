@@ -59,7 +59,7 @@ const eras: Era[] = [
 
 const lifeData = {
   birthDate: "1990-07-04",
-  deathDate: "2090-07-03",
+  deathDate: "2089-12-31",
   eras,
 }
 

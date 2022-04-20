@@ -85,7 +85,7 @@ export default memo(function Calendar(props: Props) {
             c.weekColIndex * d.layout.weeksPerYearRow + c.weekRowIndex
           ]
 
-        if (!week || week.startDate > today) {
+        if (!week || !("era" in week)) {
           return
         }
 

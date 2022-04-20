@@ -16,6 +16,18 @@ export function getPrevWeekStart(date: string): string {
   return moment(date).isoWeekday(-6).format("YYYY-MM-DD")
 }
 
+export function parseYear(date: string) {
+  return parseInt(date.slice(0, 4), 10)
+}
+
+export function getFirstWeekInYear(date: string) {
+  let firstWeekInYear = getWeekStart(`${parseYear(date)}-01-01`)
+  if (parseYear(firstWeekInYear) < parseYear(date)) {
+    firstWeekInYear = getNextWeekStart(firstWeekInYear)
+  }
+  return firstWeekInYear
+}
+
 export function prettyFormatDateTime({
   date,
   time,

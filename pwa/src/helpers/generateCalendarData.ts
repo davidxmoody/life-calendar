@@ -1,7 +1,11 @@
-import moment from "moment"
 import probabilityOfSurvival from "./probabilityOfSurvival"
 import {Era} from "../lifeData"
-import {getWeekStart, getNextWeekStart} from "./dates"
+import {
+  getWeekStart,
+  getNextWeekStart,
+  parseYear,
+  getFirstWeekInYear,
+} from "./dates"
 
 interface PastWeek {
   startDate: string
@@ -20,7 +24,7 @@ export interface CalendarData {
 }
 
 function getYearNum(firstWeekStart: string, weekStart: string): number {
-  return Math.abs(moment(weekStart).diff(firstWeekStart, "years"))
+  return parseYear(weekStart) - parseYear(firstWeekStart)
 }
 
 function getEra(eras: Era[], weekStart: string): Era {
@@ -46,9 +50,13 @@ export default function generateCalendarData({
   deathDate: string
   eras: Era[]
 }) {
-  const firstWeekStartDate = getWeekStart(birthDate)
+  const firstWeekStartDate = getFirstWeekInYear(birthDate)
+  const firstEraWeekStartDate = getWeekStart(birthDate)
+
   const weeks: Week[] = [
-    {startDate: firstWeekStartDate, era: getEra(eras, firstWeekStartDate)},
+    firstWeekStartDate === firstEraWeekStartDate
+      ? {startDate: firstWeekStartDate, era: getEra(eras, firstWeekStartDate)}
+      : {startDate: firstWeekStartDate, prob: 0},
   ]
 
   while (true) {
@@ -58,7 +66,12 @@ export default function generateCalendarData({
       break
     }
 
-    if (nextWeek <= today) {
+    if (nextWeek < firstEraWeekStartDate) {
+      weeks.push({
+        startDate: nextWeek,
+        prob: 0,
+      })
+    } else if (nextWeek <= today) {
       weeks.push({
         startDate: nextWeek,
         era: getEra(eras, nextWeek),
