@@ -5,7 +5,6 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
   SettingsIcon,
-  ViewIcon,
 } from "@chakra-ui/icons"
 import LayerList from "./LayerList"
 import {Link, useRoute} from "wouter"
@@ -44,11 +43,7 @@ export default function NavBar() {
         />
       ) : null}
 
-      <Flex
-        flex={1}
-        display={[selectedWeekStart ? "none" : "flex", "flex"]}
-        mr={4}
-      >
+      <Flex flex={1} mr={4}>
         <Box flex={1} display={[selectedWeekStart ? "none" : "flex", "flex"]}>
           <LayerList />
         </Box>
@@ -78,14 +73,6 @@ export default function NavBar() {
         ml={4}
         colorScheme="blue"
         aria-label="Settings"
-        icon={<ViewIcon />}
-        onClick={jumpToModal.onOpen}
-      />
-
-      <IconButton
-        ml={4}
-        colorScheme="blue"
-        aria-label="Settings"
         icon={<SettingsIcon />}
         onClick={settingsModal.onOpen}
       />
@@ -94,6 +81,10 @@ export default function NavBar() {
       <SettingsModal
         isOpen={settingsModal.isOpen}
         onClose={settingsModal.onClose}
+        openJumpToModal={() => {
+          settingsModal.onClose()
+          jumpToModal.onOpen()
+        }}
       />
     </Box>
   )

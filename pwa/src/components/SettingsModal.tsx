@@ -14,12 +14,13 @@ import {
   Box,
 } from "@chakra-ui/react"
 import SyncButton from "./SyncButton"
-import {MoonIcon, SunIcon} from "@chakra-ui/icons"
+import {MoonIcon, SunIcon, ViewIcon} from "@chakra-ui/icons"
 import useStats from "../hooks/useStats"
 
 interface Props {
   isOpen: boolean
   onClose: () => void
+  openJumpToModal: () => void
 }
 
 export default function SettingsModal(props: Props) {
@@ -45,6 +46,14 @@ export default function SettingsModal(props: Props) {
               onClick={toggleColorMode}
             >
               Toggle dark mode
+            </Button>
+
+            <Button
+              colorScheme="blue"
+              leftIcon={<ViewIcon />}
+              onClick={props.openJumpToModal}
+            >
+              Jump to date
             </Button>
 
             <Box>
