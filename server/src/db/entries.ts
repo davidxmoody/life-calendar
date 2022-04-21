@@ -36,7 +36,6 @@ async function getScannedEntry(file: string): Promise<ScannedEntry> {
 
   const metaFile = file.replace(/^scanned/, "scanned-meta") + ".json"
 
-  // TODO maybe use zod to validate this?
   const {averageColor, width, height, headings} = JSON.parse(
     await readFile(metaFile, "utf-8"),
   )
