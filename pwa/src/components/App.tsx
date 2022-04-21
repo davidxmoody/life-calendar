@@ -10,7 +10,7 @@ export default function App() {
   const [selectedLayerId] = useAtom(selectedLayerIdAtom)
 
   const [, weekParams] = useRoute("/weeks/:weekStart")
-  const selectedWeekStart = weekParams?.weekStart
+  const selectedWeekStart = weekParams?.weekStart ?? null
 
   return (
     <>
@@ -26,7 +26,10 @@ export default function App() {
         overflow="hidden"
         height={[selectedWeekStart ? 0 : "auto", "auto"]}
       >
-        <Calendar layerId={selectedLayerId} />
+        <Calendar
+          layerId={selectedLayerId}
+          selectedWeekStart={selectedWeekStart}
+        />
       </Box>
 
       <Box flex={1} p={[0, 4]} maxW="900px" ml={[0, 480]}>
