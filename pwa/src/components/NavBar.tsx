@@ -1,5 +1,5 @@
 import React from "react"
-import {Box, Flex, IconButton, Spacer, useDisclosure} from "@chakra-ui/react"
+import {Box, Flex, IconButton, useDisclosure} from "@chakra-ui/react"
 import {
   CalendarIcon,
   ArrowLeftIcon,
@@ -33,15 +33,29 @@ export default function NavBar() {
       zIndex="banner"
     >
       {selectedWeekStart ? (
+        <IconButton
+          as={Link}
+          href="/"
+          mr={4}
+          colorScheme="blue"
+          aria-label="Calendar"
+          icon={<CalendarIcon />}
+          display={["flex", "none"]}
+        />
+      ) : null}
+
+      <Flex
+        flex={1}
+        display={[selectedWeekStart ? "none" : "flex", "flex"]}
+        mr={4}
+      >
+        <Box flex={1} display={[selectedWeekStart ? "none" : "flex", "flex"]}>
+          <LayerList />
+        </Box>
+      </Flex>
+
+      {selectedWeekStart ? (
         <>
-          <IconButton
-            as={Link}
-            href="/"
-            mr={4}
-            colorScheme="blue"
-            aria-label="Calendar"
-            icon={<CalendarIcon />}
-          />
           <IconButton
             as={Link}
             href={`/weeks/${getPrevWeekStart(selectedWeekStart ?? "")}`}
@@ -53,18 +67,12 @@ export default function NavBar() {
           <IconButton
             as={Link}
             href={`/weeks/${getNextWeekStart(selectedWeekStart ?? "")}`}
-            mr={4}
             colorScheme="blue"
             aria-label="Next week"
             icon={<ArrowRightIcon />}
           />
-          <Spacer />
         </>
-      ) : (
-        <Flex flex={1}>
-          <LayerList />
-        </Flex>
-      )}
+      ) : null}
 
       <IconButton
         ml={4}
