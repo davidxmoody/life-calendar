@@ -5,5 +5,11 @@ interface Props {
 }
 
 export default function AudioPlayer(props: Props) {
-  return <audio src={REMOTE_URL + props.sourceUrl} controls />
+  return (
+    <audio
+      style={{marginBottom: 16}}
+      src={REMOTE_URL + props.sourceUrl}
+      controls
+    />
+  )
 }
