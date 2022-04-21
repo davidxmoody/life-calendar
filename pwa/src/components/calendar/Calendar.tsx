@@ -1,5 +1,5 @@
 import React, {memo, useEffect, useMemo, useRef} from "react"
-import generateCalendarData, {Week} from "../../helpers/generateCalendarData"
+import generateCalendarData from "../../helpers/generateCalendarData"
 import lifeData from "../../lifeData"
 import useToday from "../../hooks/useToday"
 import drawCalendar from "./drawCalendar"
