@@ -1,9 +1,10 @@
 import {RepeatIcon, WarningTwoIcon} from "@chakra-ui/icons"
-import {Button} from "@chakra-ui/react"
+import {Button, IconButton} from "@chakra-ui/react"
 import React, {useState} from "react"
 import {sync} from "../idb"
 
 interface Props {
+  compact?: boolean
   fullSync?: boolean
   onFinish?: () => void
 }
@@ -28,7 +29,23 @@ export default function SyncButton(props: Props) {
       .then(() => props.onFinish?.())
   }
 
-  return (
+  const label =
+    (props.fullSync ? "Full sync" : "Sync") +
+    (syncState.type === "error"
+      ? " (error)"
+      : syncState.type === "success"
+      ? ` (${formatShortNum(syncState.num)})`
+      : "")
+
+  return props.compact ? (
+    <IconButton
+      isLoading={syncState.type === "loading"}
+      colorScheme="blue"
+      aria-label={label}
+      icon={syncState.type === "error" ? <WarningTwoIcon /> : <RepeatIcon />}
+      onClick={startSync}
+    />
+  ) : (
     <Button
       isLoading={syncState.type === "loading"}
       colorScheme="blue"
@@ -37,12 +54,7 @@ export default function SyncButton(props: Props) {
       }
       onClick={startSync}
     >
-      {props.fullSync ? "Full sync" : "Sync"}
-      {syncState.type === "error"
-        ? " (error)"
-        : syncState.type === "success"
-        ? ` (${formatShortNum(syncState.num)})`
-        : ""}
+      {label}
     </Button>
   )
 }

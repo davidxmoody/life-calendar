@@ -11,6 +11,7 @@ import {Link, useRoute} from "wouter"
 import {getNextWeekStart, getPrevWeekStart} from "../helpers/dates"
 import SettingsModal from "./SettingsModal"
 import JumpToModal from "./JumpToModal"
+import SyncButton from "./SyncButton"
 
 export default function NavBar() {
   const [, weekParams] = useRoute("/weeks/:weekStart")
@@ -68,6 +69,10 @@ export default function NavBar() {
           />
         </>
       ) : null}
+
+      <Box ml={4}>
+        <SyncButton compact={true} />
+      </Box>
 
       <IconButton
         ml={4}
