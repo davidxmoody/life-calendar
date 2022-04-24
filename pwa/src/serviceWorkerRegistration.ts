@@ -12,7 +12,7 @@ export function register() {
             installingWorker.onstatechange = () => {
               if (installingWorker.state === "installed") {
                 if (navigator.serviceWorker.controller) {
-                  alert("New service worker, reloading")
+                  alert("New service worker 2, reloading")
                   window.location.reload()
                 }
               }
