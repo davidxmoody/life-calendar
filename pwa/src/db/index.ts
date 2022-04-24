@@ -86,9 +86,7 @@ export async function getScannedBlob(entry: ScannedEntry) {
   return URL.createObjectURL(blob)
 }
 
-export async function downloadScanned(num?: number) {
-  let numDone = 0
-
+export async function downloadScanned(sinceDate: string) {
   const db = await dbPromise
 
   const allScannedEntries: ScannedEntry[] = await db.getAllFromIndex(
@@ -97,15 +95,9 @@ export async function downloadScanned(num?: number) {
     "scanned",
   )
 
-  console.log(`Found ${allScannedEntries.length} scanned entries in db`)
-
   for (const entry of allScannedEntries) {
-    downloadSingleScannedImage(entry)
-
-    numDone++
-    if (numDone >= (num ?? Infinity)) {
-      console.log(`Reached limit stopping`)
-      break
+    if (entry.date >= sinceDate) {
+      await downloadSingleScannedImage(entry)
     }
   }
 }

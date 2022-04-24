@@ -16,6 +16,8 @@ import {
 import SyncButton from "./SyncButton"
 import {MoonIcon, SunIcon, ViewIcon} from "@chakra-ui/icons"
 import useStats from "../hooks/useStats"
+import {useState} from "react"
+import {downloadScanned} from "../db"
 
 interface Props {
   isOpen: boolean
@@ -28,6 +30,8 @@ export default function SettingsModal(props: Props) {
 
   const {stats, refresh} = useStats(props.isOpen)
 
+  const [downloadSinceBusy, setDownloadSinceBusy] = useState(false)
+
   return (
     <Modal isOpen={props.isOpen} onClose={props.onClose} size="xs">
       <ModalOverlay />
@@ -36,8 +40,6 @@ export default function SettingsModal(props: Props) {
         <ModalCloseButton />
         <ModalBody>
           <Stack spacing={4} mb={2}>
-            <SyncButton onFinish={refresh} />
-
             <SyncButton fullSync onFinish={refresh} />
 
             <Button
@@ -56,22 +58,42 @@ export default function SettingsModal(props: Props) {
               Jump to date
             </Button>
 
+            <Button
+              colorScheme="blue"
+              leftIcon={<ViewIcon />}
+              onClick={async () => {
+                try {
+                  setDownloadSinceBusy(true)
+                  const date = prompt("Enter date", "2019-01-01")
+                  if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+                    await downloadScanned(date)
+                  }
+                } finally {
+                  setDownloadSinceBusy(false)
+                  refresh()
+                }
+              }}
+              isLoading={downloadSinceBusy}
+            >
+              Download since
+            </Button>
+
             <Box>
               <UnorderedList>
                 {stats ? (
-                  (
-                    [
-                      "layers",
-                      "audio",
-                      "markdown",
-                      "scanned",
-                      "images",
-                    ] as const
-                  ).map((t) => (
-                    <ListItem key={t}>
-                      {stats[t].toLocaleString()} {t}
+                  <>
+                    <ListItem>
+                      {(
+                        stats.markdown +
+                        stats.scanned +
+                        stats.audio
+                      ).toLocaleString()}{" "}
+                      entries
                     </ListItem>
-                  ))
+                    <ListItem>
+                      {stats.images.toLocaleString()} cached images
+                    </ListItem>
+                  </>
                 ) : (
                   <ListItem>Loading stats...</ListItem>
                 )}
