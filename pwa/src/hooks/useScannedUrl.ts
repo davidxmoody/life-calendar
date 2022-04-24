@@ -2,26 +2,32 @@ import {useEffect, useState} from "react"
 import {getScannedBlob} from "../db"
 import {ScannedEntry} from "../types"
 
-export default function useScannedUrl(
-  entry: ScannedEntry,
-  shouldFetch: boolean,
-): string | null {
+export default function useScannedUrl(entry: ScannedEntry) {
   const [url, setUrl] = useState<null | string>(null)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
-    if (shouldFetch && !url) {
-      getScannedBlob(entry).then(setUrl)
+    let cancelled = false
+    let newUrl: string | undefined
+    ;(async () => {
+      try {
+        const blob = await getScannedBlob(entry)
+        if (!cancelled) {
+          newUrl = URL.createObjectURL(blob)
+          setUrl(newUrl)
+        }
+      } catch (e) {
+        setError(true)
+      }
+    })()
+
+    return () => {
+      cancelled = true
+      if (newUrl) {
+        URL.revokeObjectURL(newUrl)
+      }
     }
-  }, [entry, shouldFetch, url])
+  }, [entry])
 
-  // TODO clean up object URLs
-
-  return url
+  return {url, error}
 }
-
-// Desired behaviour:
-// when opened first check if it exists and download if not
-// then return object url
-// return error states if it cant be fetched
-// clean up afterwards
-// retry automatically?

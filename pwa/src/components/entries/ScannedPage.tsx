@@ -1,3 +1,4 @@
+import {WarningTwoIcon} from "@chakra-ui/icons"
 import {AspectRatio, Box, Flex, Image} from "@chakra-ui/react"
 import * as React from "react"
 import useScannedUrl from "../../hooks/useScannedUrl"
@@ -9,7 +10,7 @@ interface Props {
 }
 
 export default function ScannedPage(props: Props) {
-  const url = useScannedUrl(props.entry, props.isExpanded)
+  const {url, error} = useScannedUrl(props.entry)
 
   return (
     <Flex mb={4} alignItems="center" px={props.isExpanded ? 0 : 3}>
@@ -22,6 +23,12 @@ export default function ScannedPage(props: Props) {
         <Box position="relative" width="100%" height="100%">
           {url ? (
             <Image src={url} position="absolute" width="100%" height="100%" />
+          ) : null}
+          {error ? (
+            <WarningTwoIcon
+              color="blue.700"
+              boxSize={props.isExpanded ? 12 : 4}
+            />
           ) : null}
         </Box>
       </AspectRatio>

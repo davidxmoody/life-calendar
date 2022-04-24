@@ -65,25 +65,20 @@ export async function sync(fullSync?: boolean): Promise<number> {
 
 export async function downloadSingleScannedImage(entry: ScannedEntry) {
   const db = await dbPromise
+
   const exists = !!(await db.getKey("scanned", entry.id))
   if (exists) {
-    console.log(`Blob already exists in db skipping: ${entry.id}`)
     return
   }
 
   const url = getScannedUrl(entry)
-  console.log(`About to download url: ${url}`)
   const blob = await fetch(url).then((r) => r.blob())
-  console.log(`Downloaded blob with size: ${blob.size}`)
   db.put("scanned", blob, entry.id)
-  console.log(`Put blob in db`)
 }
 
-export async function getScannedBlob(entry: ScannedEntry) {
+export async function getScannedBlob(entry: ScannedEntry): Promise<Blob> {
   await downloadSingleScannedImage(entry)
-  const db = await dbPromise
-  const blob = await db.get("scanned", entry.id)
-  return URL.createObjectURL(blob)
+  return (await dbPromise).get("scanned", entry.id)
 }
 
 export async function downloadScanned(sinceDate: string) {
