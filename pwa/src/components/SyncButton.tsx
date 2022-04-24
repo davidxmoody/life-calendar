@@ -1,7 +1,7 @@
 import {RepeatIcon, WarningTwoIcon} from "@chakra-ui/icons"
 import {Button, IconButton} from "@chakra-ui/react"
 import React, {useState} from "react"
-import {sync} from "../idb"
+import {sync} from "../db"
 
 interface Props {
   compact?: boolean

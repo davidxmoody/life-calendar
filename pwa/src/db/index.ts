@@ -2,9 +2,10 @@
 
 import {openDB} from "idb"
 import {REMOTE_URL} from "../config"
-import {Entry, LayerData, MarkdownEntry} from "../types"
+import {getScannedUrl} from "../helpers/getImageUrls"
+import {Entry, LayerData, MarkdownEntry, ScannedEntry} from "../types"
 
-export const dbPromise = openDB("data", 2, {
+export const dbPromise = openDB("data", 3, {
   upgrade(db, oldVersion, _newVersion, transaction) {
     switch (oldVersion) {
       case 0:
@@ -13,6 +14,8 @@ export const dbPromise = openDB("data", 2, {
         db.createObjectStore("config")
       case 1:
         transaction.objectStore("entries").createIndex("type", "type")
+      case 2:
+        db.createObjectStore("scanned")
     }
   },
   blocked() {
@@ -60,6 +63,55 @@ export async function sync(fullSync?: boolean): Promise<number> {
   return layers.length + entries.length
 }
 
+export async function downloadSingleScannedImage(entry: ScannedEntry) {
+  const db = await dbPromise
+  const exists = !!(await db.getKey("scanned", entry.id))
+  if (exists) {
+    console.log(`Blob already exists in db skipping: ${entry.id}`)
+    return
+  }
+
+  const url = getScannedUrl(entry)
+  console.log(`About to download url: ${url}`)
+  const blob = await fetch(url).then((r) => r.blob())
+  console.log(`Downloaded blob with size: ${blob.size}`)
+  db.put("scanned", blob, entry.id)
+  console.log(`Put blob in db`)
+}
+
+export async function getScannedBlob(entry: ScannedEntry) {
+  await downloadSingleScannedImage(entry)
+  const db = await dbPromise
+  const blob = await db.get("scanned", entry.id)
+  return URL.createObjectURL(blob)
+}
+
+export async function downloadScanned(num?: number) {
+  let numDone = 0
+
+  const db = await dbPromise
+
+  const allScannedEntries: ScannedEntry[] = await db.getAllFromIndex(
+    "entries",
+    "type",
+    "scanned",
+  )
+
+  console.log(`Found ${allScannedEntries.length} scanned entries in db`)
+
+  for (const entry of allScannedEntries) {
+    downloadSingleScannedImage(entry)
+
+    numDone++
+    if (numDone >= (num ?? Infinity)) {
+      console.log(`Reached limit stopping`)
+      break
+    }
+  }
+}
+
+;(window as any).downloadScanned = downloadScanned
+
 export async function search(
   term: string,
   limit: number = 100,
@@ -102,8 +154,7 @@ export async function getStats(): Promise<Stats> {
   const markdown = await db.countFromIndex("entries", "type", "markdown")
   const scanned = await db.countFromIndex("entries", "type", "scanned")
   const audio = await db.countFromIndex("entries", "type", "audio")
-
-  const images = (await (await caches.open("media")).keys()).length
+  const images = await db.count("scanned")
 
   return {
     lastSyncTimestamp,

@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react"
-import {dbPromise} from "../idb"
+import {dbPromise} from "../db"
 
 export default function useLayerIds(): string[] | undefined {
   const [ids, setIds] = useState<string[] | undefined>(undefined)

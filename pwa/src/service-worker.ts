@@ -2,10 +2,8 @@
 /* eslint-disable no-restricted-globals */
 
 import {clientsClaim} from "workbox-core"
-import {ExpirationPlugin} from "workbox-expiration"
 import {precacheAndRoute, createHandlerBoundToURL} from "workbox-precaching"
 import {registerRoute} from "workbox-routing"
-import {StaleWhileRevalidate} from "workbox-strategies"
 
 declare const self: ServiceWorkerGlobalScope
 
@@ -44,16 +42,6 @@ registerRoute(
     return true
   },
   createHandlerBoundToURL(process.env.PUBLIC_URL + "/index.html"),
-)
-
-registerRoute(
-  ({url}) => /^\/scanned\//.test(url.pathname),
-  new StaleWhileRevalidate({
-    cacheName: "media",
-    plugins: [
-      new ExpirationPlugin({purgeOnQuotaError: true, maxEntries: 1000}),
-    ],
-  }),
 )
 
 // This allows the web app to trigger skipWaiting via

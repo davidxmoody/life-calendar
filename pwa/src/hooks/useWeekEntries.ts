@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react"
 import {getNextWeekStart} from "../helpers/dates"
-import {dbPromise} from "../idb"
+import {dbPromise} from "../db"
 import {Entry} from "../types"
 
 export default function useWeekEntries(weekStart: string): Entry[] | undefined {

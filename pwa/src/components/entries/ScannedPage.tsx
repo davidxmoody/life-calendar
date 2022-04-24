@@ -1,7 +1,6 @@
 import {AspectRatio, Box, Flex, Image} from "@chakra-ui/react"
 import * as React from "react"
-import {useEffect, useState} from "react"
-import {getScannedUrl} from "../../helpers/getImageUrls"
+import useScannedUrl from "../../hooks/useScannedUrl"
 import {ScannedEntry} from "../../types"
 
 interface Props {
@@ -10,14 +9,7 @@ interface Props {
 }
 
 export default function ScannedPage(props: Props) {
-  const [isCached, setIsCached] = useState<boolean | null>(null)
-
-  useEffect(() => {
-    caches
-      .open("media")
-      .then((cache) => cache.match(getScannedUrl(props.entry)))
-      .then((result) => setIsCached(!!result))
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  const url = useScannedUrl(props.entry, props.isExpanded)
 
   return (
     <Flex mb={4} alignItems="center" px={props.isExpanded ? 0 : 3}>
@@ -28,14 +20,8 @@ export default function ScannedPage(props: Props) {
         flexShrink={0}
       >
         <Box position="relative" width="100%" height="100%">
-          {props.isExpanded || isCached ? (
-            <Image
-              src={getScannedUrl(props.entry)}
-              position="absolute"
-              width="100%"
-              height="100%"
-              onLoad={() => setIsCached(true)}
-            />
+          {url ? (
+            <Image src={url} position="absolute" width="100%" height="100%" />
           ) : null}
         </Box>
       </AspectRatio>

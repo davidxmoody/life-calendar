@@ -1,9 +1,10 @@
 import {useEffect, useState} from "react"
-import {getStats, Stats} from "../idb"
+import {getStats, Stats} from "../db"
 
-export default function useStats(
-  open: boolean,
-): {stats: Stats | null; refresh: () => void} {
+export default function useStats(open: boolean): {
+  stats: Stats | null
+  refresh: () => void
+} {
   const [stats, setStats] = useState<Stats | null>(null)
 
   function refresh() {

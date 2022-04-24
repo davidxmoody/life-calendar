@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react"
-import {dbPromise} from "../idb"
+import {dbPromise} from "../db"
 import {LayerData} from "../types"
 
 export default function useLayerData(
