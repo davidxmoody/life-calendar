@@ -1,7 +1,6 @@
 import React, {memo} from "react"
 import ReactMarkdown, {Components} from "react-markdown"
-import {Link as WouterLink} from "wouter"
-import {getWeekStart} from "../../helpers/dates"
+// import {getWeekStart} from "../../helpers/dates"
 import {
   Box,
   Heading,
@@ -10,6 +9,8 @@ import {
   Text,
   UnorderedList,
 } from "@chakra-ui/react"
+// import {useAtom} from "jotai"
+// import {selectedWeekStartAtom} from "../../atoms"
 
 interface Props {
   source: string
@@ -27,16 +28,25 @@ function heading(size: React.ComponentProps<typeof Heading>["size"]) {
 }
 
 const components: Components = {
-  a: (props) =>
-    props.href?.startsWith("/") ? (
-      <Link as={WouterLink} href={props.href} color="teal.500">
-        {props.children}
-      </Link>
-    ) : (
+  a: (props) => {
+    // TODO reimplement this maybe?
+    // const [, setSelectedWeekStart] = useAtom(selectedWeekStartAtom)
+    // return props.href?.startsWith("/weeks/") ? (
+    //   <Link
+    //     href={props.href}
+    //     color="teal.500"
+    //     onClick={() => setSelectedWeekStart(props.href!.replace("/weeks/", ""))}
+    //   >
+    //     {props.children}
+    //   </Link>
+    // ) : (
+    return (
       <Link href={props.href} isExternal rel="noreferrer" color="teal.500">
         {props.children}
       </Link>
-    ),
+    )
+    // )
+  },
   p: (props) => <Text mb={paraMarginBottom} {...props} />,
   h1: heading("xl"),
   h2: heading("xl"),
@@ -89,17 +99,13 @@ const components: Components = {
     ),
 }
 
-function addDateLinks(source: string): string {
-  return source.replace(
-    /\b\d{4}-\d{2}-\d{2}\b/g,
-    (match) => `[${match}](/weeks/${getWeekStart(match)})`,
-  )
-}
+// function addDateLinks(source: string): string {
+//   return source.replace(
+//     /\b\d{4}-\d{2}-\d{2}\b/g,
+//     (match) => `[${match}](/weeks/${getWeekStart(match)})`,
+//   )
+// }
 
 export default memo(function Markdown(props: Props) {
-  return (
-    <ReactMarkdown components={components}>
-      {addDateLinks(props.source)}
-    </ReactMarkdown>
-  )
+  return <ReactMarkdown components={components}>{props.source}</ReactMarkdown>
 })

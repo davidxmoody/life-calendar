@@ -1,11 +1,12 @@
 import {ChevronDownIcon} from "@chakra-ui/icons"
 import {Button, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react"
-import {useStore} from "../store"
+import {useAtom} from "jotai"
+import {startTransition} from "react"
+import {layerIdsAtom, selectedLayerIdAtom} from "../atoms"
 
 export default function LayerList() {
-  const layerIds = useStore((x) => x.layerIds).read()
-  const selectedLayerId = useStore((x) => x.selectedLayerId)
-  const setSelectedLayerId = useStore((x) => x.setSelectedLayerId)
+  const [layerIds] = useAtom(layerIdsAtom)
+  const [selectedLayerId, setSelectedLayerId] = useAtom(selectedLayerIdAtom)
 
   const emptyLayerId = "no-layer"
   const layerIdsWithEmpty = [emptyLayerId, ...layerIds]
@@ -27,7 +28,9 @@ export default function LayerList() {
           <MenuItem
             key={layerId}
             onClick={() =>
-              setSelectedLayerId(layerId === emptyLayerId ? null : layerId)
+              startTransition(() => {
+                setSelectedLayerId(layerId === emptyLayerId ? null : layerId)
+              })
             }
             fontWeight={
               (layerId === emptyLayerId ? null : layerId) === selectedLayerId

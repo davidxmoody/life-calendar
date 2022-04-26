@@ -1,22 +1,18 @@
-import React, {memo, useEffect, useMemo, useRef} from "react"
+import React, {memo, startTransition, useEffect, useMemo, useRef} from "react"
 import generateCalendarData from "../../helpers/generateCalendarData"
 import lifeData from "../../lifeData"
 import useToday from "../../hooks/useToday"
 import drawCalendar from "./drawCalendar"
 import calculateCalendarDimensions from "../../helpers/calculateCalendarDimensions"
 import getWeekUnderCursor from "../../helpers/getWeekUnderCursor"
-import {useLocation} from "wouter"
 import tinycolor from "tinycolor2"
-import {useStore} from "../../store"
+import {selectedLayerDataAtom, selectedWeekStartAtom} from "../../atoms"
+import {useAtom} from "jotai"
 
-interface Props {
-  selectedWeekStart: string | null
-}
-
-export default memo(function Calendar(props: Props) {
-  const layerData = useStore((x) => x.selectedLayerData).read()
-
-  const [, setLocation] = useLocation()
+export default memo(function Calendar() {
+  const [selectedWeekStart] = useAtom(selectedWeekStartAtom)
+  const [layerData] = useAtom(selectedLayerDataAtom)
+  const [, setSelectedWeekStart] = useAtom(selectedWeekStartAtom)
 
   const today = useToday()
   const data = useMemo(
@@ -31,7 +27,7 @@ export default memo(function Calendar(props: Props) {
       for (let y = 0; y < data.decades[d].years.length; y++) {
         for (let w = 0; w < data.decades[d].years[y].weeks.length; w++) {
           const week = data.decades[d].years[y].weeks[w]
-          if (week.startDate === props.selectedWeekStart) {
+          if (week.startDate === selectedWeekStart) {
             const color =
               "era" in week
                 ? tinycolor(week.era.color)
@@ -44,7 +40,7 @@ export default memo(function Calendar(props: Props) {
         }
       }
     }
-  }, [data, props.selectedWeekStart])
+  }, [data, selectedWeekStart])
 
   const ratio = 1.46
   let canvasHeight = window.innerHeight - 72
@@ -115,7 +111,9 @@ export default memo(function Calendar(props: Props) {
             return
           }
 
-          setLocation(`/weeks/${week.startDate}`)
+          startTransition(() => {
+            setSelectedWeekStart(week.startDate)
+          })
         }}
       />
 

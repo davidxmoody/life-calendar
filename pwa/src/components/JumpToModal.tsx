@@ -13,11 +13,12 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import {useState} from "react"
+import {startTransition, useState} from "react"
 import useToday from "../hooks/useToday"
 import moment from "moment"
-import {useLocation} from "wouter"
 import {getWeekStart} from "../helpers/dates"
+import {useAtom} from "jotai"
+import {selectedWeekStartAtom} from "../atoms"
 
 const months = [
   "January",
@@ -40,7 +41,7 @@ interface Props {
 }
 
 export default function JumpToModal(props: Props) {
-  const [, setLocation] = useLocation()
+  const [, setSelectedWeekStart] = useAtom(selectedWeekStartAtom)
   const today = useToday()
   const [initialYear, initialMonth, initialDay] = today
     .split("-")
@@ -118,8 +119,10 @@ export default function JumpToModal(props: Props) {
             disabled={!selectedDateValid}
             colorScheme="blue"
             onClick={() => {
-              props.onClose()
-              setLocation(`/weeks/${getWeekStart(selectedDate)}`)
+              startTransition(() => {
+                props.onClose()
+                setSelectedWeekStart(getWeekStart(selectedDate))
+              })
             }}
           >
             Jump to {selectedDate}
@@ -139,9 +142,9 @@ function range(startInc: number, endInc: number) {
 }
 
 function getDate(year: number, month: number, day: number) {
-  return `${year}-${month
+  return `${year}-${month.toString().padStart(2, "0")}-${day
     .toString()
-    .padStart(2, "0")}-${day.toString().padStart(2, "0")}`
+    .padStart(2, "0")}`
 }
 
 function isValidDay(year: number, month: number, day: number) {

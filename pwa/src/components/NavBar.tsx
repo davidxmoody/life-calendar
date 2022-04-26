@@ -1,4 +1,4 @@
-import React from "react"
+import React, {startTransition} from "react"
 import {Box, Flex, IconButton, useDisclosure} from "@chakra-ui/react"
 import {
   CalendarIcon,
@@ -7,15 +7,17 @@ import {
   SettingsIcon,
 } from "@chakra-ui/icons"
 import LayerList from "./LayerList"
-import {Link, useRoute} from "wouter"
 import {getNextWeekStart, getPrevWeekStart} from "../helpers/dates"
 import SettingsModal from "./SettingsModal"
 import JumpToModal from "./JumpToModal"
 import SyncButton from "./SyncButton"
+import {useAtom} from "jotai"
+import {selectedWeekStartAtom} from "../atoms"
 
 export default function NavBar() {
-  const [, weekParams] = useRoute("/weeks/:weekStart")
-  const selectedWeekStart = weekParams?.weekStart
+  const [selectedWeekStart, setSelectedWeekStart] = useAtom(
+    selectedWeekStartAtom,
+  )
 
   const settingsModal = useDisclosure()
   const jumpToModal = useDisclosure()
@@ -34,13 +36,12 @@ export default function NavBar() {
     >
       {selectedWeekStart ? (
         <IconButton
-          as={Link}
-          href="/"
           mr={4}
           colorScheme="blue"
           aria-label="Calendar"
           icon={<CalendarIcon />}
           display={["flex", "none"]}
+          onClick={() => startTransition(() => setSelectedWeekStart(null))}
         />
       ) : null}
 
@@ -53,19 +54,25 @@ export default function NavBar() {
       {selectedWeekStart ? (
         <>
           <IconButton
-            as={Link}
-            href={`/weeks/${getPrevWeekStart(selectedWeekStart ?? "")}`}
             mr={4}
             colorScheme="blue"
             aria-label="Previous week"
             icon={<ArrowLeftIcon />}
+            onClick={() =>
+              startTransition(() =>
+                setSelectedWeekStart(getPrevWeekStart(selectedWeekStart)),
+              )
+            }
           />
           <IconButton
-            as={Link}
-            href={`/weeks/${getNextWeekStart(selectedWeekStart ?? "")}`}
             colorScheme="blue"
             aria-label="Next week"
             icon={<ArrowRightIcon />}
+            onClick={() =>
+              startTransition(() =>
+                setSelectedWeekStart(getNextWeekStart(selectedWeekStart)),
+              )
+            }
           />
         </>
       ) : null}

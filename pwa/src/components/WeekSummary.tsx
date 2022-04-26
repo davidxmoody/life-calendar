@@ -1,15 +1,12 @@
 import React, {memo} from "react"
-import useWeekEntries from "../hooks/useWeekEntries"
 import {Box} from "@chakra-ui/react"
 import {Entry} from "../types"
 import Day from "./entries/Day"
+import {useAtom} from "jotai"
+import {weekEntriesAtom} from "../atoms"
 
-interface Props {
-  weekStart: string
-}
-
-export default memo(function WeekSummary(props: Props) {
-  const entries = useWeekEntries(props.weekStart)
+export default memo(function WeekSummary() {
+  const [entries] = useAtom(weekEntriesAtom)
 
   const days: Record<string, Entry[]> = {}
   for (const entry of entries ?? []) {
