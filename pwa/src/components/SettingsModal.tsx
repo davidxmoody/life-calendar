@@ -9,15 +9,12 @@ import {
   ModalOverlay,
   Stack,
   useColorMode,
-  UnorderedList,
-  ListItem,
-  Box,
 } from "@chakra-ui/react"
 import SyncButton from "./SyncButton"
 import {MoonIcon, SunIcon, ViewIcon} from "@chakra-ui/icons"
-import useStats from "../hooks/useStats"
-import {useState} from "react"
+import {Suspense, useState} from "react"
 import {downloadScanned} from "../db"
+import DatabaseStats from "./DatabaseStats"
 
 interface Props {
   isOpen: boolean
@@ -27,8 +24,6 @@ interface Props {
 
 export default function SettingsModal(props: Props) {
   const {colorMode, toggleColorMode} = useColorMode()
-
-  const {stats, refresh} = useStats(props.isOpen)
 
   const [downloadSinceBusy, setDownloadSinceBusy] = useState(false)
 
@@ -40,7 +35,7 @@ export default function SettingsModal(props: Props) {
         <ModalCloseButton />
         <ModalBody>
           <Stack spacing={4} mb={2}>
-            <SyncButton fullSync onFinish={refresh} />
+            <SyncButton fullSync />
 
             <Button
               colorScheme="blue"
@@ -70,7 +65,6 @@ export default function SettingsModal(props: Props) {
                   }
                 } finally {
                   setDownloadSinceBusy(false)
-                  refresh()
                 }
               }}
               isLoading={downloadSinceBusy}
@@ -78,27 +72,9 @@ export default function SettingsModal(props: Props) {
               Download since
             </Button>
 
-            <Box>
-              <UnorderedList>
-                {stats ? (
-                  <>
-                    <ListItem>
-                      {(
-                        stats.markdown +
-                        stats.scanned +
-                        stats.audio
-                      ).toLocaleString()}{" "}
-                      entries
-                    </ListItem>
-                    <ListItem>
-                      {stats.images.toLocaleString()} cached images
-                    </ListItem>
-                  </>
-                ) : (
-                  <ListItem>Loading stats...</ListItem>
-                )}
-              </UnorderedList>
-            </Box>
+            <Suspense>
+              <DatabaseStats />
+            </Suspense>
           </Stack>
         </ModalBody>
       </ModalContent>

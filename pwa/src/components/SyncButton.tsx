@@ -1,12 +1,13 @@
 import {RepeatIcon, WarningTwoIcon} from "@chakra-ui/icons"
 import {Button, IconButton} from "@chakra-ui/react"
+import {useAtom} from "jotai"
 import React, {useState} from "react"
+import {lastSyncTimestampAtom} from "../atoms"
 import {sync} from "../db"
 
 interface Props {
   compact?: boolean
   fullSync?: boolean
-  onFinish?: () => void
 }
 
 type SyncState =
@@ -16,17 +17,20 @@ type SyncState =
   | {type: "error"}
 
 export default function SyncButton(props: Props) {
+  const [, setLastSyncTimestamp] = useAtom(lastSyncTimestampAtom)
   const [syncState, setSyncState] = useState<SyncState>({type: "initial"})
 
   function startSync() {
     setSyncState({type: "loading"})
     sync(props.fullSync)
-      .then((num) => setSyncState({type: "success", num}))
+      .then(({count, timestamp}) => {
+        setSyncState({type: "success", num: count})
+        setLastSyncTimestamp(timestamp)
+      })
       .catch((error) => {
         console.error(error)
         setSyncState({type: "error"})
       })
-      .then(() => props.onFinish?.())
   }
 
   const label =

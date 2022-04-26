@@ -1,6 +1,6 @@
 import {atom} from "jotai"
 import {atomWithStorage} from "jotai/utils"
-import {dbPromise} from "./db"
+import {dbPromise, getStats} from "./db"
 import {getNextWeekStart} from "./helpers/dates"
 import {LayerData} from "./types"
 
@@ -9,12 +9,16 @@ export const selectedLayerIdAtom = atomWithStorage<string | null>(
   null,
 )
 
-export const layerIdsAtom = atom(async () => {
+export const lastSyncTimestampAtom = atom(0)
+
+export const layerIdsAtom = atom(async (get) => {
+  get(lastSyncTimestampAtom)
   const db = await dbPromise
   return db.getAllKeys("layers") as any as Promise<string[]>
 })
 
 export const selectedLayerDataAtom = atom(async (get) => {
+  get(lastSyncTimestampAtom)
   const selectedLayerId = get(selectedLayerIdAtom)
 
   if (!selectedLayerId) {
@@ -33,6 +37,7 @@ export const selectedWeekStartAtom = atomWithStorage<string | null>(
 )
 
 export const weekEntriesAtom = atom(async (get) => {
+  get(lastSyncTimestampAtom)
   const selectedWeekStart = get(selectedWeekStartAtom)
 
   if (!selectedWeekStart) {
@@ -44,4 +49,10 @@ export const weekEntriesAtom = atom(async (get) => {
     "entries",
     IDBKeyRange.bound(selectedWeekStart, getNextWeekStart(selectedWeekStart)),
   )
+})
+
+export const databaseStatsAtom = atom(async (get) => {
+  await new Promise((r) => setTimeout(r, 1000))
+  get(lastSyncTimestampAtom)
+  return getStats()
 })

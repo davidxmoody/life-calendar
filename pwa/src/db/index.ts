@@ -29,7 +29,9 @@ export const dbPromise = openDB("data", 3, {
   },
 })
 
-export async function sync(fullSync?: boolean): Promise<number> {
+export async function sync(
+  fullSync?: boolean,
+): Promise<{count: number; timestamp: number}> {
   const db = await dbPromise
 
   const lastSyncTimestamp: number | null = fullSync
@@ -60,7 +62,7 @@ export async function sync(fullSync?: boolean): Promise<number> {
 
   await tx.done
 
-  return layers.length + entries.length
+  return {count: layers.length + entries.length, timestamp}
 }
 
 export async function downloadSingleScannedImage(entry: ScannedEntry) {
