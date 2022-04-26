@@ -75,7 +75,7 @@ export default memo(function Calendar() {
         lastDraw.current = d
       }
     }
-  }, [ref.current, data, layerData, d])
+  }, [ref.current, data, layerData, d]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div
