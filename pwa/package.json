@@ -8,20 +8,20 @@
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.3.0",
     "framer-motion": "^4.1.9",
-    "idb": "^6.0.0",
-    "jotai": "^1.2.2",
-    "moment": "^2.29.1",
+    "idb": "^7.0.1",
+    "jotai": "^1.6.4",
+    "moment": "^2.29.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-markdown": "^5.0.3",
     "react-scripts": "^4.0.3",
     "tinycolor2": "^1.4.2",
-    "workbox-core": "^6.1.5",
-    "workbox-expiration": "^6.1.5",
-    "workbox-precaching": "^6.1.5",
-    "workbox-routing": "^6.1.5",
-    "workbox-strategies": "^6.1.5",
-    "wouter": "^2.7.4"
+    "workbox-core": "^6.5.3",
+    "workbox-expiration": "^6.5.3",
+    "workbox-precaching": "^6.5.3",
+    "workbox-routing": "^6.5.3",
+    "workbox-strategies": "^6.5.3",
+    "wouter": "^2.7.5"
   },
   "scripts": {
     "start": "HTTPS=true SSL_KEY_FILE=\"$LOCAL_SSL_KEY\" SSL_CRT_FILE=\"$LOCAL_SSL_CERT\" react-scripts start",
@@ -49,8 +49,8 @@
     "@types/node": "^14.14.41",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",
-    "@types/tinycolor2": "^1.4.2",
-    "prettier": "^2.2.1",
-    "typescript": "^4.2.4"
+    "@types/tinycolor2": "^1.4.3",
+    "prettier": "^2.6.2",
+    "typescript": "^4.6.3"
   }
 }
