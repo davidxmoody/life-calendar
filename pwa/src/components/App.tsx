@@ -3,12 +3,9 @@ import WeekSummary from "./WeekSummary"
 import NavBar from "./NavBar"
 import {Box} from "@chakra-ui/react"
 import Calendar from "./calendar/Calendar"
-import {useAtom} from "jotai"
-import {selectedLayerIdAtom} from "../atoms"
+import {Suspense} from "react"
 
 export default function App() {
-  const [selectedLayerId] = useAtom(selectedLayerIdAtom)
-
   const [, weekParams] = useRoute("/weeks/:weekStart")
   const selectedWeekStart = weekParams?.weekStart ?? null
 
@@ -26,10 +23,9 @@ export default function App() {
         overflow="hidden"
         height={[selectedWeekStart ? 0 : "auto", "auto"]}
       >
-        <Calendar
-          layerId={selectedLayerId}
-          selectedWeekStart={selectedWeekStart}
-        />
+        <Suspense fallback={<div style={{color: "red"}}>Loading...</div>}>
+          <Calendar selectedWeekStart={selectedWeekStart} />
+        </Suspense>
       </Box>
 
       <Box flex={1} p={[0, 4]} maxW="900px" ml={[0, 480]}>

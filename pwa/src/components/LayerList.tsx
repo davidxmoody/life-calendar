@@ -1,13 +1,11 @@
 import {ChevronDownIcon} from "@chakra-ui/icons"
 import {Button, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react"
-import useLayerIds from "../hooks/useLayerIds"
-import {useAtom} from "jotai"
-import {selectedLayerIdAtom} from "../atoms"
+import {useStore} from "../store"
 
 export default function LayerList() {
-  const [selectedLayerId, setSelectedLayerId] = useAtom(selectedLayerIdAtom)
-
-  const layerIds = useLayerIds() ?? []
+  const layerIds = useStore((x) => x.layerIds).read()
+  const selectedLayerId = useStore((x) => x.selectedLayerId)
+  const setSelectedLayerId = useStore((x) => x.setSelectedLayerId)
 
   const emptyLayerId = "no-layer"
   const layerIdsWithEmpty = [emptyLayerId, ...layerIds]

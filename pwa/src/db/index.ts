@@ -3,6 +3,7 @@
 import {openDB} from "idb"
 import {REMOTE_URL} from "../config"
 import {getScannedUrl} from "../helpers/getImageUrls"
+import {Resource} from "../store"
 import {Entry, LayerData, MarkdownEntry, ScannedEntry} from "../types"
 
 export const dbPromise = openDB("data", 3, {
@@ -152,3 +153,115 @@ export async function getStats(): Promise<Stats> {
     images,
   }
 }
+
+type ResourceStatus<T> =
+  | {type: "pending"}
+  | {type: "error"; error: unknown}
+  | {type: "success"; result: T}
+
+export function createDbResource<T>(
+  queryFn: (db: Awaited<typeof dbPromise>) => Promise<T>,
+): Resource<T> {
+  let status: ResourceStatus<T> = {type: "pending"}
+
+  const promise = dbPromise
+    .then(queryFn)
+    // .then(async (x) => {
+    //   await new Promise((res) => setTimeout(res, 1000))
+    //   return x
+    // })
+    .then((result) => {
+      status = {type: "success", result}
+    })
+    .catch((error) => {
+      status = {type: "error", error}
+      throw error
+    })
+
+  return {
+    read: () => {
+      switch (status.type) {
+        case "pending":
+          throw promise
+        case "error":
+          throw status.error
+        case "success":
+          return status.result
+      }
+    },
+  }
+}
+
+// interface PromiseCacheItem {
+//   queryName: string
+//   queryFn: string
+//   promise: Promise<any>
+//   value?: any
+//   error?: any
+// }
+
+// const promiseCache = new WeakMap<{query: Function}, PromiseCacheItem>()
+
+// export function useSuspenseDbQuery<ReturnVal, Args extends any[]>(
+//   queryName: string,
+//   queryFn: (db: Awaited<typeof dbPromise>, ...args: Args) => Promise<ReturnVal>,
+//   ...args: Args
+// ): ReturnVal {
+//   console.log("SUSPENSE DB QUERY CALLED", promiseCache)
+//   const item = promiseCache.get(input)
+//   console.log("SUSPENSE DB QUERY cached?", !!item)
+
+//   if (item) {
+//     if ("error" in item) {
+//       console.log("SUSPENSE DB QUERY throwing")
+//       throw item.error
+//     }
+//     if ("value" in item) {
+//       console.log("SUSPENSE DB QUERY returning value")
+//       return item.value
+//     }
+//     console.log("SUSPENSE DB QUERY suspending")
+//     throw item.promise
+//   }
+
+//   const newItem: PromiseCacheItem = {
+//     promise: Promise.resolve(),
+//   }
+
+//   newItem.promise = (async () => {
+//     try {
+//       console.log("SUSPENSE DB QUERY inside promise")
+//       const db = await dbPromise
+//       console.log("SUSPENSE DB QUERY got db")
+//       const result = await input.query(db)
+//       console.log("SUSPENSE DB QUERY ran query fn", result)
+//       newItem.value = result
+//     } catch (e) {
+//       newItem.error = e
+//       throw e
+//     }
+//   })()
+
+//   promiseCache.set(input, newItem)
+
+//   console.log("SUSPENSE DB QUERY set everything, throwing promise")
+//   throw newItem.promise
+// }
+
+// new plan for suspense queries using render while fetching:
+//
+// - global state looks like this:
+//
+// layerData: Promise<LayerData | undefined>
+//
+// - when navigating, the nav action sets the new promise
+// - when rendering, the thing suspends until the promise is ready
+//
+// have new "Resource" type that's created by top level actions and put into
+// the state and has a read method
+
+// plan for app state (maybe zustand):
+//
+// - selectedLayerId: Resource<string | undefined>
+// - selectedLayerData: Resource<LayerData | undefined>
+// -

@@ -3,22 +3,22 @@ import generateCalendarData from "../../helpers/generateCalendarData"
 import lifeData from "../../lifeData"
 import useToday from "../../hooks/useToday"
 import drawCalendar from "./drawCalendar"
-import useLayerData from "../../hooks/useLayerData"
 import calculateCalendarDimensions from "../../helpers/calculateCalendarDimensions"
 import getWeekUnderCursor from "../../helpers/getWeekUnderCursor"
 import {useLocation} from "wouter"
 import tinycolor from "tinycolor2"
+import {useStore} from "../../store"
 
 interface Props {
-  layerId: string | null
   selectedWeekStart: string | null
 }
 
 export default memo(function Calendar(props: Props) {
+  const layerData = useStore((x) => x.selectedLayerData).read()
+
   const [, setLocation] = useLocation()
 
   const today = useToday()
-  const layerData = useLayerData(props.layerId)
   const data = useMemo(
     () => generateCalendarData({today, ...lifeData}),
     [today],
@@ -71,10 +71,6 @@ export default memo(function Calendar(props: Props) {
   const lastDraw = useRef<typeof d | undefined>()
 
   useEffect(() => {
-    if (props.layerId && !layerData) {
-      return
-    }
-
     if (ref.current) {
       const ctx = ref.current.getContext("2d")
       if (ctx) {
@@ -83,7 +79,7 @@ export default memo(function Calendar(props: Props) {
         lastDraw.current = d
       }
     }
-  }, [ref.current, data, layerData, d]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [ref.current, data, layerData, d])
 
   return (
     <div

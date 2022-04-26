@@ -12,7 +12,7 @@ export default function drawCalendar({
   d: CalendarDimensions
   ctx: CanvasRenderingContext2D
   data: CalendarData
-  layerData: LayerData | undefined
+  layerData: LayerData | null
   incremental: boolean
 }) {
   console.time(`drawCalendar ${incremental ? "inc" : ""}`)
@@ -74,7 +74,7 @@ export default function drawCalendar({
 }
 
 function getWeekColor(
-  layerData: LayerData | undefined,
+  layerData: LayerData | null,
   week: Week,
   decadeIndex: number,
   yearIndex: number,

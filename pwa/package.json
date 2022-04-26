@@ -21,7 +21,8 @@
     "workbox-precaching": "^6.5.3",
     "workbox-routing": "^6.5.3",
     "workbox-strategies": "^6.5.3",
-    "wouter": "^2.7.5"
+    "wouter": "^2.7.5",
+    "zustand": "^4.0.0-rc.0"
   },
   "scripts": {
     "start": "HTTPS=true SSL_KEY_FILE=\"$LOCAL_SSL_KEY\" SSL_CRT_FILE=\"$LOCAL_SSL_CERT\" react-scripts start",
