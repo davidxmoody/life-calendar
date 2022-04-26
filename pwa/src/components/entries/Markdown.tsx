@@ -45,7 +45,7 @@ const components: Components = {
   h5: heading("md"),
   h6: heading("md"),
   blockquote: (props) => (
-    <Text
+    <Box
       pl={4}
       fontStyle="italic"
       borderColor={codeBackgroudColor}
@@ -53,7 +53,7 @@ const components: Components = {
       opacity={0.75}
     >
       {props.children}
-    </Text>
+    </Box>
   ),
   img: (props) => (
     <img style={{maxWidth: "100%"}} src={props.src} alt={props.alt} />
