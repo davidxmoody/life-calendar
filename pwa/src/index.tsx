@@ -1,5 +1,5 @@
 import React, {StrictMode} from "react"
-import ReactDOM from "react-dom"
+import {createRoot} from "react-dom/client"
 import "./index.css"
 import App from "./components/App"
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration"
@@ -18,7 +18,7 @@ const theme = extendTheme({
   },
 })
 
-ReactDOM.render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ColorModeScript initialColorMode={initialColorMode} />
     <ChakraProvider theme={theme}>
@@ -27,7 +27,6 @@ ReactDOM.render(
       </JotaiProvider>
     </ChakraProvider>
   </StrictMode>,
-  document.getElementById("root"),
 )
 
 serviceWorkerRegistration.register()
