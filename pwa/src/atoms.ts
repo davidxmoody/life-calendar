@@ -52,7 +52,6 @@ export const weekEntriesAtom = atom(async (get) => {
 })
 
 export const databaseStatsAtom = atom(async (get) => {
-  await new Promise((r) => setTimeout(r, 1000))
   get(lastSyncTimestampAtom)
   return getStats()
 })
