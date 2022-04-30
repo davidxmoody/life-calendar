@@ -1,6 +1,6 @@
 import WeekSummary from "./WeekSummary"
 import NavBar from "./NavBar"
-import {Box} from "@chakra-ui/react"
+import {Box, Flex} from "@chakra-ui/react"
 import Calendar from "./calendar/Calendar"
 import {Suspense} from "react"
 import {useAtom} from "jotai"
@@ -12,24 +12,24 @@ export default function App() {
 
   return (
     <Suspense>
-      <NavBar />
+      <Flex height="100vh" flexDirection="column">
+        <NavBar />
 
-      <Box height="72px" />
+        <Flex flex={1} overflowY="auto">
+          <Box
+            width={[selectedWeekStart ? 0 : "auto", "auto"]}
+            opacity={[selectedWeekStart ? 0 : 1, 1]}
+            pointerEvents={[selectedWeekStart ? "none" : "auto", "auto"]}
+            flex={0}
+          >
+            <Calendar />
+          </Box>
 
-      <Box
-        position="fixed"
-        top="72px"
-        bottom={0}
-        left={0}
-        overflow="hidden"
-        height={[selectedWeekStart ? 0 : "auto", "auto"]}
-      >
-        <Calendar />
-      </Box>
-
-      <Box flex={1} p={[0, 4]} maxW="900px" ml={[0, 480]}>
-        <WeekSummary />
-      </Box>
+          <Box flex={1} overflowY="scroll">
+            <WeekSummary />
+          </Box>
+        </Flex>
+      </Flex>
     </Suspense>
   )
 }

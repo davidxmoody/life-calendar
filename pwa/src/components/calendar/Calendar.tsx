@@ -8,6 +8,7 @@ import getWeekUnderCursor from "../../helpers/getWeekUnderCursor"
 import tinycolor from "tinycolor2"
 import {selectedLayerDataAtom, selectedWeekStartAtom} from "../../atoms"
 import {useAtom} from "jotai"
+import {NAV_BAR_HEIGHT_PX} from "../NavBar"
 
 export default memo(function Calendar() {
   const [selectedWeekStart] = useAtom(selectedWeekStartAtom)
@@ -43,7 +44,8 @@ export default memo(function Calendar() {
   }, [data, selectedWeekStart])
 
   const ratio = 1.46
-  let canvasHeight = window.innerHeight - 72
+  // TODO perhaps measure size of self instead of using this?
+  let canvasHeight = window.innerHeight - NAV_BAR_HEIGHT_PX
   let canvasWidth = Math.floor(canvasHeight / ratio)
 
   if (canvasWidth > window.innerWidth) {

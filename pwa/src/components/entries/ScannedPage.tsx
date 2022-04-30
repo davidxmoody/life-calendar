@@ -6,7 +6,6 @@ import {ScannedEntry} from "../../types"
 
 interface Props {
   entry: ScannedEntry
-  isExpanded: boolean
 }
 
 const fadeIn = keyframes`
@@ -18,10 +17,10 @@ export default function ScannedPage(props: Props) {
   const {url, error} = useScannedUrl(props.entry)
 
   return (
-    <Flex mb={4} alignItems="center" px={props.isExpanded ? 0 : 3}>
+    <Flex alignItems="center">
       <AspectRatio
         ratio={props.entry.width / props.entry.height}
-        w={props.isExpanded ? "100%" : "60px"}
+        w="100%"
         bg={props.entry.averageColor}
         flexShrink={0}
       >
@@ -35,25 +34,9 @@ export default function ScannedPage(props: Props) {
               animation={`${fadeIn} 0.3s`}
             />
           ) : null}
-          {error ? (
-            <WarningTwoIcon
-              color="blue.700"
-              boxSize={props.isExpanded ? 12 : 4}
-            />
-          ) : null}
+          {error ? <WarningTwoIcon color="blue.700" boxSize={12} /> : null}
         </Box>
       </AspectRatio>
-      {!props.isExpanded && props.entry.headings ? (
-        <Box ml={3}>
-          {props.entry.headings.length === 0 ? (
-            <Box>...</Box>
-          ) : (
-            props.entry.headings.map((heading, i) => (
-              <Box key={i}>{heading}</Box>
-            ))
-          )}
-        </Box>
-      ) : null}
     </Flex>
   )
 }

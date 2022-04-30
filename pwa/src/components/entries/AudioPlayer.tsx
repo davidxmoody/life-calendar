@@ -7,7 +7,7 @@ interface Props {
 export default function AudioPlayer(props: Props) {
   return (
     <audio
-      style={{marginBottom: 16}}
+      style={{maxWidth: "100%"}}
       src={REMOTE_URL + props.sourceUrl}
       controls
     />

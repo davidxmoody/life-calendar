@@ -14,6 +14,8 @@ import SyncButton from "./SyncButton"
 import {useAtom} from "jotai"
 import {selectedWeekStartAtom} from "../atoms"
 
+export const NAV_BAR_HEIGHT_PX = 72
+
 export default function NavBar() {
   const [selectedWeekStart, setSelectedWeekStart] = useAtom(
     selectedWeekStartAtom,
@@ -24,15 +26,13 @@ export default function NavBar() {
 
   return (
     <Box
+      height={`${NAV_BAR_HEIGHT_PX}px`}
       display="flex"
       alignItems="center"
       p={4}
       backgroundColor="blue.400"
-      position="fixed"
-      top={0}
-      left={0}
-      right={0}
       zIndex="banner"
+      flex={0}
     >
       {selectedWeekStart ? (
         <IconButton

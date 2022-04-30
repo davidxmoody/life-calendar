@@ -14,9 +14,11 @@ export default memo(function WeekSummary() {
   }
 
   return (
-    <Box mb={16}>
+    <Box mb={16} p={[0, 2]}>
       {Object.entries(days).map(([date, entries]) => (
-        <Day key={date} date={date} entries={entries} />
+        <Box key={date} mb={4}>
+          <Day date={date} entries={entries} />
+        </Box>
       ))}
     </Box>
   )
