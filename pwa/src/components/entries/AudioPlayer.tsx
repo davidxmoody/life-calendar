@@ -5,6 +5,7 @@ interface Props {
 }
 
 export default function AudioPlayer(props: Props) {
+  // TODO fix this to make it work with new auth, maybe add to DB?
   return (
     <audio
       style={{maxWidth: "100%"}}

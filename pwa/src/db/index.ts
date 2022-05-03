@@ -1,9 +1,8 @@
 /* eslint-disable no-fallthrough */
 
 import {openDB} from "idb"
-import {REMOTE_URL} from "../config"
-import {getScannedUrl} from "../helpers/getImageUrls"
 import {Entry, LayerData, MarkdownEntry, ScannedEntry} from "../types"
+import authedFetch from "../helpers/authedFetch"
 
 export const dbPromise = openDB("data", 3, {
   upgrade(db, oldVersion, _newVersion, transaction) {
@@ -42,12 +41,10 @@ export async function sync(
     timestamp,
     entries,
     layers,
-  }: {timestamp: number; entries: Entry[]; layers: LayerData[]} = await fetch(
-    `${REMOTE_URL}/sync${
-      lastSyncTimestamp ? `?sinceMs=${lastSyncTimestamp}` : ""
-    }`,
-    {credentials: "include"},
-  ).then((res) => res.json())
+  }: {timestamp: number; entries: Entry[]; layers: LayerData[]} =
+    await authedFetch(
+      `/sync${lastSyncTimestamp ? `?sinceMs=${lastSyncTimestamp}` : ""}`,
+    ).then((res) => res.json())
 
   const tx = db.transaction(["entries", "layers", "config"], "readwrite")
 
@@ -74,8 +71,7 @@ export async function downloadSingleScannedImage(entry: ScannedEntry) {
     return
   }
 
-  const url = getScannedUrl(entry)
-  const blob = await fetch(url, {credentials: "include"}).then((r) => r.blob())
+  const blob = await authedFetch(entry.fileUrl).then((r) => r.blob())
   if (!blob.type.startsWith("image")) {
     throw new Error("Received non-image response")
   }

@@ -3,8 +3,6 @@ import {getLayers} from "./db/layers"
 import {getEntries} from "./db/entries"
 import {readFileSync} from "fs"
 import * as https from "https"
-import * as cookieParser from "cookie-parser"
-import {v4} from "uuid"
 import * as cors from "cors"
 
 if (
@@ -16,7 +14,6 @@ if (
 }
 
 const LISTEN_PORT = 8051
-const COOKIE_TOKEN_NAME = "lc_token"
 
 const SSL_KEY = readFileSync(process.env.LOCAL_SSL_KEY, "utf-8")
 const SSL_CERT = readFileSync(process.env.LOCAL_SSL_CERT, "utf-8")
@@ -35,24 +32,19 @@ app.use(
       "https://localhost:3000",
       "https://davidxmoody-life-calendar.netlify.app",
     ],
-    credentials: true,
   }),
 )
 
-app.use(cookieParser())
-
 app.use((req, res, next) => {
-  console.log(req.path)
-
-  if (!req.cookies[COOKIE_TOKEN_NAME]) {
-    const token = v4()
-    res.cookie(COOKIE_TOKEN_NAME, token, {secure: true, httpOnly: true})
+  const token = req.header("token")
+  if (!token) {
+    console.log("Request missing auth token")
     res.sendStatus(401)
-    console.log(`New device registered with token: "${token}"`)
-  } else if (!VALID_TOKENS[req.cookies[COOKIE_TOKEN_NAME]]) {
+  } else if (!VALID_TOKENS[token]) {
+    console.log(`Invalid token: "${token}"`)
     res.sendStatus(403)
-    console.log(`Invalid token: "${req.cookies[COOKIE_TOKEN_NAME]}"`)
   } else {
+    console.log(`${VALID_TOKENS[token]}: ${req.path}`)
     next()
   }
 })
