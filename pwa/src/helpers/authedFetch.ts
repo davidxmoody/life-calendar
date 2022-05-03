@@ -5,7 +5,7 @@ if (!localStorage.AUTH_TOKEN) {
   localStorage.AUTH_TOKEN = v4()
 }
 
-export default function (path: string) {
+export default function authedFetch(path: string) {
   return fetch(`${REMOTE_URL}${path}`, {
     headers: {token: localStorage.AUTH_TOKEN},
   })
