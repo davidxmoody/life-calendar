@@ -46,6 +46,7 @@ export async function sync(
     `${REMOTE_URL}/sync${
       lastSyncTimestamp ? `?sinceMs=${lastSyncTimestamp}` : ""
     }`,
+    {credentials: "include"},
   ).then((res) => res.json())
 
   const tx = db.transaction(["entries", "layers", "config"], "readwrite")
@@ -74,7 +75,10 @@ export async function downloadSingleScannedImage(entry: ScannedEntry) {
   }
 
   const url = getScannedUrl(entry)
-  const blob = await fetch(url).then((r) => r.blob())
+  const blob = await fetch(url, {credentials: "include"}).then((r) => r.blob())
+  if (!blob.type.startsWith("image")) {
+    throw new Error("Received non-image response")
+  }
   db.put("scanned", blob, entry.id)
 }
 
