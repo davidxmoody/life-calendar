@@ -1,6 +1,7 @@
 import {Box, Heading, useColorModeValue, useDisclosure} from "@chakra-ui/react"
 import * as React from "react"
 import {prettyFormatDateTime} from "../../helpers/dates"
+import getMarkdownWordcount from "../../helpers/getMarkdownWordcount"
 import {Entry} from "../../types"
 import AudioPlayer from "./AudioPlayer"
 import Markdown from "./Markdown"
@@ -118,10 +119,6 @@ function getMarkdownHeadings(content: string) {
     .split("\n")
     .filter((line) => line.startsWith("#"))
     .map((line) => line.replace(/^#* */, ""))
-}
-
-function getMarkdownWordcount(content: string) {
-  return content.trim().split(/\s+/).length
 }
 
 function pluralise(count: number, singular: string, plural: string) {

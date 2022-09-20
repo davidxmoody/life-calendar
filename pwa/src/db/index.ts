@@ -1,8 +1,11 @@
 /* eslint-disable no-fallthrough */
 
 import {openDB} from "idb"
-import {Entry, LayerData, MarkdownEntry, ScannedEntry} from "../types"
+import {Entry, Layer, MarkdownEntry, ScannedEntry} from "../types"
 import authedFetch from "../helpers/authedFetch"
+import recalculateEntriesLayers from "./recalculateEntriesLayers"
+import {getNextWeekStart, getWeekStart} from "../helpers/dates"
+import {uniq} from "ramda"
 
 export const dbPromise = openDB("data", 3, {
   upgrade(db, oldVersion, _newVersion, transaction) {
@@ -33,6 +36,7 @@ export async function sync(
 ): Promise<{count: number; timestamp: number}> {
   const db = await dbPromise
 
+  // TODO make fullSync delete existing database to avoid dangling deleted data?
   const lastSyncTimestamp: number | null = fullSync
     ? null
     : (await db.get("config", "lastSyncTimestamp")) ?? null
@@ -41,10 +45,13 @@ export async function sync(
     timestamp,
     entries,
     layers,
-  }: {timestamp: number; entries: Entry[]; layers: LayerData[]} =
-    await authedFetch(
-      `/sync${lastSyncTimestamp ? `?sinceMs=${lastSyncTimestamp}` : ""}`,
-    ).then((res) => res.json())
+  }: {
+    timestamp: number
+    entries: Entry[]
+    layers: Layer[]
+  } = await authedFetch(
+    `/sync${lastSyncTimestamp ? `?sinceMs=${lastSyncTimestamp}` : ""}`,
+  ).then((res) => res.json())
 
   const tx = db.transaction(["entries", "layers", "config"], "readwrite")
 
@@ -55,6 +62,16 @@ export async function sync(
   for (const layer of layers) {
     tx.objectStore("layers").put(layer)
   }
+
+  await recalculateEntriesLayers({
+    changedWeeks: uniq(entries.map((e) => getWeekStart(e.date))),
+    getEntriesForWeek: (weekStart) =>
+      tx
+        .objectStore("entries")
+        .getAll(IDBKeyRange.bound(weekStart, getNextWeekStart(weekStart))),
+    getLayer: (id) => tx.objectStore("layers").get(id),
+    saveLayer: (layer) => tx.objectStore("layers").put(layer),
+  })
 
   tx.objectStore("config").put(timestamp, "lastSyncTimestamp")
 

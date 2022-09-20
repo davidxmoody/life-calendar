@@ -7,10 +7,12 @@
     "@chakra-ui/react": "^1.8.8",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
+    "@types/jest": "^29.0.3",
     "framer-motion": "^6.3.2",
     "idb": "^7.0.1",
     "jotai": "^1.6.4",
     "moment": "^2.29.3",
+    "ramda": "^0.28.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-markdown": "^8.0.3",
@@ -26,11 +28,13 @@
   "scripts": {
     "start": "HTTPS=true SSL_KEY_FILE=\"$LOCAL_SSL_KEY\" SSL_CRT_FILE=\"$LOCAL_SSL_CERT\" react-scripts start",
     "build": "react-scripts build",
+    "test": "react-scripts test",
     "serve": "npm run build && http-server build -p 8050 --ssl --cert \"$LOCAL_SSL_CERT\" --key \"$LOCAL_SSL_KEY\""
   },
   "eslintConfig": {
     "extends": [
-      "react-app"
+      "react-app",
+      "react-app/jest"
     ]
   },
   "browserslist": {
@@ -47,6 +51,7 @@
   },
   "devDependencies": {
     "@types/node": "^16.11.29",
+    "@types/ramda": "^0.28.15",
     "@types/react": "^18.0.7",
     "@types/react-dom": "^18.0.0",
     "@types/tinycolor2": "^1.4.3",

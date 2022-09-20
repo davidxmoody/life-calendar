@@ -32,3 +32,8 @@ export interface AudioEntry {
 export type Entry = MarkdownEntry | ScannedEntry | AudioEntry
 
 export type LayerData = Record<string, number | undefined>
+
+export interface Layer {
+  id: string
+  data: LayerData
+}
