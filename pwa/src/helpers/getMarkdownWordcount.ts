@@ -1,3 +1,3 @@
-export default function (content: string) {
+export default function getMarkdownWordcount(content: string) {
   return content.trim().split(/\s+/).length
 }

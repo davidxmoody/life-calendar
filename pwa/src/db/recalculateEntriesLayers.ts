@@ -13,7 +13,7 @@ function round(num: number) {
   return Math.round(num * 1000) / 1000
 }
 
-export default async function ({
+export default async function recalculateEntriesLayers({
   changedWeeks,
   getEntriesForWeek,
   getLayer,
