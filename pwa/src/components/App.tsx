@@ -1,4 +1,4 @@
-import Timeline from "./Timeline"
+import Timeline from "./timeline/Timeline"
 import NavBar from "./NavBar"
 import {Box, Flex} from "@chakra-ui/react"
 import Calendar from "./calendar/Calendar"

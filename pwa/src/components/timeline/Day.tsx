@@ -1,13 +1,13 @@
 import {Box, Heading, useColorModeValue, useDisclosure} from "@chakra-ui/react"
-import {Atom, atom, useAtom} from "jotai"
+import {Atom, useAtom} from "jotai"
 import * as React from "react"
 import {memo, startTransition, useState} from "react"
-import {getEntriesForDayAtom, nullAtom} from "../atoms"
-import {prettyFormatDateTime} from "../helpers/dates"
-import {Entry} from "../types"
-import AudioPlayer from "./entries/AudioPlayer"
-import Markdown from "./entries/Markdown"
-import ScannedPage from "./entries/ScannedPage"
+import {getEntriesForDayAtom, nullAtom} from "../../atoms"
+import {prettyFormatDateTime} from "../../helpers/dates"
+import {Entry} from "../../types"
+import AudioPlayer from "./AudioPlayer"
+import Markdown from "./Markdown"
+import ScannedPage from "./ScannedPage"
 
 interface Props {
   date: string
@@ -17,7 +17,7 @@ interface Props {
   }>
 }
 
-export default memo(function TimelineDay(props: Props) {
+export default memo(function Day(props: Props) {
   const {isOpen, onToggle} = useDisclosure({defaultIsOpen: false})
   const [entriesAtom, setEntriesAtom] =
     useState<Atom<Promise<Entry[]> | null>>(nullAtom)
