@@ -14,7 +14,7 @@ export default memo(function Timeline() {
   console.log(data)
 
   return (
-    <Box overflowY="scroll" height="100%">
+    <Box overflowY="scroll" height="100%" id="timeline">
       <Box mb={16} p={[0, 2]}>
         {data.weeks.map((week) => (
           <Week key={week.days[0]?.date} days={week.days} />
