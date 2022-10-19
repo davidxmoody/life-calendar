@@ -1,4 +1,4 @@
-import WeekSummary from "./WeekSummary"
+import Timeline from "./Timeline"
 import NavBar from "./NavBar"
 import {Box, Flex} from "@chakra-ui/react"
 import Calendar from "./calendar/Calendar"
@@ -25,8 +25,8 @@ export default function App() {
             <Calendar />
           </Box>
 
-          <Box flex={1} overflowY="scroll">
-            <WeekSummary />
+          <Box flex={1}>
+            <Timeline />
           </Box>
         </Flex>
       </Flex>

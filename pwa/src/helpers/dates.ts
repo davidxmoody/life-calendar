@@ -20,12 +20,16 @@ export function parseYear(date: string) {
   return parseInt(date.slice(0, 4), 10)
 }
 
-export function getFirstWeekInYear(date: string) {
-  let firstWeekInYear = getWeekStart(`${parseYear(date)}-01-01`)
-  if (parseYear(firstWeekInYear) < parseYear(date)) {
-    firstWeekInYear = getNextWeekStart(firstWeekInYear)
-  }
-  return firstWeekInYear
+export function addDays(date: string, numDays: number) {
+  return moment(date).add(numDays, "days").format("YYYY-MM-DD")
+}
+
+export function getFirstWeekInYear(year: number) {
+  const weekStartOfFirstDay = getWeekStart(`${year}-01-01`)
+
+  return parseYear(weekStartOfFirstDay) < year
+    ? getNextWeekStart(weekStartOfFirstDay)
+    : weekStartOfFirstDay
 }
 
 export function prettyFormatDateTime({

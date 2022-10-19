@@ -50,7 +50,9 @@ export default function generateCalendarData({
   deathDate: string
   eras: Era[]
 }) {
-  const firstWeekStartDate = getFirstWeekInYear(birthDate)
+  const firstWeekStartDate = getFirstWeekInYear(
+    parseYear(getWeekStart(birthDate)),
+  )
   const firstEraWeekStartDate = getWeekStart(birthDate)
 
   const weeks: Week[] = [

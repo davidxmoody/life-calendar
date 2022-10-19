@@ -1,23 +1,40 @@
 import {Box, Heading, useColorModeValue, useDisclosure} from "@chakra-ui/react"
+import {Atom, atom, useAtom} from "jotai"
 import * as React from "react"
-import {prettyFormatDateTime} from "../../helpers/dates"
-import getHeadings from "../../helpers/getHeadings"
-import {Entry} from "../../types"
-import AudioPlayer from "./AudioPlayer"
-import Markdown from "./Markdown"
-import ScannedPage from "./ScannedPage"
+import {memo, startTransition, useState} from "react"
+import {getEntriesForDayAtom, nullAtom} from "../atoms"
+import {prettyFormatDateTime} from "../helpers/dates"
+import {Entry} from "../types"
+import AudioPlayer from "./entries/AudioPlayer"
+import Markdown from "./entries/Markdown"
+import ScannedPage from "./entries/ScannedPage"
 
 interface Props {
   date: string
-  entries: Entry[]
+  headings: null | Array<{
+    headings: string[]
+    type: "markdown" | "scanned" | "audio"
+  }>
 }
 
-export default function Day(props: Props) {
+export default memo(function TimelineDay(props: Props) {
   const {isOpen, onToggle} = useDisclosure({defaultIsOpen: false})
+  const [entriesAtom, setEntriesAtom] =
+    useState<Atom<Promise<Entry[]> | null>>(nullAtom)
+  const [entries] = useAtom(entriesAtom)
+
+  function onClick() {
+    startTransition(() => {
+      if (entriesAtom === nullAtom) {
+        setEntriesAtom(getEntriesForDayAtom(props.date))
+      }
+      onToggle()
+    })
+  }
 
   return (
-    <Box maxW="800px">
-      <DayHeader date={props.date} entries={props.entries} onClick={onToggle} />
+    <Box maxW="800px" mb={4}>
+      <DayHeader date={props.date} onClick={onClick} />
 
       <Box
         borderLeftWidth={[0, "thin"]}
@@ -27,21 +44,17 @@ export default function Day(props: Props) {
         borderColor="gray.600"
         overflow="hidden"
       >
-        {isOpen ? (
-          <Full entries={props.entries} />
-        ) : (
-          <Summary entries={props.entries} onClick={onToggle} />
-        )}
+        {isOpen && entries ? (
+          <Full entries={entries} />
+        ) : props.headings ? (
+          <Summary headings={props.headings} onClick={onClick} />
+        ) : null}
       </Box>
     </Box>
   )
-}
+})
 
-function DayHeader(props: {
-  date: string
-  entries: Entry[]
-  onClick: () => void
-}) {
+function DayHeader(props: {date: string; onClick: () => void}) {
   const bodyBackground = useColorModeValue("white", "gray.800")
 
   return (
@@ -63,12 +76,13 @@ function DayHeader(props: {
   )
 }
 
-function Summary(props: {entries: Entry[]; onClick: () => void}) {
-  const headings = getHeadings(props.entries)
-
+function Summary(props: {
+  headings: NonNullable<Props["headings"]>
+  onClick: () => void
+}) {
   return (
-    <Box px={4} py={2} onClick={props.onClick} cursor="pointer">
-      {headings.map((heading, i) => (
+    <Box px={4} py={2}>
+      {props.headings.map((heading, i) => (
         <Box key={i} display="flex">
           {heading.type === "markdown"
             ? "⌨️"
@@ -77,7 +91,14 @@ function Summary(props: {entries: Entry[]; onClick: () => void}) {
             : "🎤"}{" "}
           <Box ml={2}>
             {heading.headings.map((h, j) => (
-              <Box key={j}>{h}</Box>
+              <Box
+                key={j}
+                onClick={props.onClick}
+                cursor="pointer"
+                _hover={{background: "grey"}}
+              >
+                {h}
+              </Box>
             ))}
           </Box>
         </Box>

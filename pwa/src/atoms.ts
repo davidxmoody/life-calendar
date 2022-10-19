@@ -1,8 +1,16 @@
 import {atom} from "jotai"
 import {atomWithStorage} from "jotai/utils"
 import {dbPromise, getStats} from "./db"
-import {getNextWeekStart} from "./helpers/dates"
-import {LayerData} from "./types"
+import {
+  addDays,
+  getFirstWeekInYear,
+  getNextWeekStart,
+  parseYear,
+} from "./helpers/dates"
+import getHeadings from "./helpers/getHeadings"
+import {Entry, LayerData} from "./types"
+
+export const nullAtom = atom(null)
 
 export const selectedLayerIdAtom = atomWithStorage<string | null>(
   "selectedLayerId",
@@ -47,7 +55,11 @@ export const weekEntriesAtom = atom(async (get) => {
   const db = await dbPromise
   return db.getAll(
     "entries",
-    IDBKeyRange.bound(selectedWeekStart, getNextWeekStart(selectedWeekStart)),
+    // IDBKeyRange.bound(selectedWeekStart, getNextWeekStart(selectedWeekStart)),
+    IDBKeyRange.bound(
+      selectedWeekStart.slice(0, 4) + "-01-01",
+      selectedWeekStart.slice(0, 4) + "-12-31",
+    ),
   )
 })
 
@@ -55,3 +67,73 @@ export const databaseStatsAtom = atom(async (get) => {
   get(lastSyncTimestampAtom)
   return getStats()
 })
+
+export const timelineDataAtom = atom(
+  async (get): Promise<TimelineData | null> => {
+    get(lastSyncTimestampAtom)
+    const selectedWeekStart = get(selectedWeekStartAtom)
+
+    if (!selectedWeekStart) {
+      return null
+    }
+
+    const db = await dbPromise
+
+    const year = parseYear(selectedWeekStart)
+
+    const startInclusive = getFirstWeekInYear(year)
+    const endExclusive = getFirstWeekInYear(year + 1)
+
+    const allEntriesInYear: Entry[] = await db.getAll(
+      "entries",
+      IDBKeyRange.bound(startInclusive, endExclusive),
+    )
+
+    const data: TimelineData = {weeks: []}
+
+    let currentDate = startInclusive
+    while (currentDate < endExclusive) {
+      data.weeks.push({
+        days: [0, 1, 2, 3, 4, 5, 6].map((x) => {
+          const date = addDays(currentDate, x)
+          const headings = getHeadings(
+            allEntriesInYear.filter((e) => e.date === date),
+          )
+
+          return {
+            date,
+            headings,
+          }
+        }),
+      })
+
+      currentDate = getNextWeekStart(currentDate)
+    }
+
+    return data
+  },
+)
+
+export interface TimelineData {
+  weeks: Array<{
+    days: Array<{
+      date: string
+      headings: Array<{
+        type: "markdown" | "scanned" | "audio"
+        headings: string[]
+      }>
+    }>
+  }>
+}
+
+export function getEntriesForDayAtom(date: string) {
+  return atom(async (get) => {
+    get(lastSyncTimestampAtom)
+
+    const db = await dbPromise
+    return db.getAll(
+      "entries",
+      IDBKeyRange.bound(date, addDays(date, 1)),
+    ) as Promise<Entry[]>
+  })
+}
