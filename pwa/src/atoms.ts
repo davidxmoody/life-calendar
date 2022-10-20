@@ -1,3 +1,5 @@
+/* eslint-disable no-loop-func */
+
 import {atom} from "jotai"
 import {atomWithStorage} from "jotai/utils"
 import {dbPromise, getStats} from "./db"

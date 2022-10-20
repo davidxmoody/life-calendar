@@ -28,7 +28,7 @@ export default memo(function Timeline() {
     return () => {
       elements.forEach((e) => observer.unobserve(e))
     }
-  }, [data])
+  }, [data, setSelectedWeekStart])
 
   useEffect(() => {
     if (skipNextScrollToRef.current === selectedWeekStart) {
