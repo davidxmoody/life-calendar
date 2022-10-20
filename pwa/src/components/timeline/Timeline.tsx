@@ -7,14 +7,8 @@ import Week from "./Week"
 export default memo(function Timeline() {
   const [data] = useAtom(timelineDataAtom)
 
-  if (!data) {
-    return null
-  }
-
-  console.log(data)
-
   return (
-    <Box overflowY="scroll" height="100%" id="timeline">
+    <Box overflowY="scroll" height="100%">
       <Box mb={16} p={[0, 2]}>
         {data.weeks.map((week) => (
           <Week key={week.days[0]?.date} days={week.days} />

@@ -44,6 +44,11 @@ export const selectedWeekStartAtom = atomWithStorage<string | null>(
   null,
 )
 
+export const selectedYearAtom = atom((get) => {
+  const selectedWeekStart = get(selectedWeekStartAtom)
+  return selectedWeekStart ? parseYear(selectedWeekStart) : null
+})
+
 export const weekEntriesAtom = atom(async (get) => {
   get(lastSyncTimestampAtom)
   const selectedWeekStart = get(selectedWeekStartAtom)
@@ -68,51 +73,47 @@ export const databaseStatsAtom = atom(async (get) => {
   return getStats()
 })
 
-export const timelineDataAtom = atom(
-  async (get): Promise<TimelineData | null> => {
-    get(lastSyncTimestampAtom)
-    const selectedWeekStart = get(selectedWeekStartAtom)
+export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
+  get(lastSyncTimestampAtom)
+  const selectedYear = get(selectedYearAtom)
 
-    if (!selectedWeekStart) {
-      return null
-    }
+  if (!selectedYear) {
+    return {weeks: []}
+  }
 
-    const db = await dbPromise
+  const db = await dbPromise
 
-    const year = parseYear(selectedWeekStart)
+  const startInclusive = getFirstWeekInYear(selectedYear)
+  const endExclusive = getFirstWeekInYear(selectedYear + 1)
 
-    const startInclusive = getFirstWeekInYear(year)
-    const endExclusive = getFirstWeekInYear(year + 1)
+  const allEntriesInYear: Entry[] = await db.getAll(
+    "entries",
+    IDBKeyRange.bound(startInclusive, endExclusive),
+  )
 
-    const allEntriesInYear: Entry[] = await db.getAll(
-      "entries",
-      IDBKeyRange.bound(startInclusive, endExclusive),
-    )
+  const data: TimelineData = {weeks: []}
 
-    const data: TimelineData = {weeks: []}
+  let currentDate = startInclusive
+  while (currentDate < endExclusive) {
+    data.weeks.push({
+      days: [0, 1, 2, 3, 4, 5, 6].map((x) => {
+        const date = addDays(currentDate, x)
+        const headings = getHeadings(
+          allEntriesInYear.filter((e) => e.date === date),
+        )
 
-    let currentDate = startInclusive
-    while (currentDate < endExclusive) {
-      data.weeks.push({
-        days: [0, 1, 2, 3, 4, 5, 6].map((x) => {
-          const date = addDays(currentDate, x)
-          const headings = getHeadings(
-            allEntriesInYear.filter((e) => e.date === date),
-          )
+        return {
+          date,
+          headings,
+        }
+      }),
+    })
 
-          return {
-            date,
-            headings,
-          }
-        }),
-      })
+    currentDate = getNextWeekStart(currentDate)
+  }
 
-      currentDate = getNextWeekStart(currentDate)
-    }
-
-    return data
-  },
-)
+  return data
+})
 
 export interface TimelineData {
   weeks: Array<{

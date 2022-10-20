@@ -1,7 +1,7 @@
 import * as React from "react"
 import {Box} from "@chakra-ui/react"
 import {selectedWeekStartAtom, TimelineData} from "../../atoms"
-import {memo, useEffect} from "react"
+import {memo, useEffect, useState} from "react"
 import Day from "./Day"
 import {useAtom} from "jotai"
 
@@ -10,24 +10,27 @@ interface Props {
 }
 
 export default memo(function TimelineWeek(props: Props) {
+  const [skipNextScroll, setSkipNextScroll] = useState(false)
+
   const [selectedWeekStart, setSelectedWeekStart] = useAtom(
     selectedWeekStartAtom,
   )
-  const ref = React.useRef(null)
+
+  const weekStart = props.days[0].date
+  const isSelected = selectedWeekStart === props.days[0].date
+
+  const ref = React.useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (ref.current) {
       const observer = new IntersectionObserver(
         (x) => {
           if (x[0]?.isIntersecting) {
-            console.log("intersection", props.days[0].date, x)
+            setSkipNextScroll(true)
             setSelectedWeekStart(props.days[0].date)
           }
         },
-        {
-          root: document.getElementById("timeline"),
-          rootMargin: "-30% 0px -70% 0px",
-        },
+        {rootMargin: "-30% 0px -70% 0px"},
       )
       observer.observe(ref.current)
 
@@ -37,7 +40,17 @@ export default memo(function TimelineWeek(props: Props) {
         }
       }
     }
-  }, [props.days[0].date, ref.current])
+  }, [ref, weekStart])
+
+  useEffect(() => {
+    if (!isSelected && skipNextScroll) {
+      setSkipNextScroll(false)
+    }
+
+    if (isSelected && !skipNextScroll) {
+      ref.current?.scrollIntoView()
+    }
+  }, [ref, isSelected, skipNextScroll])
 
   return (
     <Box
