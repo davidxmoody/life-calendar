@@ -1,17 +1,58 @@
-import React, {memo} from "react"
+import React, {memo, useEffect, useRef} from "react"
 import {Box} from "@chakra-ui/react"
 import {useAtom} from "jotai"
-import {timelineDataAtom} from "../../atoms"
-import Week from "./Week"
+import {selectedWeekStartAtom, timelineDataAtom} from "../../atoms"
+import Day from "./Day"
 
 export default memo(function Timeline() {
   const [data] = useAtom(timelineDataAtom)
+  const [selectedWeekStart, setSelectedWeekStart] = useAtom(
+    selectedWeekStartAtom,
+  )
+  const skipNextScrollToRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (x) => {
+        if (x[0]?.isIntersecting) {
+          const intersectingWeekStart = x[0].target.getAttribute("data-week")
+          skipNextScrollToRef.current = intersectingWeekStart
+          setSelectedWeekStart(intersectingWeekStart)
+        }
+      },
+      {rootMargin: "-30% 0px -70% 0px"},
+    )
+    const elements = document.querySelectorAll("#timeline .timeline-week")
+    elements.forEach((e) => observer.observe(e))
+
+    return () => {
+      elements.forEach((e) => observer.unobserve(e))
+    }
+  }, [data])
+
+  useEffect(() => {
+    if (skipNextScrollToRef.current === selectedWeekStart) {
+      skipNextScrollToRef.current = null
+    } else {
+      document
+        .querySelector(`#timeline [data-week="${selectedWeekStart}"]`)
+        ?.scrollIntoView()
+    }
+  }, [selectedWeekStart])
 
   return (
-    <Box overflowY="scroll" height="100%">
+    <Box id="timeline" overflowY="scroll" height="100%">
       <Box mb={16} p={[0, 2]}>
         {data.weeks.map((week) => (
-          <Week key={week.days[0]?.date} days={week.days} />
+          <Box
+            key={week.days[0].date}
+            className="timeline-week"
+            data-week={week.days[0].date}
+          >
+            {week.days.map((day) => (
+              <Day key={day.date} date={day.date} headings={day.headings} />
+            ))}
+          </Box>
         ))}
       </Box>
     </Box>
