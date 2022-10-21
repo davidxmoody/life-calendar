@@ -27,7 +27,7 @@ export default function drawCalendar({
   data.decades.forEach((decade, decadeIndex) => {
     decade.years.forEach((year, yearIndex) => {
       if (incremental) {
-        if ("era" in year.weeks[0]) {
+        if (year.weeks.some((week) => "era" in week)) {
           ctx.clearRect(
             d.year.w * yearIndex,
             d.year.h * decadeIndex,
