@@ -4,7 +4,7 @@ import * as React from "react"
 import {memo, startTransition, useState} from "react"
 import {getEntriesForDayAtom, nullAtom} from "../../atoms"
 import {prettyFormatDateTime} from "../../helpers/dates"
-import {Entry} from "../../types"
+import {Entry, EntryContentType} from "../../types"
 import AudioPlayer from "./AudioPlayer"
 import Markdown from "./Markdown"
 import ScannedPage from "./ScannedPage"
@@ -12,8 +12,8 @@ import ScannedPage from "./ScannedPage"
 interface Props {
   date: string
   headings: null | Array<{
+    type: EntryContentType
     headings: string[]
-    type: "markdown" | "scanned" | "audio"
   }>
 }
 

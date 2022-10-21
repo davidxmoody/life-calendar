@@ -10,7 +10,7 @@ import {
   parseYear,
 } from "./helpers/dates"
 import getHeadings from "./helpers/getHeadings"
-import {Entry, LayerData} from "./types"
+import {Entry, EntryContentType, LayerData} from "./types"
 
 export const nullAtom = atom(null)
 
@@ -122,7 +122,7 @@ export interface TimelineData {
     days: Array<{
       date: string
       headings: Array<{
-        type: "markdown" | "scanned" | "audio"
+        type: EntryContentType
         headings: string[]
       }>
     }>
