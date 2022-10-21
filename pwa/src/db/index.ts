@@ -4,10 +4,11 @@ import {openDB} from "idb"
 import {Entry, Layer, MarkdownEntry, ScannedEntry} from "../types"
 import authedFetch from "../helpers/authedFetch"
 import recalculateEntriesLayers from "./recalculateEntriesLayers"
-import {getNextWeekStart, getWeekStart} from "../helpers/dates"
+import {addDays, getNextWeekStart, getWeekStart} from "../helpers/dates"
 import {uniq} from "ramda"
+import getHeadings from "../helpers/getHeadings"
 
-export const dbPromise = openDB("data", 3, {
+export const dbPromise = openDB("data", 4, {
   upgrade(db, oldVersion, _newVersion, transaction) {
     switch (oldVersion) {
       case 0:
@@ -18,6 +19,8 @@ export const dbPromise = openDB("data", 3, {
         transaction.objectStore("entries").createIndex("type", "type")
       case 2:
         db.createObjectStore("scanned")
+      case 3:
+        db.createObjectStore("headings", {keyPath: "date"})
     }
   },
   blocked() {
@@ -53,14 +56,28 @@ export async function sync(
     `/sync${lastSyncTimestamp ? `?sinceMs=${lastSyncTimestamp}` : ""}`,
   ).then((res) => res.json())
 
-  const tx = db.transaction(["entries", "layers", "config"], "readwrite")
+  const tx = db.transaction(
+    ["entries", "layers", "config", "headings"],
+    "readwrite",
+  )
 
   for (const entry of entries) {
-    tx.objectStore("entries").put(entry)
+    await tx.objectStore("entries").put(entry)
+  }
+
+  for (const date of uniq(entries.map((e) => e.date))) {
+    const entries = await (tx
+      .objectStore("entries")
+      .getAll(IDBKeyRange.bound(date, addDays(date, 1))) as Promise<Entry[]>)
+
+    await tx.objectStore("headings").put({
+      date,
+      headings: getHeadings(entries),
+    })
   }
 
   for (const layer of layers) {
-    tx.objectStore("layers").put(layer)
+    await tx.objectStore("layers").put(layer)
   }
 
   await recalculateEntriesLayers({
@@ -73,7 +90,7 @@ export async function sync(
     saveLayer: (layer) => tx.objectStore("layers").put(layer),
   })
 
-  tx.objectStore("config").put(timestamp, "lastSyncTimestamp")
+  await tx.objectStore("config").put(timestamp, "lastSyncTimestamp")
 
   await tx.done
 
@@ -115,8 +132,6 @@ export async function downloadScanned(sinceDate: string) {
     }
   }
 }
-
-;(window as any).downloadScanned = downloadScanned
 
 export async function search(
   term: string,

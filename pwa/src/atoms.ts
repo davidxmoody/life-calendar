@@ -60,7 +60,7 @@ interface TimelineData {
   weeks: Array<{
     days: Array<{
       date: string
-      headings: Array<{
+      headings: null | Array<{
         type: EntryContentType
         headings: string[]
       }>
@@ -81,9 +81,12 @@ export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
   const startInclusive = getFirstWeekInYear(selectedYear)
   const endExclusive = getFirstWeekInYear(selectedYear + 1)
 
-  const allEntriesInYear: Entry[] = await db.getAll(
-    "entries",
-    IDBKeyRange.bound(startInclusive, endExclusive),
+  const allHeadingsInYear: Array<{
+    date: string
+    headings: ReturnType<typeof getHeadings>
+  }> = await db.getAll(
+    "headings",
+    IDBKeyRange.bound(startInclusive, endExclusive, false, true),
   )
 
   const data: TimelineData = {weeks: []}
@@ -93,9 +96,8 @@ export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
     data.weeks.push({
       days: [0, 1, 2, 3, 4, 5, 6].map((x) => {
         const date = addDays(currentDate, x)
-        const headings = getHeadings(
-          allEntriesInYear.filter((e) => e.date === date),
-        )
+        const headings =
+          allHeadingsInYear.find((h) => h.date === date)?.headings ?? null
 
         return {
           date,
