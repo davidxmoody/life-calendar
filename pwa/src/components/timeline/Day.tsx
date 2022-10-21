@@ -2,7 +2,7 @@ import {Box, Heading, useColorModeValue, useDisclosure} from "@chakra-ui/react"
 import {Atom, useAtom} from "jotai"
 import * as React from "react"
 import {memo, startTransition, useState} from "react"
-import {getEntriesForDayAtom, nullAtom} from "../../atoms"
+import {createEntriesForDayAtom, nullAtom} from "../../atoms"
 import {prettyFormatDateTime} from "../../helpers/dates"
 import {Entry, EntryContentType} from "../../types"
 import AudioPlayer from "./AudioPlayer"
@@ -26,7 +26,7 @@ export default memo(function Day(props: Props) {
   function onClick() {
     startTransition(() => {
       if (entriesAtom === nullAtom) {
-        setEntriesAtom(getEntriesForDayAtom(props.date))
+        setEntriesAtom(createEntriesForDayAtom(props.date))
       }
       onToggle()
     })

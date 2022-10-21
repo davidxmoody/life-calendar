@@ -46,34 +46,27 @@ export const selectedWeekStartAtom = atomWithStorage<string | null>(
   null,
 )
 
-export const selectedYearAtom = atom((get) => {
+const selectedYearAtom = atom((get) => {
   const selectedWeekStart = get(selectedWeekStartAtom)
   return selectedWeekStart ? parseYear(selectedWeekStart) : null
-})
-
-export const weekEntriesAtom = atom(async (get) => {
-  get(lastSyncTimestampAtom)
-  const selectedWeekStart = get(selectedWeekStartAtom)
-
-  if (!selectedWeekStart) {
-    return []
-  }
-
-  const db = await dbPromise
-  return db.getAll(
-    "entries",
-    // IDBKeyRange.bound(selectedWeekStart, getNextWeekStart(selectedWeekStart)),
-    IDBKeyRange.bound(
-      selectedWeekStart.slice(0, 4) + "-01-01",
-      selectedWeekStart.slice(0, 4) + "-12-31",
-    ),
-  )
 })
 
 export const databaseStatsAtom = atom(async (get) => {
   get(lastSyncTimestampAtom)
   return getStats()
 })
+
+interface TimelineData {
+  weeks: Array<{
+    days: Array<{
+      date: string
+      headings: Array<{
+        type: EntryContentType
+        headings: string[]
+      }>
+    }>
+  }>
+}
 
 export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
   get(lastSyncTimestampAtom)
@@ -117,19 +110,7 @@ export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
   return data
 })
 
-export interface TimelineData {
-  weeks: Array<{
-    days: Array<{
-      date: string
-      headings: Array<{
-        type: EntryContentType
-        headings: string[]
-      }>
-    }>
-  }>
-}
-
-export function getEntriesForDayAtom(date: string) {
+export function createEntriesForDayAtom(date: string) {
   return atom(async (get) => {
     get(lastSyncTimestampAtom)
 
