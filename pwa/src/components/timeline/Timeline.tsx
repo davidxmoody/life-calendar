@@ -3,8 +3,10 @@ import {Box} from "@chakra-ui/react"
 import {useAtom} from "jotai"
 import {selectedWeekStartAtom, timelineDataAtom} from "../../atoms"
 import Day from "./Day"
+import useToday from "../../hooks/useToday"
 
 export default memo(function Timeline() {
+  const today = useToday()
   const [data] = useAtom(timelineDataAtom)
   const [selectedWeekStart, setSelectedWeekStart] = useAtom(
     selectedWeekStartAtom,
@@ -49,9 +51,11 @@ export default memo(function Timeline() {
             className="timeline-week"
             data-week={week.days[0].date}
           >
-            {week.days.map((day) => (
-              <Day key={day.date} date={day.date} headings={day.headings} />
-            ))}
+            {week.days
+              .filter((day) => day.date <= today)
+              .map((day) => (
+                <Day key={day.date} date={day.date} headings={day.headings} />
+              ))}
           </Box>
         ))}
       </Box>
