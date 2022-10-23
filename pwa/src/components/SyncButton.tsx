@@ -25,7 +25,9 @@ export default function SyncButton(props: Props) {
     sync(props.fullSync)
       .then(({count, timestamp}) => {
         setSyncState({type: "success", num: count})
-        setLastSyncTimestamp(timestamp)
+        if (count !== 0) {
+          setLastSyncTimestamp(timestamp)
+        }
       })
       .catch((error) => {
         console.error(error)
