@@ -1,9 +1,17 @@
-import React, {memo, useEffect, useRef} from "react"
-import {Box} from "@chakra-ui/react"
+import React, {memo, startTransition, useEffect, useRef} from "react"
+import {Box, Button, Flex} from "@chakra-ui/react"
 import {useAtom} from "jotai"
 import {selectedWeekStartAtom, timelineDataAtom} from "../../atoms"
 import Day from "./Day"
 import useToday from "../../hooks/useToday"
+import {
+  getNextWeekStart,
+  getPrevWeekStart,
+  getWeekStart,
+  parseYear,
+} from "../../helpers/dates"
+import {ArrowDownIcon, ArrowUpIcon} from "@chakra-ui/icons"
+import lifeData from "../../lifeData"
 
 export default memo(function Timeline() {
   const today = useToday()
@@ -42,9 +50,30 @@ export default memo(function Timeline() {
     }
   }, [selectedWeekStart])
 
+  const firstWeekStart = getWeekStart(lifeData.birthDate)
+  const lastWeekStart = getWeekStart(today)
+
+  const prevYearWeekStart = getPrevWeekStart(data.weeks[0].days[0].date)
+  const nextYearWeekStart = getNextWeekStart(
+    data.weeks[data.weeks.length - 1].days[6].date,
+  )
+
   return (
     <Box id="timeline" overflowY="scroll" height="100%">
       <Box mb={16} p={[0, 2]}>
+        {data.weeks[0].days[0].date > firstWeekStart ? (
+          <YearJumpButton
+            weekStart={prevYearWeekStart}
+            direction="prev"
+            onClick={() => {
+              startTransition(() => {
+                skipNextScrollToRef.current = null
+                setSelectedWeekStart(prevYearWeekStart)
+              })
+            }}
+          />
+        ) : null}
+
         {data.weeks.map((week) => (
           <Box
             key={week.days[0].date}
@@ -52,13 +81,47 @@ export default memo(function Timeline() {
             data-week={week.days[0].date}
           >
             {week.days
-              .filter((day) => day.date <= today)
+              .filter(
+                (day) => day.date <= today && day.date >= lifeData.birthDate,
+              )
               .map((day) => (
                 <Day key={day.date} date={day.date} headings={day.headings} />
               ))}
           </Box>
         ))}
+
+        {nextYearWeekStart <= lastWeekStart ? (
+          <YearJumpButton
+            weekStart={nextYearWeekStart}
+            direction="next"
+            onClick={() => {
+              startTransition(() => {
+                skipNextScrollToRef.current = null
+                setSelectedWeekStart(nextYearWeekStart)
+              })
+            }}
+          />
+        ) : null}
       </Box>
     </Box>
   )
 })
+
+function YearJumpButton(props: {
+  weekStart: string
+  direction: "next" | "prev"
+  onClick: () => void
+}) {
+  return (
+    <Flex maxWidth="800px" my={8} justifyContent="center">
+      <Button
+        leftIcon={
+          props.direction === "next" ? <ArrowDownIcon /> : <ArrowUpIcon />
+        }
+        onClick={props.onClick}
+      >
+        Go to {parseYear(props.weekStart)}
+      </Button>
+    </Flex>
+  )
+}
