@@ -14,6 +14,11 @@ import {Entry, EntryContentType, LayerData} from "./types"
 
 export const nullAtom = atom(null)
 
+export const mobileViewAtom = atomWithStorage<"calendar" | "timeline">(
+  "mobileView",
+  "calendar",
+)
+
 export const selectedLayerIdAtom = atomWithStorage<string | null>(
   "selectedLayerId",
   null,

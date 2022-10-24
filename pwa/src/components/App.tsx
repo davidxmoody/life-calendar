@@ -4,11 +4,10 @@ import {Box, Flex} from "@chakra-ui/react"
 import Calendar from "./calendar/Calendar"
 import {Suspense} from "react"
 import {useAtom} from "jotai"
-import {selectedWeekStartAtom} from "../atoms"
+import {mobileViewAtom} from "../atoms"
 
 export default function App() {
-  // TODO remove this from here and use a layout that doesn't need it
-  const [selectedWeekStart] = useAtom(selectedWeekStartAtom)
+  const [mobileView] = useAtom(mobileViewAtom)
 
   return (
     <Suspense>
@@ -17,15 +16,16 @@ export default function App() {
 
         <Flex flex={1} overflowY="auto">
           <Box
-            width={[selectedWeekStart ? 0 : "auto", "auto"]}
-            opacity={[selectedWeekStart ? 0 : 1, 1]}
-            pointerEvents={[selectedWeekStart ? "none" : "auto", "auto"]}
             flex={0}
+            display={[mobileView === "calendar" ? "block" : "none", "block"]}
           >
             <Calendar />
           </Box>
 
-          <Box flex={1}>
+          <Box
+            flex={1}
+            display={[mobileView === "timeline" ? "block" : "none", "block"]}
+          >
             <Timeline />
           </Box>
         </Flex>

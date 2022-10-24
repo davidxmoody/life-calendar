@@ -18,7 +18,7 @@ import useToday from "../hooks/useToday"
 import moment from "moment"
 import {getWeekStart} from "../helpers/dates"
 import {useAtom} from "jotai"
-import {selectedWeekStartAtom} from "../atoms"
+import {mobileViewAtom, selectedWeekStartAtom} from "../atoms"
 
 const months = [
   "January",
@@ -42,6 +42,7 @@ interface Props {
 
 export default function JumpToModal(props: Props) {
   const [, setSelectedWeekStart] = useAtom(selectedWeekStartAtom)
+  const [, setMobileView] = useAtom(mobileViewAtom)
   const today = useToday()
   const [initialYear, initialMonth, initialDay] = today
     .split("-")
@@ -122,6 +123,7 @@ export default function JumpToModal(props: Props) {
               startTransition(() => {
                 props.onClose()
                 setSelectedWeekStart(getWeekStart(selectedDate))
+                setMobileView("timeline")
               })
             }}
           >

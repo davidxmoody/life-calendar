@@ -6,14 +6,20 @@ import drawCalendar from "./drawCalendar"
 import calculateCalendarDimensions from "../../helpers/calculateCalendarDimensions"
 import getWeekUnderCursor from "../../helpers/getWeekUnderCursor"
 import tinycolor from "tinycolor2"
-import {selectedLayerDataAtom, selectedWeekStartAtom} from "../../atoms"
+import {
+  mobileViewAtom,
+  selectedLayerDataAtom,
+  selectedWeekStartAtom,
+} from "../../atoms"
 import {useAtom} from "jotai"
 import {NAV_BAR_HEIGHT_PX} from "../NavBar"
 
 export default memo(function Calendar() {
-  const [selectedWeekStart] = useAtom(selectedWeekStartAtom)
+  const [selectedWeekStart, setSelectedWeekStart] = useAtom(
+    selectedWeekStartAtom,
+  )
+  const [, setMobileView] = useAtom(mobileViewAtom)
   const [layerData] = useAtom(selectedLayerDataAtom)
-  const [, setSelectedWeekStart] = useAtom(selectedWeekStartAtom)
 
   const today = useToday()
   const data = useMemo(
@@ -115,6 +121,7 @@ export default memo(function Calendar() {
 
           startTransition(() => {
             setSelectedWeekStart(week.startDate)
+            setMobileView("timeline")
           })
         }}
       />
