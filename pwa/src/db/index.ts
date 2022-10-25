@@ -7,6 +7,7 @@ import recalculateEntriesLayers from "./recalculateEntriesLayers"
 import {addDays, getNextWeekStart, getWeekStart} from "../helpers/dates"
 import {uniq} from "ramda"
 import getHeadings, {DayHeadings} from "../helpers/getHeadings"
+import search from "./search"
 
 interface DataDBSchema extends DBSchema {
   entries: {
@@ -157,31 +158,24 @@ export async function downloadScanned(sinceDate: string) {
   }
 }
 
-export async function search(term: string, limit: number = 100) {
-  const db = await dbPromise
+export async function searchDb(term: string) {
+  let cursor = await (await dbPromise)
+    .transaction("entries")
+    .store.openCursor(null, "prev")
 
-  const results = []
-
-  let cursor = await db.transaction("entries").store.openCursor(null, "prev")
-
-  while (cursor && results.length < limit) {
-    const entry = cursor.value
-    if (entry.type === "markdown" && entry.content.includes(term)) {
-      results.push(entry)
-    }
-    if (
-      entry.type === "scanned" &&
-      entry.headings?.some((h) => h.includes(term))
-    ) {
-      results.push(entry)
-    }
-    cursor = await cursor.continue()
-  }
-
-  return results
+  return search({
+    regex: term,
+    getNextEntry: async () => {
+      const currentEntry = cursor?.value ?? undefined
+      if (currentEntry) {
+        cursor = (await cursor?.continue()) ?? null
+      }
+      return currentEntry
+    },
+  })
 }
 
-;(window as any).search = search
+;(window as any).search = searchDb
 
 export interface Stats {
   lastSyncTimestamp: number | null
