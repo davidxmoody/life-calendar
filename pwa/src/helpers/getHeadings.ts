@@ -14,7 +14,12 @@ function pluralise(count: number, singular: string, plural: string) {
     : `${count.toLocaleString()} ${plural}`
 }
 
-export default function getHeadings(entries: Entry[]) {
+export type DayHeadings = Array<{
+  type: Entry["type"]
+  headings: string[]
+}>
+
+export default function getHeadings(entries: Entry[]): DayHeadings {
   const headings: Array<{
     type: Entry["type"]
     headings: string[]

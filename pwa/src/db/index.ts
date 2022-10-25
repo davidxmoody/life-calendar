@@ -1,14 +1,38 @@
 /* eslint-disable no-fallthrough */
 
-import {openDB} from "idb"
-import {Entry, Layer, MarkdownEntry, ScannedEntry} from "../types"
+import {DBSchema, openDB} from "idb"
+import {Entry, Layer, ScannedEntry} from "../types"
 import authedFetch from "../helpers/authedFetch"
 import recalculateEntriesLayers from "./recalculateEntriesLayers"
 import {addDays, getNextWeekStart, getWeekStart} from "../helpers/dates"
 import {uniq} from "ramda"
-import getHeadings from "../helpers/getHeadings"
+import getHeadings, {DayHeadings} from "../helpers/getHeadings"
 
-export const dbPromise = openDB("data", 4, {
+interface DataDBSchema extends DBSchema {
+  entries: {
+    key: string
+    value: Entry
+    indexes: {type: string}
+  }
+  layers: {
+    key: string
+    value: Layer
+  }
+  config: {
+    key: "lastSyncTimestamp"
+    value: number | null
+  }
+  scanned: {
+    key: string
+    value: Blob
+  }
+  headings: {
+    key: string
+    value: {date: string; headings: DayHeadings}
+  }
+}
+
+export const dbPromise = openDB<DataDBSchema>("data", 4, {
   upgrade(db, oldVersion, _newVersion, transaction) {
     switch (oldVersion) {
       case 0:
@@ -40,7 +64,7 @@ export async function sync(
   const db = await dbPromise
 
   // TODO make fullSync delete existing database to avoid dangling deleted data?
-  const lastSyncTimestamp: number | null = fullSync
+  const lastSyncTimestamp = fullSync
     ? null
     : (await db.get("config", "lastSyncTimestamp")) ?? null
 
@@ -66,9 +90,9 @@ export async function sync(
   }
 
   for (const date of uniq(entries.map((e) => e.date))) {
-    const entries = await (tx
+    const entries = await tx
       .objectStore("entries")
-      .getAll(IDBKeyRange.bound(date, addDays(date, 1))) as Promise<Entry[]>)
+      .getAll(IDBKeyRange.bound(date, addDays(date, 1)))
 
     await tx.objectStore("headings").put({
       date,
@@ -114,17 +138,17 @@ export async function downloadSingleScannedImage(entry: ScannedEntry) {
 
 export async function getScannedBlob(entry: ScannedEntry): Promise<Blob> {
   await downloadSingleScannedImage(entry)
-  return (await dbPromise).get("scanned", entry.id)
+  return (await (await dbPromise).get("scanned", entry.id))!
 }
 
 export async function downloadScanned(sinceDate: string) {
   const db = await dbPromise
 
-  const allScannedEntries: ScannedEntry[] = await db.getAllFromIndex(
+  const allScannedEntries = (await db.getAllFromIndex(
     "entries",
     "type",
     "scanned",
-  )
+  )) as ScannedEntry[]
 
   for (const entry of allScannedEntries) {
     if (entry.date >= sinceDate) {
@@ -133,10 +157,7 @@ export async function downloadScanned(sinceDate: string) {
   }
 }
 
-export async function search(
-  term: string,
-  limit: number = 100,
-): Promise<MarkdownEntry[]> {
+export async function search(term: string, limit: number = 100) {
   const db = await dbPromise
 
   const results = []
@@ -144,8 +165,15 @@ export async function search(
   let cursor = await db.transaction("entries").store.openCursor(null, "prev")
 
   while (cursor && results.length < limit) {
-    if (cursor.value.content.includes(term)) {
-      results.push(cursor.value as MarkdownEntry)
+    const entry = cursor.value
+    if (entry.type === "markdown" && entry.content.includes(term)) {
+      results.push(entry)
+    }
+    if (
+      entry.type === "scanned" &&
+      entry.headings?.some((h) => h.includes(term))
+    ) {
+      results.push(entry)
     }
     cursor = await cursor.continue()
   }
@@ -167,7 +195,7 @@ export interface Stats {
 export async function getStats(): Promise<Stats> {
   const db = await dbPromise
 
-  const lastSyncTimestamp: number | null =
+  const lastSyncTimestamp =
     (await db.get("config", "lastSyncTimestamp")) ?? null
 
   const layers = await db.count("layers")

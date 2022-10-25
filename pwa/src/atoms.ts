@@ -9,8 +9,7 @@ import {
   getNextWeekStart,
   parseYear,
 } from "./helpers/dates"
-import getHeadings from "./helpers/getHeadings"
-import {Entry, EntryContentType, LayerData} from "./types"
+import {DayHeadings} from "./helpers/getHeadings"
 
 export const nullAtom = atom(null)
 
@@ -28,8 +27,7 @@ export const lastSyncTimestampAtom = atom(0)
 
 export const layerIdsAtom = atom(async (get) => {
   get(lastSyncTimestampAtom)
-  const db = await dbPromise
-  return db.getAllKeys("layers") as any as Promise<string[]>
+  return (await dbPromise).getAllKeys("layers")
 })
 
 export const selectedLayerDataAtom = atom(async (get) => {
@@ -40,10 +38,9 @@ export const selectedLayerDataAtom = atom(async (get) => {
     return null
   }
 
-  const db = await dbPromise
-  return db
+  return (await dbPromise)
     .get("layers", selectedLayerId)
-    .then((x) => x?.data ?? null) as Promise<LayerData | null>
+    .then((layer) => layer?.data ?? null)
 })
 
 export const selectedWeekStartAtom = atomWithStorage<string | null>(
@@ -65,10 +62,7 @@ interface TimelineData {
   weeks: Array<{
     days: Array<{
       date: string
-      headings: null | Array<{
-        type: EntryContentType
-        headings: string[]
-      }>
+      headings: null | DayHeadings
     }>
   }>
 }
@@ -81,15 +75,12 @@ export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
     return {weeks: []}
   }
 
-  const db = await dbPromise
-
   const startInclusive = getFirstWeekInYear(selectedYear)
   const endExclusive = getFirstWeekInYear(selectedYear + 1)
 
-  const allHeadingsInYear: Array<{
-    date: string
-    headings: ReturnType<typeof getHeadings>
-  }> = await db.getAll(
+  const allHeadingsInYear = await (
+    await dbPromise
+  ).getAll(
     "headings",
     IDBKeyRange.bound(startInclusive, endExclusive, false, true),
   )
@@ -121,10 +112,9 @@ export function createEntriesForDayAtom(date: string) {
   return atom(async (get) => {
     get(lastSyncTimestampAtom)
 
-    const db = await dbPromise
-    return db.getAll(
+    return (await dbPromise).getAll(
       "entries",
       IDBKeyRange.bound(date, addDays(date, 1)),
-    ) as Promise<Entry[]>
+    )
   })
 }
