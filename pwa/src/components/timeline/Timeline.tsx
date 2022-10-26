@@ -1,7 +1,11 @@
 import React, {memo, startTransition, useEffect, useRef} from "react"
 import {Box, Button, Flex} from "@chakra-ui/react"
 import {useAtom} from "jotai"
-import {selectedWeekStartAtom, timelineDataAtom} from "../../atoms"
+import {
+  searchRegexAtom,
+  selectedWeekStartAtom,
+  timelineDataAtom,
+} from "../../atoms"
 import Day from "./Day"
 import useToday from "../../hooks/useToday"
 import {
@@ -15,6 +19,7 @@ import lifeData from "../../lifeData"
 
 export default memo(function Timeline() {
   const today = useToday()
+  const [searchRegex] = useAtom(searchRegexAtom)
   const [data] = useAtom(timelineDataAtom)
   const [selectedWeekStart, setSelectedWeekStart] = useAtom(
     selectedWeekStartAtom,
@@ -85,7 +90,12 @@ export default memo(function Timeline() {
                 (day) => day.date <= today && day.date >= lifeData.birthDate,
               )
               .map((day) => (
-                <Day key={day.date} date={day.date} headings={day.headings} />
+                <Day
+                  key={day.date}
+                  date={day.date}
+                  headings={day.headings}
+                  searchRegex={searchRegex}
+                />
               ))}
           </Box>
         ))}

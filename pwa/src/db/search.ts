@@ -1,32 +1,34 @@
 import {Entry} from "../types"
 
+type Cursor = null | {value: Entry | undefined; continue: () => Promise<Cursor>}
+
 export default async function search({
   regex,
-  getNextEntry,
+  cursor,
 }: {
   regex: string
-  getNextEntry: () => Promise<Entry | undefined>
+  cursor: Cursor
 }) {
   const regexObject = new RegExp(regex, "i")
 
   let results: Entry[] = []
 
-  let currentEntry: Entry | undefined
-
-  while ((currentEntry = await getNextEntry())) {
+  while (cursor?.value) {
     if (
-      currentEntry.type === "markdown" &&
-      regexObject.test(currentEntry.content)
+      cursor.value.type === "markdown" &&
+      regexObject.test(cursor.value.content)
     ) {
-      results.push(currentEntry)
+      results.push(cursor.value)
     }
 
     if (
-      currentEntry.type === "scanned" &&
-      currentEntry.headings?.some((h) => regexObject.test(h))
+      cursor.value.type === "scanned" &&
+      cursor.value.headings?.some((h) => regexObject.test(h))
     ) {
-      results.push(currentEntry)
+      results.push(cursor.value)
     }
+
+    cursor = await cursor.continue()
   }
 
   return results

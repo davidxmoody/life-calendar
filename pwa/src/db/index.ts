@@ -158,21 +158,19 @@ export async function downloadScanned(sinceDate: string) {
   }
 }
 
-export async function searchDb(term: string) {
-  let cursor = await (await dbPromise)
-    .transaction("entries")
-    .store.openCursor(null, "prev")
+export async function searchDb(
+  regex: string,
+  range?: {startInclusive: string; endExclusive: string},
+) {
+  const key = range
+    ? IDBKeyRange.bound(range.startInclusive, range.endExclusive)
+    : null
 
-  return search({
-    regex: term,
-    getNextEntry: async () => {
-      const currentEntry = cursor?.value ?? undefined
-      if (currentEntry) {
-        cursor = (await cursor?.continue()) ?? null
-      }
-      return currentEntry
-    },
-  })
+  const cursor = await (await dbPromise)
+    .transaction("entries")
+    .store.openCursor(key, "prev")
+
+  return search({regex, cursor})
 }
 
 ;(window as any).search = searchDb

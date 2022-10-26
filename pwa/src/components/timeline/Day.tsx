@@ -5,6 +5,7 @@ import {memo, startTransition, useState} from "react"
 import {createEntriesForDayAtom, nullAtom} from "../../atoms"
 import {prettyFormatDateTime} from "../../helpers/dates"
 import {Entry, EntryContentType} from "../../types"
+import HighlightedText from "../HighlightedText"
 import AudioPlayer from "./AudioPlayer"
 import Markdown from "./Markdown"
 import ScannedPage from "./ScannedPage"
@@ -15,6 +16,7 @@ interface Props {
     type: EntryContentType
     headings: string[]
   }>
+  searchRegex: string
 }
 
 export default memo(function Day(props: Props) {
@@ -33,6 +35,10 @@ export default memo(function Day(props: Props) {
   }
 
   if (!props.headings?.length) {
+    if (props.searchRegex) {
+      return null
+    }
+
     return (
       <Container>
         <EmptyDayHeader date={props.date} />
@@ -57,7 +63,7 @@ export default memo(function Day(props: Props) {
         {entries ? (
           <Full entries={entries} />
         ) : (
-          <Summary headings={props.headings} />
+          <Summary headings={props.headings} searchRegex={props.searchRegex} />
         )}
       </Box>
     </Container>
@@ -114,7 +120,10 @@ function DayHeader(props: {date: string; onClick: () => void}) {
   )
 }
 
-function Summary(props: {headings: NonNullable<Props["headings"]>}) {
+function Summary(props: {
+  headings: NonNullable<Props["headings"]>
+  searchRegex: string
+}) {
   return (
     <Box px={4} py={2}>
       {props.headings.map((heading, i) => (
@@ -126,7 +135,9 @@ function Summary(props: {headings: NonNullable<Props["headings"]>}) {
             : "🎤"}{" "}
           <Box ml={2}>
             {heading.headings.map((h, j) => (
-              <Box key={j}>{h}</Box>
+              <Box key={j}>
+                <HighlightedText searchRegex={props.searchRegex} text={h} />
+              </Box>
             ))}
           </Box>
         </Box>

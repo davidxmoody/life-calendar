@@ -29,11 +29,15 @@ function createScannedEntry(text: string): ScannedEntry {
   }
 }
 
-function createGetNextEntry(
-  entries: Entry[],
-): () => Promise<Entry | undefined> {
-  let index = 0
-  return async () => entries[index++]
+function createCursor(entries: Entry[]) {
+  if (entries.length === 0) {
+    return null
+  }
+
+  return {
+    value: entries[0],
+    continue: async () => createCursor(entries.slice(1)),
+  }
 }
 
 test("searches entries", async () => {
@@ -46,7 +50,7 @@ test("searches entries", async () => {
 
   const searchResults = await search({
     regex: "he.lo",
-    getNextEntry: createGetNextEntry(entries),
+    cursor: createCursor(entries),
   })
 
   expect(searchResults).toEqual([markdownMatch, scannedMatch])

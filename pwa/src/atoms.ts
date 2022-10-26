@@ -2,7 +2,8 @@
 
 import {atom} from "jotai"
 import {atomWithStorage} from "jotai/utils"
-import {dbPromise, getStats} from "./db"
+import {uniq} from "ramda"
+import {dbPromise, getStats, searchDb} from "./db"
 import {
   addDays,
   getFirstWeekInYear,
@@ -58,6 +59,8 @@ export const databaseStatsAtom = atom(async (get) => {
   return getStats()
 })
 
+export const searchRegexAtom = atomWithStorage<string>("searchRegex", "")
+
 interface TimelineData {
   weeks: Array<{
     days: Array<{
@@ -70,6 +73,7 @@ interface TimelineData {
 export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
   get(lastSyncTimestampAtom)
   const selectedYear = get(selectedYearAtom)
+  const searchRegex = get(searchRegexAtom)
 
   if (!selectedYear) {
     return {weeks: []}
@@ -78,12 +82,23 @@ export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
   const startInclusive = getFirstWeekInYear(selectedYear)
   const endExclusive = getFirstWeekInYear(selectedYear + 1)
 
-  const allHeadingsInYear = await (
+  let allHeadingsInYear = await (
     await dbPromise
   ).getAll(
     "headings",
     IDBKeyRange.bound(startInclusive, endExclusive, false, true),
   )
+
+  if (searchRegex) {
+    const searchResults = await searchDb(searchRegex, {
+      startInclusive,
+      endExclusive,
+    })
+    const visibleDays = uniq(searchResults.map((e) => e.date))
+    allHeadingsInYear = allHeadingsInYear.filter((h) =>
+      visibleDays.includes(h.date),
+    )
+  }
 
   const data: TimelineData = {weeks: []}
 
