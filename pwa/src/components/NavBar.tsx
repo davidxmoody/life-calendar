@@ -1,20 +1,28 @@
 import React, {startTransition} from "react"
 import {Box, Flex, IconButton, useDisclosure} from "@chakra-ui/react"
-import {CalendarIcon, SettingsIcon} from "@chakra-ui/icons"
+import {CalendarIcon, SearchIcon, SettingsIcon} from "@chakra-ui/icons"
 import LayerList from "./LayerList"
 import SettingsModal from "./SettingsModal"
 import JumpToModal from "./JumpToModal"
 import SyncButton from "./SyncButton"
 import {useAtom} from "jotai"
-import {mobileViewAtom} from "../atoms"
+import {mobileViewAtom, searchRegexAtom} from "../atoms"
 
 export const NAV_BAR_HEIGHT_PX = 72
 
 export default function NavBar() {
   const [mobileView, setMobileView] = useAtom(mobileViewAtom)
+  const [, setSearchRegex] = useAtom(searchRegexAtom)
 
   const settingsModal = useDisclosure()
   const jumpToModal = useDisclosure()
+
+  function startSearch() {
+    const searchRegex = prompt("Enter search regex")
+    startTransition(() => {
+      setSearchRegex(searchRegex ?? "")
+    })
+  }
 
   return (
     <Box
@@ -45,6 +53,14 @@ export default function NavBar() {
           <LayerList />
         </Box>
       </Flex>
+
+      <IconButton
+        ml={4}
+        colorScheme="blue"
+        aria-label="Search"
+        icon={<SearchIcon />}
+        onClick={startSearch}
+      />
 
       <Box ml={4}>
         <SyncButton compact={true} />

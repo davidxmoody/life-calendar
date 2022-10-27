@@ -10,7 +10,8 @@ import {
   UnorderedList,
 } from "@chakra-ui/react"
 import {useAtom} from "jotai"
-import {selectedWeekStartAtom} from "../../atoms"
+import {searchRegexAtom, selectedWeekStartAtom} from "../../atoms"
+import {Highlight} from "../HighlightedText"
 
 interface Props {
   source: string
@@ -41,7 +42,9 @@ function DateLink(props: {date: string}) {
 
 const components: Components = {
   a: (props) =>
-    props.href?.startsWith("/datelink/") ? (
+    props.href?.startsWith("/highlight") ? (
+      <Highlight>{props.children}</Highlight>
+    ) : props.href?.startsWith("/datelink/") ? (
       <DateLink date={props.href!.replace("/datelink/", "")} />
     ) : (
       <Link href={props.href} isExternal rel="noreferrer" color="teal.500">
@@ -107,10 +110,21 @@ function addDateLinks(source: string): string {
   )
 }
 
-export default memo(function Markdown(props: Props) {
-  return (
-    <ReactMarkdown components={components}>
-      {addDateLinks(props.source)}
-    </ReactMarkdown>
+function addHighlights(source: string, searchRegex: string) {
+  if (!searchRegex) {
+    return source
+  }
+
+  return source.replace(
+    new RegExp(searchRegex, "gi"),
+    (match) => `[${match}](/highlight)`,
   )
+}
+
+export default memo(function Markdown(props: Props) {
+  const [searchRegex] = useAtom(searchRegexAtom)
+
+  const modifiedSource = addDateLinks(addHighlights(props.source, searchRegex))
+
+  return <ReactMarkdown components={components}>{modifiedSource}</ReactMarkdown>
 })

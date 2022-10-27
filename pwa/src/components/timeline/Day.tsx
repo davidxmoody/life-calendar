@@ -136,7 +136,9 @@ function Summary(props: {
           <Box ml={2}>
             {heading.headings.map((h, j) => (
               <Box key={j}>
-                <HighlightedText searchRegex={props.searchRegex} text={h} />
+                <HighlightedText searchRegex={props.searchRegex}>
+                  {h}
+                </HighlightedText>
               </Box>
             ))}
           </Box>
