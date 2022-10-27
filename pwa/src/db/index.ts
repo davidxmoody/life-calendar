@@ -33,7 +33,7 @@ interface DataDBSchema extends DBSchema {
   }
 }
 
-export const dbPromise = openDB<DataDBSchema>("data", 4, {
+const dbPromise = openDB<DataDBSchema>("data", 4, {
   upgrade(db, oldVersion, _newVersion, transaction) {
     switch (oldVersion) {
       case 0:
@@ -58,6 +58,33 @@ export const dbPromise = openDB<DataDBSchema>("data", 4, {
     alert("IDB terminated")
   },
 })
+
+export async function getLayerIds() {
+  return (await dbPromise).getAllKeys("layers")
+}
+
+export async function getLayerData(layerId: string) {
+  return (await dbPromise)
+    .get("layers", layerId)
+    .then((layer) => layer?.data ?? null)
+}
+
+export async function getEntriesForDay(date: string) {
+  return (await dbPromise).getAll(
+    "entries",
+    IDBKeyRange.bound(date, addDays(date, 1)),
+  )
+}
+
+export async function getHeadingsInRange(
+  startInclusive: string,
+  endExclusive: string,
+) {
+  return (await dbPromise).getAll(
+    "headings",
+    IDBKeyRange.bound(startInclusive, endExclusive, false, true),
+  )
+}
 
 export async function sync(
   fullSync?: boolean,
