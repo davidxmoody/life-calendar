@@ -31,8 +31,10 @@ export default memo(function Timeline() {
       (x) => {
         if (x[0]?.isIntersecting) {
           const intersectingWeekStart = x[0].target.getAttribute("data-week")
-          skipNextScrollToRef.current = intersectingWeekStart
-          setSelectedWeekStart(intersectingWeekStart)
+          if (intersectingWeekStart) {
+            skipNextScrollToRef.current = intersectingWeekStart
+            setSelectedWeekStart(intersectingWeekStart)
+          }
         }
       },
       {rootMargin: "-30% 0px -70% 0px"},

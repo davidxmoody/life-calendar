@@ -15,6 +15,8 @@ import {
   addDays,
   getFirstWeekInYear,
   getNextWeekStart,
+  getToday,
+  getWeekStart,
   parseYear,
 } from "./helpers/dates"
 import {DayHeadings} from "./helpers/getHeadings"
@@ -45,15 +47,12 @@ export const selectedLayerDataAtom = atom(async (get) => {
   return selectedLayerId ? getLayerData(selectedLayerId) : null
 })
 
-export const selectedWeekStartAtom = atomWithStorage<string | null>(
+export const selectedWeekStartAtom = atomWithStorage(
   "selectedWeekStart",
-  null,
+  getWeekStart(getToday()),
 )
 
-const selectedYearAtom = atom((get) => {
-  const selectedWeekStart = get(selectedWeekStartAtom)
-  return selectedWeekStart ? parseYear(selectedWeekStart) : null
-})
+const selectedYearAtom = atom((get) => parseYear(get(selectedWeekStartAtom)))
 
 export const databaseStatsAtom = atom(async (get) => {
   get(lastSyncTimestampAtom)
