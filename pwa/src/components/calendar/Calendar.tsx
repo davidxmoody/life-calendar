@@ -5,7 +5,6 @@ import useToday from "../../hooks/useToday"
 import drawCalendar from "./drawCalendar"
 import calculateCalendarDimensions from "../../helpers/calculateCalendarDimensions"
 import getWeekUnderCursor from "../../helpers/getWeekUnderCursor"
-import tinycolor from "tinycolor2"
 import {
   mobileViewAtom,
   selectedLayerDataAtom,
@@ -35,13 +34,7 @@ export default memo(function Calendar() {
         for (let w = 0; w < data.decades[d].years[y].weeks.length; w++) {
           const week = data.decades[d].years[y].weeks[w]
           if (week.startDate === selectedWeekStart) {
-            const color =
-              "era" in week
-                ? tinycolor(week.era.color)
-                    .complement()
-                    .saturate(100)
-                    .toRgbString()
-                : "red"
+            const color = "era" in week ? week.era.color : "red"
             return {decadeIndex: d, yearIndex: y, weekIndex: w, color}
           }
         }
@@ -133,6 +126,7 @@ export default memo(function Calendar() {
             height: d.week.h / pixelRatio,
             boxSizing: "border-box",
             border: `2px solid ${selectedWeekPosition.color}`,
+            filter: "hue-rotate(180deg) saturate(1000%) contrast(1000%)",
             top: 0,
             left: 0,
             position: "absolute",
