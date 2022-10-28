@@ -48,7 +48,11 @@ export default memo(function Day(props: Props) {
 
   return (
     <Container>
-      <DayHeader date={props.date} onClick={onClick} />
+      <DayHeader
+        date={props.date}
+        headings={props.headings}
+        onClick={onClick}
+      />
 
       <Box
         borderLeftWidth={[0, "thin"]}
@@ -98,7 +102,11 @@ function EmptyDayHeader(props: {date: string}) {
   )
 }
 
-function DayHeader(props: {date: string; onClick: () => void}) {
+function DayHeader(props: {
+  date: string
+  headings: NonNullable<Props["headings"]>
+  onClick: () => void
+}) {
   const bodyBackground = useColorModeValue("white", "gray.800")
 
   return (
@@ -113,7 +121,10 @@ function DayHeader(props: {date: string; onClick: () => void}) {
         cursor="pointer"
       >
         <Heading size="md" color="white">
-          {prettyFormatDateTime({date: props.date})}
+          {prettyFormatDateTime({date: props.date})}{" "}
+          <small style={{fontWeight: "normal"}}>
+            {getTypeDescription(props.headings.map((h) => h.type))}
+          </small>
         </Heading>
       </Box>
     </Box>
@@ -127,21 +138,14 @@ function Summary(props: {
   return (
     <Box px={4} py={2}>
       {props.headings.map((heading, i) => (
-        <Box key={i} display="flex">
-          {heading.type === "markdown"
-            ? "⌨️"
-            : heading.type === "scanned"
-            ? "📝"
-            : "🎤"}{" "}
-          <Box ml={2}>
-            {heading.headings.map((h, j) => (
-              <Box key={j}>
-                <HighlightedText searchRegex={props.searchRegex}>
-                  {h}
-                </HighlightedText>
-              </Box>
-            ))}
-          </Box>
+        <Box key={i}>
+          {heading.headings.map((h, j) => (
+            <Box key={j}>
+              <HighlightedText searchRegex={props.searchRegex}>
+                {h}
+              </HighlightedText>
+            </Box>
+          ))}
         </Box>
       ))}
     </Box>
@@ -173,5 +177,35 @@ function Full(props: {entries: Entry[]}) {
         </Box>
       ))}
     </Box>
+  )
+}
+
+function getIcon(contentType: EntryContentType) {
+  return contentType === "markdown"
+    ? "⌨️"
+    : contentType === "scanned"
+    ? "📝"
+    : "🎤"
+}
+
+function getTypeDescription(contentTypes: EntryContentType[]) {
+  const hasMarkdown = contentTypes.includes("markdown")
+  const hasScanned = contentTypes.includes("scanned")
+  const hasAudio = contentTypes.includes("audio")
+
+  if (hasMarkdown && !hasScanned && !hasAudio) {
+    return ""
+  }
+
+  return (
+    "(" +
+    [
+      hasMarkdown ? getIcon("markdown") : null,
+      hasScanned ? getIcon("scanned") : null,
+      hasAudio ? getIcon("audio") : null,
+    ]
+      .filter((x) => x)
+      .join("/") +
+    ")"
   )
 }
