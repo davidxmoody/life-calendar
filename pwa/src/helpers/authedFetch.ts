@@ -1,8 +1,7 @@
 import {REMOTE_URL} from "../config"
-import {v4} from "uuid"
 
 if (!localStorage.AUTH_TOKEN) {
-  localStorage.AUTH_TOKEN = v4()
+  localStorage.AUTH_TOKEN = `${Math.round(Math.random() * 10000000000000)}`
 }
 
 export default function authedFetch(path: string) {
