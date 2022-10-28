@@ -12,8 +12,12 @@ export function register() {
             installingWorker.onstatechange = () => {
               if (installingWorker.state === "installed") {
                 if (navigator.serviceWorker.controller) {
-                  alert("New version available")
-                  window.location.reload()
+                  const response = window.confirm(
+                    "A new version is available, the app will now refresh",
+                  )
+                  if (response) {
+                    window.location.reload()
+                  }
                 }
               }
             }
