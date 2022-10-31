@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react"
 import {useAtom} from "jotai"
 import {searchRegexAtom, selectedWeekStartAtom} from "../../atoms"
-import {Highlight} from "../HighlightedText"
+import {Highlight} from "./HighlightedText"
 
 interface Props {
   source: string
