@@ -44,3 +44,11 @@ export function prettyFormatDateTime({
   }
   return moment(`${date} ${time}`).format("ddd D MMM YYYY HH:mm")
 }
+
+export function formatTimestampAgo(timestamp: number | null) {
+  if (timestamp == null) {
+    return "never"
+  }
+
+  return moment.utc(timestamp).fromNow()
+}
