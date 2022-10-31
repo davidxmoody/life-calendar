@@ -2,7 +2,7 @@ import {RepeatIcon, WarningTwoIcon} from "@chakra-ui/icons"
 import {Button, IconButton} from "@chakra-ui/react"
 import {useAtom} from "jotai"
 import React from "react"
-import {lastSyncTimestampAtom, syncStateAtom} from "../../atoms"
+import {updateTriggerAtom, syncStateAtom} from "../../atoms"
 import {sync} from "../../db"
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 }
 
 export default function SyncButton(props: Props) {
-  const [, setLastSyncTimestamp] = useAtom(lastSyncTimestampAtom)
+  const [, triggerUpdate] = useAtom(updateTriggerAtom)
   const [syncState, setSyncState] = useAtom(syncStateAtom)
 
   function startSync() {
@@ -20,7 +20,7 @@ export default function SyncButton(props: Props) {
       .then(({count, timestamp}) => {
         setSyncState({type: "success", num: count})
         if (count !== 0) {
-          setLastSyncTimestamp(timestamp)
+          triggerUpdate(timestamp)
         }
       })
       .catch(() => {

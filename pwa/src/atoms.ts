@@ -41,15 +41,15 @@ export type SyncState =
 
 export const syncStateAtom = atom<SyncState>({type: "initial"})
 
-export const lastSyncTimestampAtom = atom(0)
+export const updateTriggerAtom = atom(0)
 
 export const layerIdsAtom = atom(async (get) => {
-  get(lastSyncTimestampAtom)
+  get(updateTriggerAtom)
   return getLayerIds()
 })
 
 export const selectedLayerDataAtom = atom(async (get) => {
-  get(lastSyncTimestampAtom)
+  get(updateTriggerAtom)
   const selectedLayerId = get(selectedLayerIdAtom)
 
   return selectedLayerId ? getLayerData(selectedLayerId) : null
@@ -63,7 +63,7 @@ export const selectedWeekStartAtom = atomWithStorage(
 const selectedYearAtom = atom((get) => parseYear(get(selectedWeekStartAtom)))
 
 export const databaseStatsAtom = atom(async (get) => {
-  get(lastSyncTimestampAtom)
+  get(updateTriggerAtom)
   return getStats()
 })
 
@@ -79,7 +79,7 @@ interface TimelineData {
 }
 
 export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
-  get(lastSyncTimestampAtom)
+  get(updateTriggerAtom)
   const selectedYear = get(selectedYearAtom)
   const searchRegex = get(searchRegexAtom)
 
@@ -124,7 +124,7 @@ export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
 
 export function createEntriesForDayAtom(date: string) {
   return atom(async (get) => {
-    get(lastSyncTimestampAtom)
+    get(updateTriggerAtom)
     return getEntriesForDay(date)
   })
 }
