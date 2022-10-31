@@ -18,7 +18,6 @@ import DatabaseStats from "./DatabaseStats"
 interface Props {
   isOpen: boolean
   onClose: () => void
-  openJumpToModal: () => void
 }
 
 export default function SettingsModal(props: Props) {
@@ -33,14 +32,6 @@ export default function SettingsModal(props: Props) {
         <ModalBody>
           <Stack spacing={4} mb={2}>
             <SyncButton fullSync />
-
-            <Button
-              colorScheme="blue"
-              leftIcon={<ViewIcon />}
-              onClick={props.openJumpToModal}
-            >
-              Jump to date
-            </Button>
 
             <Button
               colorScheme="blue"

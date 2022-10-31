@@ -3,7 +3,6 @@ import {Box, Flex, IconButton, useDisclosure} from "@chakra-ui/react"
 import {CalendarIcon, SearchIcon, SettingsIcon} from "@chakra-ui/icons"
 import LayerList from "./LayerList"
 import SettingsModal from "./SettingsModal"
-import JumpToModal from "./JumpToModal"
 import SyncButton from "./SyncButton"
 import {useAtom} from "jotai"
 import {mobileViewAtom, searchRegexAtom} from "../atoms"
@@ -15,7 +14,6 @@ export default function NavBar() {
   const [, setSearchRegex] = useAtom(searchRegexAtom)
 
   const settingsModal = useDisclosure()
-  const jumpToModal = useDisclosure()
 
   function startSearch() {
     const searchRegex = prompt("Enter search regex")
@@ -74,14 +72,9 @@ export default function NavBar() {
         onClick={settingsModal.onOpen}
       />
 
-      <JumpToModal isOpen={jumpToModal.isOpen} onClose={jumpToModal.onClose} />
       <SettingsModal
         isOpen={settingsModal.isOpen}
         onClose={settingsModal.onClose}
-        openJumpToModal={() => {
-          settingsModal.onClose()
-          jumpToModal.onOpen()
-        }}
       />
     </Box>
   )
