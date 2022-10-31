@@ -2,7 +2,7 @@ import {ChevronDownIcon} from "@chakra-ui/icons"
 import {Button, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react"
 import {useAtom} from "jotai"
 import {startTransition} from "react"
-import {layerIdsAtom, selectedLayerIdAtom} from "../atoms"
+import {layerIdsAtom, selectedLayerIdAtom} from "../../atoms"
 
 export default function LayerList() {
   const [layerIds] = useAtom(layerIdsAtom)

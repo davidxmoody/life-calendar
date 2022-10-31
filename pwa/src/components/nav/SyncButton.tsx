@@ -2,8 +2,8 @@ import {RepeatIcon, WarningTwoIcon} from "@chakra-ui/icons"
 import {Button, IconButton} from "@chakra-ui/react"
 import {useAtom} from "jotai"
 import React from "react"
-import {lastSyncTimestampAtom, syncStateAtom} from "../atoms"
-import {sync} from "../db"
+import {lastSyncTimestampAtom, syncStateAtom} from "../../atoms"
+import {sync} from "../../db"
 
 interface Props {
   compact?: boolean

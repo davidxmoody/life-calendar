@@ -12,7 +12,7 @@ import {
 import SyncButton from "./SyncButton"
 import {ViewIcon} from "@chakra-ui/icons"
 import {Suspense, useState} from "react"
-import {downloadScanned} from "../db"
+import {downloadScanned} from "../../db"
 import DatabaseStats from "./DatabaseStats"
 
 interface Props {

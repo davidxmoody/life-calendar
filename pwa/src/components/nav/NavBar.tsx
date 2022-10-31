@@ -5,7 +5,7 @@ import LayerList from "./LayerList"
 import SettingsModal from "./SettingsModal"
 import SyncButton from "./SyncButton"
 import {useAtom} from "jotai"
-import {mobileViewAtom, searchRegexAtom} from "../atoms"
+import {mobileViewAtom, searchRegexAtom} from "../../atoms"
 
 export const NAV_BAR_HEIGHT_PX = 72
 

@@ -11,7 +11,7 @@ import {
   selectedWeekStartAtom,
 } from "../../atoms"
 import {useAtom} from "jotai"
-import {NAV_BAR_HEIGHT_PX} from "../NavBar"
+import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
 
 export default memo(function Calendar() {
   const [selectedWeekStart, setSelectedWeekStart] = useAtom(

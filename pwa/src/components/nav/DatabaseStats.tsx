@@ -1,7 +1,7 @@
 import * as React from "react"
 import {UnorderedList, ListItem, Box} from "@chakra-ui/react"
 import {useAtom} from "jotai"
-import {databaseStatsAtom} from "../atoms"
+import {databaseStatsAtom} from "../../atoms"
 
 export default function DatabaseStats() {
   const [stats] = useAtom(databaseStatsAtom)
