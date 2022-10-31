@@ -1,7 +1,7 @@
 import React, {memo, startTransition, useEffect, useMemo, useRef} from "react"
 import generateCalendarData from "../../helpers/generateCalendarData"
 import lifeData from "../../lifeData"
-import useToday from "../../hooks/useToday"
+import useToday from "../../helpers/useToday"
 import drawCalendar from "./drawCalendar"
 import calculateCalendarDimensions from "../../helpers/calculateCalendarDimensions"
 import getWeekUnderCursor from "../../helpers/getWeekUnderCursor"

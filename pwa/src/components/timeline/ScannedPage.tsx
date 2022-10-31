@@ -1,7 +1,7 @@
 import {WarningTwoIcon} from "@chakra-ui/icons"
 import {AspectRatio, Box, Flex, Image, keyframes} from "@chakra-ui/react"
 import * as React from "react"
-import useScannedUrl from "../../hooks/useScannedUrl"
+import useScannedUrl from "../../helpers/useScannedUrl"
 import {ScannedEntry} from "../../types"
 
 interface Props {

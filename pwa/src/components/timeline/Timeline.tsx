@@ -7,7 +7,7 @@ import {
   timelineDataAtom,
 } from "../../atoms"
 import Day from "./Day"
-import useToday from "../../hooks/useToday"
+import useToday from "../../helpers/useToday"
 import {
   getNextWeekStart,
   getPrevWeekStart,
