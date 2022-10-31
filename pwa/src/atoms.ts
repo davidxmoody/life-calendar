@@ -33,6 +33,14 @@ export const selectedLayerIdAtom = atomWithStorage<string | null>(
   null,
 )
 
+export type SyncState =
+  | {type: "initial"}
+  | {type: "loading"}
+  | {type: "success"; num: number}
+  | {type: "error"}
+
+export const syncStateAtom = atom<SyncState>({type: "initial"})
+
 export const lastSyncTimestampAtom = atom(0)
 
 export const layerIdsAtom = atom(async (get) => {
@@ -74,10 +82,6 @@ export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
   get(lastSyncTimestampAtom)
   const selectedYear = get(selectedYearAtom)
   const searchRegex = get(searchRegexAtom)
-
-  if (!selectedYear) {
-    return {weeks: []}
-  }
 
   const startInclusive = getFirstWeekInYear(selectedYear)
   const endExclusive = getFirstWeekInYear(selectedYear + 1)

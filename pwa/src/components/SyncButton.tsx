@@ -1,8 +1,8 @@
 import {RepeatIcon, WarningTwoIcon} from "@chakra-ui/icons"
-import {Button, IconButton, useToast} from "@chakra-ui/react"
+import {Button, IconButton} from "@chakra-ui/react"
 import {useAtom} from "jotai"
-import React, {useState} from "react"
-import {lastSyncTimestampAtom} from "../atoms"
+import React from "react"
+import {lastSyncTimestampAtom, syncStateAtom} from "../atoms"
 import {sync} from "../db"
 
 interface Props {
@@ -10,40 +10,21 @@ interface Props {
   fullSync?: boolean
 }
 
-type SyncState =
-  | {type: "initial"}
-  | {type: "loading"}
-  | {type: "success"; num: number}
-  | {type: "error"}
-
 export default function SyncButton(props: Props) {
   const [, setLastSyncTimestamp] = useAtom(lastSyncTimestampAtom)
-  const [syncState, setSyncState] = useState<SyncState>({type: "initial"})
-  const toast = useToast()
+  const [syncState, setSyncState] = useAtom(syncStateAtom)
 
   function startSync() {
     setSyncState({type: "loading"})
     sync(props.fullSync)
       .then(({count, timestamp}) => {
         setSyncState({type: "success", num: count})
-        toast({
-          title: "Sync successful",
-          description: `${count} new items`,
-          isClosable: true,
-          status: "success",
-        })
         if (count !== 0) {
           setLastSyncTimestamp(timestamp)
         }
       })
-      .catch((error: Error) => {
+      .catch(() => {
         setSyncState({type: "error"})
-        toast({
-          title: "Sync failed",
-          description: error.message,
-          isClosable: true,
-          status: "error",
-        })
       })
   }
 
