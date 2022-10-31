@@ -1,4 +1,4 @@
-import {Box, Heading, useColorModeValue} from "@chakra-ui/react"
+import {Box, Heading} from "@chakra-ui/react"
 import {Atom, useAtom} from "jotai"
 import * as React from "react"
 import {memo, startTransition, useState} from "react"
@@ -83,10 +83,8 @@ function Container(props: {children: React.ReactNode}) {
 }
 
 function EmptyDayHeader(props: {date: string}) {
-  const bodyBackground = useColorModeValue("white", "gray.800")
-
   return (
-    <Box bg={bodyBackground} opacity={0.5}>
+    <Box bg="gray.800" opacity={0.5}>
       <Box
         p={4}
         borderRadius={[0, "md"]}
@@ -107,10 +105,8 @@ function DayHeader(props: {
   headings: NonNullable<Props["headings"]>
   onClick: () => void
 }) {
-  const bodyBackground = useColorModeValue("white", "gray.800")
-
   return (
-    <Box bg={bodyBackground} position="sticky" top={0} zIndex="sticky">
+    <Box bg="gray.800" position="sticky" top={0} zIndex="sticky">
       <Box
         p={4}
         borderTopRadius={[0, "md"]}

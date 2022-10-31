@@ -8,10 +8,9 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
-  useColorMode,
 } from "@chakra-ui/react"
 import SyncButton from "./SyncButton"
-import {MoonIcon, SunIcon, ViewIcon} from "@chakra-ui/icons"
+import {ViewIcon} from "@chakra-ui/icons"
 import {Suspense, useState} from "react"
 import {downloadScanned} from "../db"
 import DatabaseStats from "./DatabaseStats"
@@ -23,8 +22,6 @@ interface Props {
 }
 
 export default function SettingsModal(props: Props) {
-  const {colorMode, toggleColorMode} = useColorMode()
-
   const [downloadSinceBusy, setDownloadSinceBusy] = useState(false)
 
   return (
@@ -36,14 +33,6 @@ export default function SettingsModal(props: Props) {
         <ModalBody>
           <Stack spacing={4} mb={2}>
             <SyncButton fullSync />
-
-            <Button
-              colorScheme="blue"
-              leftIcon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
-              onClick={toggleColorMode}
-            >
-              Toggle dark mode
-            </Button>
 
             <Button
               colorScheme="blue"
