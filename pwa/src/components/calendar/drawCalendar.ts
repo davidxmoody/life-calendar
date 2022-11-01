@@ -85,7 +85,7 @@ function getWeekColor(
   }
 
   const opacity = layerData
-    ? 0.3 + 0.7 * (layerData[week.startDate] ?? 0)
+    ? 0.35 + 0.65 * (layerData[week.startDate] ?? 0)
     : 0.6 +
       (0.4 / (40 * 6 * 9)) *
         (decadeIndex * 10 * 9 * 6 + yearIndex * 9 * 6 + weekIndex)
