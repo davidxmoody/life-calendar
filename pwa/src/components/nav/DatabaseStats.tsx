@@ -1,6 +1,5 @@
 import * as React from "react"
 import {
-  TableContainer,
   Table,
   Thead,
   Tr,
@@ -8,6 +7,7 @@ import {
   Td,
   Tbody,
   TableCaption,
+  Box,
 } from "@chakra-ui/react"
 import {useAtom} from "jotai"
 import {databaseStatsAtom} from "../../atoms"
@@ -17,7 +17,7 @@ export default function DatabaseStats() {
   const [stats] = useAtom(databaseStatsAtom)
 
   return (
-    <TableContainer>
+    <Box marginX={-4}>
       <Table size="sm">
         <TableCaption>
           Last synced {formatTimestampAgo(stats.lastSyncTimestamp)}
@@ -51,6 +51,6 @@ export default function DatabaseStats() {
           </Tr>
         </Tbody>
       </Table>
-    </TableContainer>
+    </Box>
   )
 }

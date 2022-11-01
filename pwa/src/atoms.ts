@@ -36,8 +36,8 @@ export const selectedLayerIdAtom = atomWithStorage<string | null>(
 export type SyncState =
   | {type: "initial"}
   | {type: "loading"}
-  | {type: "success"; num: number}
   | {type: "error"}
+  | {type: "success"; count: number; timestamp: number}
 
 export const syncStateAtom = atom<SyncState>({type: "initial"})
 

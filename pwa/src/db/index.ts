@@ -200,8 +200,6 @@ export async function searchDb(
   return search({regex, cursor})
 }
 
-;(window as any).search = searchDb
-
 export interface Stats {
   lastSyncTimestamp: number | null
   markdown: number

@@ -1,63 +1,40 @@
-import {RepeatIcon, WarningTwoIcon} from "@chakra-ui/icons"
-import {Button, IconButton} from "@chakra-ui/react"
-import {useAtom} from "jotai"
 import React from "react"
-import {updateTriggerAtom, syncStateAtom} from "../../atoms"
-import {sync} from "../../db"
+import {IconButton, useDisclosure} from "@chakra-ui/react"
+import {useAtom} from "jotai"
+import {syncStateAtom} from "../../atoms"
+import SyncModal from "./SyncModal"
+import {
+  BsCloudArrowDownFill,
+  BsCloudCheckFill,
+  BsCloudFill,
+  BsCloudSlashFill,
+} from "react-icons/bs"
 
-interface Props {
-  compact?: boolean
-  fullSync?: boolean
-}
+export default function SyncButton() {
+  const {isOpen, onOpen, onClose} = useDisclosure()
+  const [syncState] = useAtom(syncStateAtom)
 
-export default function SyncButton(props: Props) {
-  const [, triggerUpdate] = useAtom(updateTriggerAtom)
-  const [syncState, setSyncState] = useAtom(syncStateAtom)
+  const icon =
+    syncState.type === "initial" ? (
+      <BsCloudFill />
+    ) : syncState.type === "error" ? (
+      <BsCloudSlashFill />
+    ) : syncState.type === "loading" ? (
+      <BsCloudArrowDownFill />
+    ) : (
+      <BsCloudCheckFill />
+    )
 
-  function startSync() {
-    setSyncState({type: "loading"})
-    sync(props.fullSync)
-      .then(({count, timestamp}) => {
-        setSyncState({type: "success", num: count})
-        if (count !== 0) {
-          triggerUpdate(timestamp)
-        }
-      })
-      .catch(() => {
-        setSyncState({type: "error"})
-      })
-  }
-
-  const label =
-    (props.fullSync ? "Full sync" : "Sync") +
-    (syncState.type === "error"
-      ? " (error)"
-      : syncState.type === "success"
-      ? ` (${formatShortNum(syncState.num)})`
-      : "")
-
-  return props.compact ? (
-    <IconButton
-      isLoading={syncState.type === "loading"}
-      colorScheme="blue"
-      aria-label={label}
-      icon={syncState.type === "error" ? <WarningTwoIcon /> : <RepeatIcon />}
-      onClick={startSync}
-    />
-  ) : (
-    <Button
-      isLoading={syncState.type === "loading"}
-      colorScheme="blue"
-      leftIcon={
-        syncState.type === "error" ? <WarningTwoIcon /> : <RepeatIcon />
-      }
-      onClick={startSync}
-    >
-      {label}
-    </Button>
+  return (
+    <>
+      <IconButton
+        aria-label="Sync"
+        colorScheme="blue"
+        fontSize="20px"
+        icon={icon}
+        onClick={onOpen}
+      />
+      <SyncModal isOpen={isOpen} onClose={onClose} />
+    </>
   )
-}
-
-function formatShortNum(num: number) {
-  return num >= 1000 ? `${Math.round(num / 1000)}k` : `${num}`
 }
