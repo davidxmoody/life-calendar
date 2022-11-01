@@ -75,11 +75,7 @@ export default memo(function Day(props: Props) {
 })
 
 function Container(props: {children: React.ReactNode}) {
-  return (
-    <Box maxW="800px" mb={4}>
-      {props.children}
-    </Box>
-  )
+  return <Box maxW="800px">{props.children}</Box>
 }
 
 function EmptyDayHeader(props: {date: string}) {

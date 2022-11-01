@@ -92,12 +92,13 @@ export default memo(function Timeline() {
                 (day) => day.date <= today && day.date >= lifeData.birthDate,
               )
               .map((day) => (
-                <Day
-                  key={day.date}
-                  date={day.date}
-                  headings={day.headings}
-                  searchRegex={searchRegex}
-                />
+                <Box key={day.date} pt={[0, 2]} pb={[4, 2]}>
+                  <Day
+                    date={day.date}
+                    headings={day.headings}
+                    searchRegex={searchRegex}
+                  />
+                </Box>
               ))}
           </Box>
         ))}
