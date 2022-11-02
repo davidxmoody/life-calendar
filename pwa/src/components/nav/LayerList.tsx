@@ -19,7 +19,6 @@ export default function LayerList() {
         rightIcon={<ChevronDownIcon />}
         flex={1}
         maxW="300px"
-        isTruncated
       >
         {selectedLayerId ?? emptyLayerId}
       </MenuButton>
