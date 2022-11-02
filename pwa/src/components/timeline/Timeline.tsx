@@ -15,7 +15,7 @@ import {
   getWeekStart,
   parseYear,
 } from "../../helpers/dates"
-import {ArrowDownIcon, ArrowUpIcon} from "@chakra-ui/icons"
+import {BsArrowDown, BsArrowUp} from "react-icons/bs"
 
 export default memo(function Timeline() {
   const [lifeData] = useAtom(lifeDataAtom)
@@ -127,9 +127,7 @@ function YearJumpButton(props: {
   return (
     <Flex maxWidth="800px" my={8} justifyContent="center">
       <Button
-        leftIcon={
-          props.direction === "next" ? <ArrowDownIcon /> : <ArrowUpIcon />
-        }
+        leftIcon={props.direction === "next" ? <BsArrowDown /> : <BsArrowUp />}
         onClick={props.onClick}
       >
         Go to {parseYear(props.weekStart)}

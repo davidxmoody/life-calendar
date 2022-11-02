@@ -1,6 +1,6 @@
-import {WarningTwoIcon} from "@chakra-ui/icons"
-import {AspectRatio, Box, Flex, Image, keyframes} from "@chakra-ui/react"
 import * as React from "react"
+import {AspectRatio, Box, Flex, Icon, Image, keyframes} from "@chakra-ui/react"
+import {BsExclamationTriangleFill} from "react-icons/bs"
 import useScannedUrl from "../../helpers/useScannedUrl"
 import {ScannedEntry} from "../../types"
 
@@ -34,7 +34,13 @@ export default function ScannedPage(props: Props) {
               animation={`${fadeIn} 0.3s`}
             />
           ) : null}
-          {error ? <WarningTwoIcon color="blue.700" boxSize={12} /> : null}
+          {error ? (
+            <Icon
+              as={BsExclamationTriangleFill}
+              color="blue.700"
+              boxSize={12}
+            />
+          ) : null}
         </Box>
       </AspectRatio>
     </Flex>
