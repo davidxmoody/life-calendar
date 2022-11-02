@@ -1,11 +1,11 @@
 import probabilityOfSurvival from "./probabilityOfSurvival"
-import {Era} from "../types"
+import {Era} from "../../types"
 import {
   getWeekStart,
   getNextWeekStart,
   parseYear,
   getFirstWeekInYear,
-} from "./dates"
+} from "../../helpers/dates"
 
 interface PastWeek {
   startDate: string

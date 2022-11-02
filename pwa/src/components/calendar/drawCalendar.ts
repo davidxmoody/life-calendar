@@ -1,5 +1,5 @@
-import {CalendarDimensions} from "../../helpers/calculateCalendarDimensions"
-import {CalendarData, Week} from "../../helpers/generateCalendarData"
+import {CalendarDimensions} from "./calculateCalendarDimensions"
+import {CalendarData, Week} from "./generateCalendarData"
 import {LayerData} from "../../types"
 
 export default function drawCalendar({

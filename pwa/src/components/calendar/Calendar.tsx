@@ -1,9 +1,9 @@
 import React, {memo, startTransition, useEffect, useMemo, useRef} from "react"
-import generateCalendarData from "../../helpers/generateCalendarData"
+import generateCalendarData from "./generateCalendarData"
 import useToday from "../../helpers/useToday"
 import drawCalendar from "./drawCalendar"
-import calculateCalendarDimensions from "../../helpers/calculateCalendarDimensions"
-import getWeekUnderCursor from "../../helpers/getWeekUnderCursor"
+import calculateCalendarDimensions from "./calculateCalendarDimensions"
+import getWeekUnderCursor from "./getWeekUnderCursor"
 import {
   lifeDataAtom,
   mobileViewAtom,
