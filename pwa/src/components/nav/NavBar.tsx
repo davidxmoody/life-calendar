@@ -1,15 +1,15 @@
 import React, {startTransition} from "react"
-import {Box, Flex, IconButton} from "@chakra-ui/react"
-import {CalendarIcon, SearchIcon} from "@chakra-ui/icons"
+import {Box, IconButton} from "@chakra-ui/react"
+import {SearchIcon} from "@chakra-ui/icons"
 import LayerList from "./LayerList"
 import SyncButton from "./SyncButton"
 import {useAtom} from "jotai"
-import {mobileViewAtom, searchRegexAtom} from "../../atoms"
+import {searchRegexAtom} from "../../atoms"
+import MobileViewSwitcher from "./MobileViewSwitcher"
 
 export const NAV_BAR_HEIGHT_PX = 72
 
 export default function NavBar() {
-  const [mobileView, setMobileView] = useAtom(mobileViewAtom)
   const [, setSearchRegex] = useAtom(searchRegexAtom)
 
   function startSearch() {
@@ -29,25 +29,15 @@ export default function NavBar() {
       zIndex="banner"
       flex={0}
     >
-      {mobileView === "timeline" ? (
-        <IconButton
-          mr={4}
-          colorScheme="blue"
-          aria-label="Calendar"
-          icon={<CalendarIcon />}
-          display={["flex", "none"]}
-          onClick={() => startTransition(() => setMobileView("calendar"))}
-        />
-      ) : null}
+      <Box display={["flex", "none"]} mr={4}>
+        <MobileViewSwitcher />
+      </Box>
 
-      <Flex flex={1} mr={4}>
-        <Box
-          flex={1}
-          display={[mobileView === "calendar" ? "flex" : "none", "flex"]}
-        >
-          <LayerList />
-        </Box>
-      </Flex>
+      <Box mr={4}>
+        <LayerList />
+      </Box>
+
+      <Box flex={1} />
 
       <IconButton
         ml={4}

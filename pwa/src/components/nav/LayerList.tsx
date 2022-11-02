@@ -1,7 +1,13 @@
-import {ChevronDownIcon} from "@chakra-ui/icons"
-import {Button, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react"
+import {
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+} from "@chakra-ui/react"
 import {useAtom} from "jotai"
 import {startTransition} from "react"
+import {BsLayersFill} from "react-icons/bs"
 import {layerIdsAtom, selectedLayerIdAtom} from "../../atoms"
 
 export default function LayerList() {
@@ -15,13 +21,11 @@ export default function LayerList() {
     <Menu autoSelect={false}>
       <MenuButton
         colorScheme="blue"
-        as={Button}
-        rightIcon={<ChevronDownIcon />}
-        flex={1}
-        maxW="300px"
-      >
-        {selectedLayerId ?? emptyLayerId}
-      </MenuButton>
+        aria-label="Change layer"
+        as={IconButton}
+        icon={<BsLayersFill />}
+        fontSize="20px"
+      />
       <MenuList>
         {layerIdsWithEmpty.map((layerId) => (
           <MenuItem
