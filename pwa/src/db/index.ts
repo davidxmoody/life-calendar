@@ -1,7 +1,7 @@
 /* eslint-disable no-fallthrough */
 
 import {DBSchema, openDB} from "idb"
-import {Entry, Layer, ScannedEntry} from "../types"
+import {Entry, Layer, LifeData, ScannedEntry} from "../types"
 import authedFetch from "../helpers/authedFetch"
 import recalculateEntriesLayers from "./recalculateEntriesLayers"
 import {addDays, getNextWeekStart, getWeekStart} from "../helpers/dates"
@@ -31,9 +31,13 @@ interface DataDBSchema extends DBSchema {
     key: string
     value: {date: string; headings: DayHeadings}
   }
+  lifeData: {
+    key: "lifeData"
+    value: LifeData
+  }
 }
 
-const dbPromise = openDB<DataDBSchema>("data", 4, {
+const dbPromise = openDB<DataDBSchema>("data", 5, {
   upgrade(db, oldVersion, _newVersion, transaction) {
     switch (oldVersion) {
       case 0:
@@ -46,6 +50,8 @@ const dbPromise = openDB<DataDBSchema>("data", 4, {
         db.createObjectStore("scanned")
       case 3:
         db.createObjectStore("headings", {keyPath: "date"})
+      case 4:
+        db.createObjectStore("lifeData")
     }
   },
   blocked() {
@@ -100,18 +106,24 @@ export async function sync(
     timestamp,
     entries,
     layers,
+    lifeData,
   }: {
     timestamp: number
     entries: Entry[]
     layers: Layer[]
+    lifeData: LifeData | null
   } = await authedFetch(
     `/sync${lastSyncTimestamp ? `?sinceMs=${lastSyncTimestamp}` : ""}`,
   ).then((res) => res.json())
 
   const tx = db.transaction(
-    ["entries", "layers", "config", "headings"],
+    ["lifeData", "entries", "layers", "config", "headings"],
     "readwrite",
   )
+
+  if (lifeData) {
+    await tx.objectStore("lifeData").put(lifeData, "lifeData")
+  }
 
   for (const entry of entries) {
     await tx.objectStore("entries").put(entry)
@@ -146,7 +158,7 @@ export async function sync(
 
   await tx.done
 
-  return {count: layers.length + entries.length, timestamp}
+  return {count: layers.length + entries.length + (lifeData ? 1 : 0), timestamp}
 }
 
 export async function downloadSingleScannedImage(entry: ScannedEntry) {
@@ -230,4 +242,8 @@ export async function getStats(): Promise<Stats> {
     layers,
     images,
   }
+}
+
+export async function getLifeData() {
+  return (await dbPromise).get("lifeData", "lifeData")
 }

@@ -39,3 +39,15 @@ export interface Layer {
   id: string
   data: LayerData
 }
+
+export interface Era {
+  startDate: string
+  name: string
+  color: string
+}
+
+export interface LifeData {
+  birthDate: string
+  deathDate: string
+  eras: Era[]
+}

@@ -8,6 +8,7 @@ import {
   getHeadingsInRange,
   getLayerData,
   getLayerIds,
+  getLifeData,
   getStats,
   searchDb,
 } from "./db"
@@ -128,3 +129,8 @@ export function createEntriesForDayAtom(date: string) {
     return getEntriesForDay(date)
   })
 }
+
+export const lifeDataAtom = atom(async (get) => {
+  get(updateTriggerAtom)
+  return getLifeData()
+})

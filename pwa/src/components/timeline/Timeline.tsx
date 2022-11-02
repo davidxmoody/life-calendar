@@ -2,6 +2,7 @@ import React, {memo, startTransition, useEffect, useRef} from "react"
 import {Box, Button, Flex} from "@chakra-ui/react"
 import {useAtom} from "jotai"
 import {
+  lifeDataAtom,
   searchRegexAtom,
   selectedWeekStartAtom,
   timelineDataAtom,
@@ -15,9 +16,9 @@ import {
   parseYear,
 } from "../../helpers/dates"
 import {ArrowDownIcon, ArrowUpIcon} from "@chakra-ui/icons"
-import lifeData from "../../lifeData"
 
 export default memo(function Timeline() {
+  const [lifeData] = useAtom(lifeDataAtom)
   const today = useToday()
   const [searchRegex] = useAtom(searchRegexAtom)
   const [data] = useAtom(timelineDataAtom)
@@ -57,7 +58,8 @@ export default memo(function Timeline() {
     }
   }, [selectedWeekStart])
 
-  const firstWeekStart = getWeekStart(lifeData.birthDate)
+  const birthDate = lifeData?.birthDate ?? "1970-01-01"
+  const firstWeekStart = getWeekStart(birthDate)
   const lastWeekStart = getWeekStart(today)
 
   const prevYearWeekStart = getPrevWeekStart(data.weeks[0].days[0].date)
@@ -88,9 +90,7 @@ export default memo(function Timeline() {
             data-week={week.days[0].date}
           >
             {week.days
-              .filter(
-                (day) => day.date <= today && day.date >= lifeData.birthDate,
-              )
+              .filter((day) => day.date <= today && day.date >= birthDate)
               .map((day) => (
                 <Box key={day.date} pt={[0, 2]} pb={[4, 2]}>
                   <Day

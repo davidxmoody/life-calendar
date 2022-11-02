@@ -1,19 +1,28 @@
 import React, {memo, startTransition, useEffect, useMemo, useRef} from "react"
 import generateCalendarData from "../../helpers/generateCalendarData"
-import lifeData from "../../lifeData"
 import useToday from "../../helpers/useToday"
 import drawCalendar from "./drawCalendar"
 import calculateCalendarDimensions from "../../helpers/calculateCalendarDimensions"
 import getWeekUnderCursor from "../../helpers/getWeekUnderCursor"
 import {
+  lifeDataAtom,
   mobileViewAtom,
   selectedLayerDataAtom,
   selectedWeekStartAtom,
 } from "../../atoms"
 import {useAtom} from "jotai"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
+import {LifeData} from "../../types"
+
+const defaultLifeData: LifeData = {
+  birthDate: "1990-01-01",
+  deathDate: "2089-12-31",
+  eras: [{startDate: "1990-01-01", name: "", color: "rgb(150, 150, 150)"}],
+}
 
 export default memo(function Calendar() {
+  const lifeData = useAtom(lifeDataAtom)[0] ?? defaultLifeData
+
   const [selectedWeekStart, setSelectedWeekStart] = useAtom(
     selectedWeekStartAtom,
   )
@@ -23,7 +32,7 @@ export default memo(function Calendar() {
   const today = useToday()
   const data = useMemo(
     () => generateCalendarData({today, ...lifeData}),
-    [today],
+    [today, lifeData],
   )
 
   const ref = useRef<HTMLCanvasElement>(null)

@@ -1,5 +1,5 @@
 import probabilityOfSurvival from "./probabilityOfSurvival"
-import {Era} from "../lifeData"
+import {Era} from "../types"
 import {
   getWeekStart,
   getNextWeekStart,
