@@ -75,12 +75,16 @@ export default memo(function Day(props: Props) {
 })
 
 function Container(props: {children: React.ReactNode}) {
-  return <Box maxW="800px">{props.children}</Box>
+  return (
+    <Box maxW="800px" pb={[4, 2]}>
+      {props.children}
+    </Box>
+  )
 }
 
 function EmptyDayHeader(props: {date: string}) {
   return (
-    <Box bg="gray.800" opacity={0.5}>
+    <Box bg="gray.800" opacity={0.5} pt={[0, 2]}>
       <Box
         p={4}
         borderRadius={[0, "md"]}
@@ -102,7 +106,7 @@ function DayHeader(props: {
   onClick: () => void
 }) {
   return (
-    <Box bg="gray.800" position="sticky" top={0} zIndex="sticky">
+    <Box bg="gray.800" position="sticky" top={0} zIndex="sticky" pt={[0, 2]}>
       <Box
         p={4}
         borderTopRadius={[0, "md"]}
