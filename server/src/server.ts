@@ -4,6 +4,7 @@ import {getEntries} from "./db/entries"
 import {readFileSync} from "fs"
 import * as https from "https"
 import * as cors from "cors"
+import {getLifeData} from "./db/lifeData"
 
 if (
   !process.env.LOCAL_SSL_KEY ||
@@ -60,8 +61,9 @@ app.get("/sync", async (req, res) => {
 
   const layers = await getLayers(sinceMs)
   const entries = await getEntries(sinceMs)
+  const lifeData = await getLifeData(sinceMs)
 
-  res.send({timestamp, layers, entries})
+  res.send({timestamp, layers, entries, lifeData})
 })
 
 https.createServer({key: SSL_KEY, cert: SSL_CERT}, app).listen(LISTEN_PORT)
