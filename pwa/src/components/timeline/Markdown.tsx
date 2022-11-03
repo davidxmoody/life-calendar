@@ -1,6 +1,5 @@
 import React, {memo} from "react"
 import ReactMarkdown, {Components} from "react-markdown"
-import {getWeekStart} from "../../helpers/dates"
 import {
   Box,
   Heading,
@@ -10,7 +9,7 @@ import {
   UnorderedList,
 } from "@chakra-ui/react"
 import {useAtom} from "jotai"
-import {searchRegexAtom, selectedWeekStartAtom} from "../../atoms"
+import {searchRegexAtom, selectedDayAtom} from "../../atoms"
 import {Highlight} from "./HighlightedText"
 
 interface Props {
@@ -29,12 +28,9 @@ function heading(size: React.ComponentProps<typeof Heading>["size"]) {
 }
 
 function DateLink(props: {date: string}) {
-  const [, setSelectedWeekStart] = useAtom(selectedWeekStartAtom)
+  const [, setSelectedDay] = useAtom(selectedDayAtom)
   return (
-    <Link
-      color="teal.500"
-      onClick={() => setSelectedWeekStart(getWeekStart(props.date))}
-    >
+    <Link color="teal.500" onClick={() => setSelectedDay(props.date)}>
       {props.date}
     </Link>
   )

@@ -17,6 +17,7 @@ interface Props {
     headings: string[]
   }>
   searchRegex: string
+  selected: boolean
 }
 
 export default memo(function Day(props: Props) {
@@ -41,7 +42,7 @@ export default memo(function Day(props: Props) {
 
     return (
       <Container>
-        <EmptyDayHeader date={props.date} />
+        <EmptyDayHeader date={props.date} selected={props.selected} />
       </Container>
     )
   }
@@ -52,6 +53,7 @@ export default memo(function Day(props: Props) {
         date={props.date}
         headings={props.headings}
         onClick={onClick}
+        selected={props.selected}
       />
 
       <Box
@@ -82,7 +84,7 @@ function Container(props: {children: React.ReactNode}) {
   )
 }
 
-function EmptyDayHeader(props: {date: string}) {
+function EmptyDayHeader(props: {date: string; selected: boolean}) {
   return (
     <Box bg="gray.800" opacity={0.5} pt={[0, 2]}>
       <Box
@@ -90,7 +92,7 @@ function EmptyDayHeader(props: {date: string}) {
         borderRadius={[0, "md"]}
         borderWidth={[0, "thin"]}
         borderColor="gray.600"
-        bg="blue.900"
+        bg={props.selected ? "blue.700" : "blue.900"}
       >
         <Heading size="md" color="white">
           {prettyFormatDateTime({date: props.date})}
@@ -104,6 +106,7 @@ function DayHeader(props: {
   date: string
   headings: NonNullable<Props["headings"]>
   onClick: () => void
+  selected: boolean
 }) {
   return (
     <Box bg="gray.800" position="sticky" top={0} zIndex="sticky" pt={[0, 2]}>
@@ -112,7 +115,7 @@ function DayHeader(props: {
         borderTopRadius={[0, "md"]}
         borderWidth={[0, "thin"]}
         borderColor="gray.600"
-        bg="blue.900"
+        bg={props.selected ? "blue.700" : "blue.900"}
         onClick={props.onClick}
         cursor="pointer"
       >

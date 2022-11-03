@@ -56,9 +56,11 @@ export const selectedLayerDataAtom = atom(async (get) => {
   return selectedLayerId ? getLayerData(selectedLayerId) : null
 })
 
-export const selectedWeekStartAtom = atomWithStorage(
-  "selectedWeekStart",
-  getWeekStart(getToday()),
+export const selectedDayAtom = atomWithStorage("selectedDay", getToday())
+
+export const selectedWeekStartAtom = atom(
+  (get) => getWeekStart(get(selectedDayAtom)),
+  (_get, set, value: string) => set(selectedDayAtom, value),
 )
 
 const selectedYearAtom = atom((get) => parseYear(get(selectedWeekStartAtom)))
