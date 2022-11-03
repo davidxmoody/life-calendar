@@ -72,14 +72,10 @@ export const databaseStatsAtom = atom(async (get) => {
 
 export const searchRegexAtom = atomWithStorage<string>("searchRegex", "")
 
-interface TimelineData {
-  weeks: Array<{
-    days: Array<{
-      date: string
-      headings: null | DayHeadings
-    }>
-  }>
-}
+type TimelineData = Array<{
+  date: string
+  headings: null | DayHeadings
+}>
 
 export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
   get(updateTriggerAtom)
@@ -102,24 +98,17 @@ export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
     )
   }
 
-  const data: TimelineData = {weeks: []}
+  const data: TimelineData = []
 
   let currentDate = startInclusive
   while (currentDate < endExclusive) {
-    data.weeks.push({
-      days: [0, 1, 2, 3, 4, 5, 6].map((x) => {
-        const date = addDays(currentDate, x)
-        const headings =
-          allHeadingsInYear.find((h) => h.date === date)?.headings ?? null
-
-        return {
-          date,
-          headings,
-        }
-      }),
+    data.push({
+      date: currentDate,
+      headings:
+        allHeadingsInYear.find((h) => h.date === currentDate)?.headings ?? null,
     })
 
-    currentDate = getNextWeekStart(currentDate)
+    currentDate = addDays(currentDate, 1)
   }
 
   return data

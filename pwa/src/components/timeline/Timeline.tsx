@@ -36,7 +36,7 @@ export default memo(function Timeline() {
           }
         }
       },
-      {rootMargin: "-30% 0px -70% 0px"},
+      {rootMargin: "-30% 0px -69% 0px"},
     )
     const elements = document.querySelectorAll("#timeline .timeline-day")
     elements.forEach((e) => observer.observe(e))
@@ -60,15 +60,13 @@ export default memo(function Timeline() {
   const firstWeekStart = getWeekStart(birthDate)
   const lastWeekStart = getWeekStart(today)
 
-  const prevYearWeekStart = getPrevWeekStart(data.weeks[0].days[0].date)
-  const nextYearWeekStart = getNextWeekStart(
-    data.weeks[data.weeks.length - 1].days[6].date,
-  )
+  const prevYearWeekStart = getPrevWeekStart(data[0].date)
+  const nextYearWeekStart = getNextWeekStart(data[data.length - 1].date)
 
   return (
     <Box id="timeline" overflowY="scroll" height="100%">
       <Box mb={16} p={[0, 2]}>
-        {data.weeks[0].days[0].date > firstWeekStart ? (
+        {data[0].date > firstWeekStart ? (
           <YearJumpButton
             weekStart={prevYearWeekStart}
             direction="prev"
@@ -81,26 +79,18 @@ export default memo(function Timeline() {
           />
         ) : null}
 
-        {data.weeks.map((week) => (
-          <Box key={week.days[0].date}>
-            {week.days
-              .filter((day) => day.date <= today && day.date >= birthDate)
-              .map((day) => (
-                <Box
-                  key={day.date}
-                  className="timeline-day"
-                  data-day={day.date}
-                >
-                  <Day
-                    date={day.date}
-                    headings={day.headings}
-                    searchRegex={searchRegex}
-                    selected={day.date === selectedDay}
-                  />
-                </Box>
-              ))}
-          </Box>
-        ))}
+        {data
+          .filter((day) => day.date <= today && day.date >= birthDate)
+          .map((day) => (
+            <div key={day.date} className="timeline-day" data-day={day.date}>
+              <Day
+                date={day.date}
+                headings={day.headings}
+                searchRegex={searchRegex}
+                selected={day.date === selectedDay}
+              />
+            </div>
+          ))}
 
         {nextYearWeekStart <= lastWeekStart ? (
           <YearJumpButton
