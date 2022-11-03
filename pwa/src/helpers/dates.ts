@@ -32,6 +32,19 @@ export function getFirstWeekInYear(year: number) {
     : weekStartOfFirstDay
 }
 
+export function dateRange(startInclusive: string, endExclusive: string) {
+  const range: string[] = []
+
+  let currentDate = startInclusive
+
+  while (currentDate < endExclusive) {
+    range.push(currentDate)
+    currentDate = addDays(currentDate, 1)
+  }
+
+  return range
+}
+
 export function prettyFormatDateTime({
   date,
   time,

@@ -13,9 +13,8 @@ import {
   searchDb,
 } from "./db"
 import {
-  addDays,
+  dateRange,
   getFirstWeekInYear,
-  getNextWeekStart,
   getToday,
   getWeekStart,
   parseYear,
@@ -98,20 +97,10 @@ export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
     )
   }
 
-  const data: TimelineData = []
-
-  let currentDate = startInclusive
-  while (currentDate < endExclusive) {
-    data.push({
-      date: currentDate,
-      headings:
-        allHeadingsInYear.find((h) => h.date === currentDate)?.headings ?? null,
-    })
-
-    currentDate = addDays(currentDate, 1)
-  }
-
-  return data
+  return dateRange(startInclusive, endExclusive).map((date) => ({
+    date,
+    headings: allHeadingsInYear.find((h) => h.date === date)?.headings ?? null,
+  }))
 })
 
 export function createEntriesForDayAtom(date: string) {
