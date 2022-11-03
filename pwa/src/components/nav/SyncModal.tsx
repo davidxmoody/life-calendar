@@ -27,12 +27,12 @@ export default function SyncModal(props: Props) {
   const [, triggerUpdate] = useAtom(updateTriggerAtom)
 
   const startSync = useCallback(
-    (args: {full: boolean}) => {
+    (args: {fullSync: boolean}) => {
       setSyncState({type: "loading"})
-      sync(args.full)
-        .then(({count, timestamp}) => {
-          setSyncState({type: "success", count, timestamp})
-          if (count !== 0) {
+      sync(args)
+        .then(({receievedNewData, timestamp}) => {
+          setSyncState({type: "success", timestamp})
+          if (receievedNewData) {
             triggerUpdate(timestamp)
           }
         })
@@ -44,7 +44,7 @@ export default function SyncModal(props: Props) {
   )
 
   useEffect(() => {
-    const timeout = setTimeout(() => startSync({full: false}), 500)
+    const timeout = setTimeout(() => startSync({fullSync: false}), 500)
     return () => clearTimeout(timeout)
   }, [startSync])
 
@@ -55,7 +55,7 @@ export default function SyncModal(props: Props) {
       (syncState.type === "success" &&
         syncState.timestamp + syncIntervalMs <= new Date().getTime())
     ) {
-      startSync({full: false})
+      startSync({fullSync: false})
     }
   }, [startSync, syncState])
 
@@ -91,7 +91,7 @@ export default function SyncModal(props: Props) {
 
               <Button
                 colorScheme="blue"
-                onClick={() => startSync({full: false})}
+                onClick={() => startSync({fullSync: false})}
                 isLoading={syncState.type === "loading"}
               >
                 Sync
@@ -99,7 +99,7 @@ export default function SyncModal(props: Props) {
 
               <Button
                 colorScheme="blue"
-                onClick={() => startSync({full: true})}
+                onClick={() => startSync({fullSync: true})}
                 isLoading={syncState.type === "loading"}
               >
                 Full sync

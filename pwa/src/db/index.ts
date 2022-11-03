@@ -92,9 +92,7 @@ export async function getHeadingsInRange(
   )
 }
 
-export async function sync(
-  fullSync?: boolean,
-): Promise<{count: number; timestamp: number}> {
+export async function sync({fullSync}: {fullSync: boolean}) {
   const db = await dbPromise
 
   const lastSyncTimestamp = fullSync
@@ -165,10 +163,12 @@ export async function sync(
 
   await tx.done
 
-  return {count: layers.length + entries.length + (lifeData ? 1 : 0), timestamp}
+  const receievedNewData = layers.length > 0 || entries.length > 0 || !!lifeData
+
+  return {receievedNewData, timestamp}
 }
 
-export async function downloadSingleScannedImage(entry: ScannedEntry) {
+async function downloadSingleScannedImage(entry: ScannedEntry) {
   const db = await dbPromise
 
   const exists = !!(await db.getKey("scanned", entry.id))
@@ -219,16 +219,7 @@ export async function searchDb(
   return search({regex, cursor})
 }
 
-export interface Stats {
-  lastSyncTimestamp: number | null
-  markdown: number
-  scanned: number
-  audio: number
-  layers: number
-  images: number
-}
-
-export async function getStats(): Promise<Stats> {
+export async function getStats() {
   const db = await dbPromise
 
   const lastSyncTimestamp =

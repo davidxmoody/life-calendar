@@ -38,7 +38,7 @@ export type SyncState =
   | {type: "initial"}
   | {type: "loading"}
   | {type: "error"}
-  | {type: "success"; count: number; timestamp: number}
+  | {type: "success"; timestamp: number}
 
 export const syncStateAtom = atom<SyncState>({type: "initial"})
 
