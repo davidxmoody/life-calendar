@@ -80,7 +80,7 @@ export default memo(function Timeline() {
         ) : null}
 
         {data
-          .filter((day) => day.date <= today && day.date >= birthDate)
+          .filter((day) => day.date <= today && day.date >= firstWeekStart)
           .map((day) => (
             <div key={day.date} className="timeline-day" data-day={day.date}>
               <Day
