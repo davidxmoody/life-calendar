@@ -97,7 +97,6 @@ export async function sync(
 ): Promise<{count: number; timestamp: number}> {
   const db = await dbPromise
 
-  // TODO make fullSync delete existing database to avoid dangling deleted data?
   const lastSyncTimestamp = fullSync
     ? null
     : (await db.get("config", "lastSyncTimestamp")) ?? null
@@ -120,6 +119,14 @@ export async function sync(
     ["lifeData", "entries", "layers", "config", "headings"],
     "readwrite",
   )
+
+  if (fullSync) {
+    await tx.objectStore("lifeData").clear()
+    await tx.objectStore("entries").clear()
+    await tx.objectStore("layers").clear()
+    await tx.objectStore("config").clear()
+    await tx.objectStore("headings").clear()
+  }
 
   if (lifeData) {
     await tx.objectStore("lifeData").put(lifeData, "lifeData")
