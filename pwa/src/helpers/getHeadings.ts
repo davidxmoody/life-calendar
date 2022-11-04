@@ -19,7 +19,7 @@ export type DayHeadings = Array<{
   headings: string[]
 }>
 
-export default function getHeadings(entries: Entry[]): DayHeadings {
+function _getHeadings(entries: Entry[]): DayHeadings {
   const headings: Array<{
     type: Entry["type"]
     headings: string[]
@@ -97,4 +97,11 @@ export default function getHeadings(entries: Entry[]): DayHeadings {
   }
 
   return headings
+}
+
+export default function getHeadings(entries: Entry[]): DayHeadings {
+  return _getHeadings(entries).map((h) => ({
+    type: h.type,
+    headings: h.headings,
+  }))
 }
