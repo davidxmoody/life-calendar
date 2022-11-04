@@ -19,6 +19,7 @@ import {
   getWeekStart,
   parseYear,
 } from "./helpers/dates"
+import generateLayer from "./helpers/generateLayer"
 import {DayHeadings} from "./helpers/getHeadings"
 import {LayerData} from "./types"
 
@@ -60,22 +61,15 @@ export const selectedLayerDataAtom = atom(async (get) => {
       return null
     }
 
-    console.log("Running full search to generate layer")
     const searchResults = await searchDb(searchRegex, {
       startInclusive: lifeData.birthDate,
       endExclusive: lifeData.deathDate,
     })
 
-    const weekCounts = countBy(
-      (x) => x,
-      searchResults.map((r) => getWeekStart(r.date)),
-    )
-    return Object.fromEntries(
-      Object.entries(weekCounts).map(([date, count]) => [
-        date,
-        Math.min(1, Math.pow(count / 7, 0.5)),
-      ]),
-    )
+    return generateLayer({
+      dates: searchResults.map((e) => e.date),
+      scoringFn: (count) => Math.min(1, Math.pow(count / 7, 0.5)),
+    })
   }
 
   return selectedLayerId ? getLayerData(selectedLayerId) : null
