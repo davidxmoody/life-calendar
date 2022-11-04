@@ -86,7 +86,7 @@ describe("scanned entries", () => {
       createScannedEntry(["Hello"]),
       createScannedEntry(),
     ])
-    expect(headings).toEqual(["1 page", "Hello", "..."])
+    expect(headings).toEqual(["1 page", "Hello"])
   })
 })
 

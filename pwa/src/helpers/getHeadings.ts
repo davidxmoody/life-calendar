@@ -8,92 +8,102 @@ function getMarkdownHeadings(content: string) {
     .map((line) => line.replace(/^#* */, ""))
 }
 
-function pluralise(count: number, singular: string, plural: string) {
-  return count === 1
-    ? `${count} ${singular}`
-    : `${count.toLocaleString()} ${plural}`
+const pluralTerms = {
+  word: "words",
+  page: "pages",
+  "audio entry": "audio entries",
 }
 
-function getHeadingsInternal(entries: Entry[]) {
-  const headings: Array<{
-    type: Entry["type"]
-    headings: string[]
-    tempCount?: number
-  }> = []
+function pluralise(count: number, term: keyof typeof pluralTerms) {
+  return count === 1
+    ? `${count} ${term}`
+    : `${count.toLocaleString()} ${pluralTerms[term]}`
+}
 
-  for (const entry of entries) {
-    const lastHeading = headings[headings.length - 1]
+type HeadingDescription =
+  | {type: "markdown-headings"; headings: string[]}
+  | {type: "markdown-wordcount"; wordcount: number}
+  | {type: "scanned-headings"; headings: string[]}
+  | {type: "scanned-pages"; pages: number}
+  | {type: "audio"; entries: number}
 
-    switch (entry.type) {
-      case "markdown":
-        const markdownHeadings = getMarkdownHeadings(entry.content)
-        if (markdownHeadings.length) {
-          headings.push({type: "markdown", headings: markdownHeadings})
-        } else {
-          const wordcount = getMarkdownWordcount(entry.content)
-          if (
-            lastHeading?.type === "markdown" &&
-            lastHeading.tempCount !== undefined
-          ) {
-            lastHeading.tempCount += wordcount
-            lastHeading.headings = [
-              pluralise(lastHeading.tempCount, "word", "words"),
-            ]
-          } else {
-            headings.push({
-              type: "markdown",
-              headings: [pluralise(wordcount, "word", "words")],
-              tempCount: wordcount,
-            })
-          }
-        }
-        break
+function getHeadingDescription(entry: Entry): HeadingDescription {
+  switch (entry.type) {
+    case "markdown":
+      const markdownHeadings = getMarkdownHeadings(entry.content)
+      if (markdownHeadings.length) {
+        return {type: "markdown-headings", headings: markdownHeadings}
+      }
 
-      case "scanned":
-        if (entry.headings?.length) {
-          headings.push({type: "scanned", headings: entry.headings})
-        } else if (
-          lastHeading?.type === "scanned" &&
-          lastHeading.tempCount !== undefined
-        ) {
-          lastHeading.tempCount++
-          lastHeading.headings = [
-            pluralise(lastHeading.tempCount, "page", "pages"),
-          ]
-        } else if (lastHeading?.type === "scanned") {
-          headings.push({type: "scanned", headings: ["..."]})
-        } else {
-          headings.push({
-            type: "scanned",
-            headings: [pluralise(1, "page", "pages")],
-            tempCount: 1,
-          })
-        }
-        break
+      return {
+        type: "markdown-wordcount",
+        wordcount: getMarkdownWordcount(entry.content),
+      }
 
-      case "audio":
-        if (
-          lastHeading?.type === "audio" &&
-          lastHeading.tempCount !== undefined
-        ) {
-          lastHeading.tempCount++
-          lastHeading.headings = [
-            pluralise(lastHeading.tempCount, "audio entry", "audio entries"),
-          ]
-        } else {
-          headings.push({
-            type: "audio",
-            headings: [pluralise(1, "audio entry", "audio entries")],
-            tempCount: 1,
-          })
-        }
-        break
-    }
+    case "scanned":
+      if (entry.headings?.length) {
+        return {type: "scanned-headings", headings: entry.headings}
+      }
+
+      return {type: "scanned-pages", pages: 1}
+
+    case "audio":
+      return {type: "audio", entries: 1}
   }
+}
 
-  return headings
+function combineHeadingDescriptions(descriptions: HeadingDescription[]) {
+  return descriptions.reduce<HeadingDescription[]>((acc, desc) => {
+    const lastDesc = acc[acc.length - 1] as HeadingDescription | undefined
+
+    if (
+      desc.type === "markdown-wordcount" &&
+      lastDesc?.type === "markdown-wordcount"
+    ) {
+      lastDesc.wordcount += desc.wordcount
+      return acc
+    }
+
+    if (desc.type === "scanned-pages" && lastDesc?.type === "scanned-pages") {
+      lastDesc.pages++
+      return acc
+    }
+
+    if (
+      desc.type === "scanned-pages" &&
+      lastDesc?.type === "scanned-headings"
+    ) {
+      return acc
+    }
+
+    if (desc.type === "audio" && lastDesc?.type === "audio") {
+      lastDesc.entries++
+      return acc
+    }
+
+    return [...acc, desc]
+  }, [])
+}
+
+function formatHeadingDescriptions(descriptions: HeadingDescription[]) {
+  return descriptions.flatMap((desc) => {
+    switch (desc.type) {
+      case "markdown-headings":
+        return desc.headings
+      case "markdown-wordcount":
+        return pluralise(desc.wordcount, "word")
+      case "scanned-headings":
+        return desc.headings
+      case "scanned-pages":
+        return pluralise(desc.pages, "page")
+      case "audio":
+        return pluralise(desc.entries, "audio entry")
+    }
+  })
 }
 
 export default function getHeadings(entries: Entry[]): string[] {
-  return getHeadingsInternal(entries).flatMap((h) => h.headings)
+  return formatHeadingDescriptions(
+    combineHeadingDescriptions(entries.map(getHeadingDescription)),
+  )
 }
