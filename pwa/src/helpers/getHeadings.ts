@@ -28,28 +28,23 @@ type HeadingDescription =
   | {type: "audio"; entries: number}
 
 function getHeadingDescription(entry: Entry): HeadingDescription {
-  switch (entry.type) {
-    case "markdown":
-      const markdownHeadings = getMarkdownHeadings(entry.content)
-      if (markdownHeadings.length) {
-        return {type: "markdown-headings", headings: markdownHeadings}
-      }
-
-      return {
-        type: "markdown-wordcount",
-        wordcount: getMarkdownWordcount(entry.content),
-      }
-
-    case "scanned":
-      if (entry.headings?.length) {
-        return {type: "scanned-headings", headings: entry.headings}
-      }
-
-      return {type: "scanned-pages", pages: 1}
-
-    case "audio":
-      return {type: "audio", entries: 1}
+  if (entry.type === "markdown") {
+    const markdownHeadings = getMarkdownHeadings(entry.content)
+    return markdownHeadings.length
+      ? {type: "markdown-headings", headings: markdownHeadings}
+      : {
+          type: "markdown-wordcount",
+          wordcount: getMarkdownWordcount(entry.content),
+        }
   }
+
+  if (entry.type === "scanned") {
+    return entry.headings?.length
+      ? {type: "scanned-headings", headings: entry.headings}
+      : {type: "scanned-pages", pages: 1}
+  }
+
+  return {type: "audio", entries: 1}
 }
 
 function combineHeadingDescriptions(descriptions: HeadingDescription[]) {
@@ -87,18 +82,16 @@ function combineHeadingDescriptions(descriptions: HeadingDescription[]) {
 
 function formatHeadingDescriptions(descriptions: HeadingDescription[]) {
   return descriptions.flatMap((desc) => {
-    switch (desc.type) {
-      case "markdown-headings":
-        return desc.headings
-      case "markdown-wordcount":
-        return pluralise(desc.wordcount, "word")
-      case "scanned-headings":
-        return desc.headings
-      case "scanned-pages":
-        return pluralise(desc.pages, "page")
-      case "audio":
-        return pluralise(desc.entries, "audio entry")
+    if (desc.type === "markdown-wordcount") {
+      return pluralise(desc.wordcount, "word")
     }
+    if (desc.type === "scanned-pages") {
+      return pluralise(desc.pages, "page")
+    }
+    if (desc.type === "audio") {
+      return pluralise(desc.entries, "audio entry")
+    }
+    return desc.headings
   })
 }
 
