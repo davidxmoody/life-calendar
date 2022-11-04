@@ -1,12 +1,12 @@
 /* eslint-disable no-fallthrough */
 
-import {DBSchema, openDB} from "idb"
+import {DBSchema, IDBPDatabase, openDB} from "idb"
 import {Entry, Layer, LifeData, ScannedEntry} from "../types"
 import authedFetch from "../helpers/authedFetch"
 import recalculateEntriesLayers from "./recalculateEntriesLayers"
 import {addDays, getNextWeekStart, getWeekStart} from "../helpers/dates"
 import {uniq} from "ramda"
-import getHeadings, {DayHeadings} from "../helpers/getHeadings"
+import getHeadings from "../helpers/getHeadings"
 import search from "./search"
 
 interface DataDBSchema extends DBSchema {
@@ -27,9 +27,9 @@ interface DataDBSchema extends DBSchema {
     key: string
     value: Blob
   }
-  headings: {
+  cachedHeadings: {
     key: string
-    value: {date: string; headings: DayHeadings}
+    value: {date: string; headings: string[]}
   }
   lifeData: {
     key: "lifeData"
@@ -37,7 +37,7 @@ interface DataDBSchema extends DBSchema {
   }
 }
 
-const dbPromise = openDB<DataDBSchema>("data", 5, {
+const dbPromise = openDB<DataDBSchema>("data", 6, {
   upgrade(db, oldVersion, _newVersion, transaction) {
     switch (oldVersion) {
       case 0:
@@ -49,9 +49,14 @@ const dbPromise = openDB<DataDBSchema>("data", 5, {
       case 2:
         db.createObjectStore("scanned")
       case 3:
-        db.createObjectStore("headings", {keyPath: "date"})
+        ;(db as IDBPDatabase<unknown>).createObjectStore("headings", {
+          keyPath: "date",
+        })
       case 4:
         db.createObjectStore("lifeData")
+      case 5:
+        ;(db as IDBPDatabase<unknown>).deleteObjectStore("headings")
+        db.createObjectStore("cachedHeadings", {keyPath: "date"})
     }
   },
   blocked() {
@@ -87,7 +92,7 @@ export async function getHeadingsInRange(
   endExclusive: string,
 ) {
   return (await dbPromise).getAll(
-    "headings",
+    "cachedHeadings",
     IDBKeyRange.bound(startInclusive, endExclusive, false, true),
   )
 }
@@ -114,7 +119,7 @@ export async function sync({fullSync}: {fullSync: boolean}) {
   ).then((res) => res.json())
 
   const tx = db.transaction(
-    ["lifeData", "entries", "layers", "config", "headings"],
+    ["lifeData", "entries", "layers", "config", "cachedHeadings"],
     "readwrite",
   )
 
@@ -123,7 +128,7 @@ export async function sync({fullSync}: {fullSync: boolean}) {
     await tx.objectStore("entries").clear()
     await tx.objectStore("layers").clear()
     await tx.objectStore("config").clear()
-    await tx.objectStore("headings").clear()
+    await tx.objectStore("cachedHeadings").clear()
   }
 
   if (lifeData) {
@@ -139,7 +144,7 @@ export async function sync({fullSync}: {fullSync: boolean}) {
       .objectStore("entries")
       .getAll(IDBKeyRange.bound(date, addDays(date, 1)))
 
-    await tx.objectStore("headings").put({
+    await tx.objectStore("cachedHeadings").put({
       date,
       headings: getHeadings(entries),
     })

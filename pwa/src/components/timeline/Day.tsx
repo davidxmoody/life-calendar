@@ -4,7 +4,7 @@ import * as React from "react"
 import {memo, startTransition, useState} from "react"
 import {createEntriesForDayAtom, nullAtom} from "../../atoms"
 import {prettyFormatDateTime} from "../../helpers/dates"
-import {Entry, EntryContentType} from "../../types"
+import {Entry} from "../../types"
 import HighlightedText from "./HighlightedText"
 import AudioPlayer from "./AudioPlayer"
 import Markdown from "./Markdown"
@@ -12,10 +12,7 @@ import ScannedPage from "./ScannedPage"
 
 interface Props {
   date: string
-  headings: null | Array<{
-    type: EntryContentType
-    headings: string[]
-  }>
+  headings: string[] | null
   searchRegex: string
   selected: boolean
 }
@@ -120,10 +117,7 @@ function DayHeader(props: {
         cursor="pointer"
       >
         <Heading size="md" color="white">
-          {prettyFormatDateTime({date: props.date})}{" "}
-          <small style={{fontWeight: "normal"}}>
-            {getTypeDescription(props.headings.map((h) => h.type))}
-          </small>
+          {prettyFormatDateTime({date: props.date})}
         </Heading>
       </Box>
     </Box>
@@ -136,15 +130,11 @@ function Summary(props: {
 }) {
   return (
     <Box px={4} py={2}>
-      {props.headings.map((heading, i) => (
-        <Box key={i}>
-          {heading.headings.map((h, j) => (
-            <Box key={j}>
-              <HighlightedText searchRegex={props.searchRegex}>
-                {h}
-              </HighlightedText>
-            </Box>
-          ))}
+      {props.headings.map((heading, index) => (
+        <Box key={index}>
+          <HighlightedText searchRegex={props.searchRegex}>
+            {heading}
+          </HighlightedText>
         </Box>
       ))}
     </Box>
@@ -176,35 +166,5 @@ function Full(props: {entries: Entry[]}) {
         </Box>
       ))}
     </Box>
-  )
-}
-
-function getIcon(contentType: EntryContentType) {
-  return contentType === "markdown"
-    ? "⌨️"
-    : contentType === "scanned"
-    ? "📝"
-    : "🎤"
-}
-
-function getTypeDescription(contentTypes: EntryContentType[]) {
-  const hasMarkdown = contentTypes.includes("markdown")
-  const hasScanned = contentTypes.includes("scanned")
-  const hasAudio = contentTypes.includes("audio")
-
-  if (hasMarkdown && !hasScanned && !hasAudio) {
-    return ""
-  }
-
-  return (
-    "(" +
-    [
-      hasMarkdown ? getIcon("markdown") : null,
-      hasScanned ? getIcon("scanned") : null,
-      hasAudio ? getIcon("audio") : null,
-    ]
-      .filter((x) => x)
-      .join("/") +
-    ")"
   )
 }

@@ -20,7 +20,6 @@ import {
   parseYear,
 } from "./helpers/dates"
 import generateLayer from "./helpers/generateLayer"
-import {DayHeadings} from "./helpers/getHeadings"
 
 export const nullAtom = atom(null)
 
@@ -92,7 +91,7 @@ export const searchRegexAtom = atomWithStorage<string>("searchRegex", "")
 
 type TimelineData = Array<{
   date: string
-  headings: null | DayHeadings
+  headings: string[] | null
 }>
 
 export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {

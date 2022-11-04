@@ -45,10 +45,7 @@ describe("markdown entries", () => {
       createMarkdownEntry("## Heading 1\n\nContent\n\n## Heading 2\n\nContent"),
       createMarkdownEntry("## Heading second entry\n\nContent"),
     ])
-    expect(headings).toEqual([
-      {type: "markdown", headings: ["Heading 1", "Heading 2"]},
-      {type: "markdown", headings: ["Heading second entry"]},
-    ])
+    expect(headings).toEqual(["Heading 1", "Heading 2", "Heading second entry"])
   })
 
   test("counts words when no headings are present", () => {
@@ -56,7 +53,7 @@ describe("markdown entries", () => {
       createMarkdownEntry("hello world"),
       createMarkdownEntry("foo bar baz"),
     ])
-    expect(headings).toEqual([{type: "markdown", headings: ["5 words"]}])
+    expect(headings).toEqual(["5 words"])
   })
 
   test("combines headings and wordcounts", () => {
@@ -65,11 +62,7 @@ describe("markdown entries", () => {
       createMarkdownEntry("## Heading"),
       createMarkdownEntry("foo bar baz"),
     ])
-    expect(headings).toEqual([
-      {type: "markdown", headings: ["1 word"]},
-      {type: "markdown", headings: ["Heading"]},
-      {type: "markdown", headings: ["3 words"]},
-    ])
+    expect(headings).toEqual(["1 word", "Heading", "3 words"])
   })
 })
 
@@ -79,15 +72,12 @@ describe("scanned entries", () => {
       createScannedEntry(["Hello", "World"]),
       createScannedEntry(["Foo", "Bar"]),
     ])
-    expect(headings).toEqual([
-      {type: "scanned", headings: ["Hello", "World"]},
-      {type: "scanned", headings: ["Foo", "Bar"]},
-    ])
+    expect(headings).toEqual(["Hello", "World", "Foo", "Bar"])
   })
 
   test("returns page counts when no headings are present in scanned entries", () => {
     const headings = getHeadings([createScannedEntry(), createScannedEntry()])
-    expect(headings).toEqual([{type: "scanned", headings: ["2 pages"]}])
+    expect(headings).toEqual(["2 pages"])
   })
 
   test("combines headings and page counts", () => {
@@ -96,18 +86,14 @@ describe("scanned entries", () => {
       createScannedEntry(["Hello"]),
       createScannedEntry(),
     ])
-    expect(headings).toEqual([
-      {type: "scanned", headings: ["1 page"]},
-      {type: "scanned", headings: ["Hello"]},
-      {type: "scanned", headings: ["..."]},
-    ])
+    expect(headings).toEqual(["1 page", "Hello", "..."])
   })
 })
 
 describe("audio entries", () => {
   test("counts audio entries", () => {
     const headings = getHeadings([createAudioEntry(), createAudioEntry()])
-    expect(headings).toEqual([{type: "audio", headings: ["2 audio entries"]}])
+    expect(headings).toEqual(["2 audio entries"])
   })
 })
 
@@ -122,11 +108,11 @@ describe("combined types", () => {
       createScannedEntry(["Scanned"]),
     ])
     expect(headings).toEqual([
-      {type: "markdown", headings: ["Test"]},
-      {type: "audio", headings: ["1 audio entry"]},
-      {type: "markdown", headings: ["2 words"]},
-      {type: "scanned", headings: ["1 page"]},
-      {type: "scanned", headings: ["Scanned"]},
+      "Test",
+      "1 audio entry",
+      "2 words",
+      "1 page",
+      "Scanned",
     ])
   })
 })

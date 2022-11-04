@@ -14,12 +14,7 @@ function pluralise(count: number, singular: string, plural: string) {
     : `${count.toLocaleString()} ${plural}`
 }
 
-export type DayHeadings = Array<{
-  type: Entry["type"]
-  headings: string[]
-}>
-
-function _getHeadings(entries: Entry[]): DayHeadings {
+function getHeadingsInternal(entries: Entry[]) {
   const headings: Array<{
     type: Entry["type"]
     headings: string[]
@@ -99,9 +94,6 @@ function _getHeadings(entries: Entry[]): DayHeadings {
   return headings
 }
 
-export default function getHeadings(entries: Entry[]): DayHeadings {
-  return _getHeadings(entries).map((h) => ({
-    type: h.type,
-    headings: h.headings,
-  }))
+export default function getHeadings(entries: Entry[]): string[] {
+  return getHeadingsInternal(entries).flatMap((h) => h.headings)
 }
