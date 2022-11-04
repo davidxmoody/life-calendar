@@ -20,7 +20,7 @@ export default function HighlightedText(props: Props) {
       return [part]
     }
 
-    return [<Highlight>{matches?.[index - 1]}</Highlight>, part]
+    return [<Highlight key={index}>{matches?.[index - 1]}</Highlight>, part]
   })
 
   return <>{results}</>
