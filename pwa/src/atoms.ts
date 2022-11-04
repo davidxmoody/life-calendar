@@ -2,7 +2,7 @@
 
 import {atom} from "jotai"
 import {atomWithStorage} from "jotai/utils"
-import {uniq, countBy, map} from "ramda"
+import {uniq} from "ramda"
 import {
   getEntriesForDay,
   getHeadingsInRange,
@@ -21,7 +21,6 @@ import {
 } from "./helpers/dates"
 import generateLayer from "./helpers/generateLayer"
 import {DayHeadings} from "./helpers/getHeadings"
-import {LayerData} from "./types"
 
 export const nullAtom = atom(null)
 
