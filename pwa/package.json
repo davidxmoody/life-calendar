@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@chakra-ui/react": "^2.3.6",
+    "@chakra-ui/react": "^2.3.7",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "framer-motion": "^7.6.2",
+    "framer-motion": "^7.6.4",
     "idb": "^7.1.0",
-    "jotai": "^1.9.0",
+    "jotai": "^1.9.1",
     "moment": "^2.29.4",
     "ramda": "^0.28.0",
     "react": "^18.2.0",
@@ -47,8 +47,8 @@
     ]
   },
   "devDependencies": {
-    "@types/jest": "^29.2.0",
-    "@types/node": "^18.11.7",
+    "@types/jest": "^29.2.1",
+    "@types/node": "^18.11.9",
     "@types/ramda": "^0.28.18",
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
