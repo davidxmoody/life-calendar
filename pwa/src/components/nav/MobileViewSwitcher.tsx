@@ -1,11 +1,11 @@
 import * as React from "react"
 import {IconButton} from "@chakra-ui/react"
 import {useAtom} from "jotai"
-import {startTransition} from "react"
+import {memo, startTransition} from "react"
 import {mobileViewAtom} from "../../atoms"
 import {BsCalendar2Fill, BsCalendar2XFill} from "react-icons/bs"
 
-export default function MobileViewSwitcher() {
+export default memo(function MobileViewSwitcher() {
   const [mobileView, setMobileView] = useAtom(mobileViewAtom)
 
   return (
@@ -23,4 +23,4 @@ export default function MobileViewSwitcher() {
       }
     />
   )
-}
+})

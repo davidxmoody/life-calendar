@@ -1,4 +1,4 @@
-import React from "react"
+import React, {memo} from "react"
 import {IconButton, useDisclosure} from "@chakra-ui/react"
 import {useAtom} from "jotai"
 import {syncStateAtom} from "../../atoms"
@@ -10,7 +10,7 @@ import {
   BsCloudSlashFill,
 } from "react-icons/bs"
 
-export default function SyncButton() {
+export default memo(function SyncButton() {
   const {isOpen, onOpen, onClose} = useDisclosure()
   const [syncState] = useAtom(syncStateAtom)
 
@@ -37,4 +37,4 @@ export default function SyncButton() {
       <SyncModal isOpen={isOpen} onClose={onClose} />
     </>
   )
-}
+})

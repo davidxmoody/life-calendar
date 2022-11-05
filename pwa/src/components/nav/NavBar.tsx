@@ -1,4 +1,4 @@
-import React from "react"
+import React, {memo} from "react"
 import {Box} from "@chakra-ui/react"
 import LayerList from "./LayerList"
 import SyncButton from "./SyncButton"
@@ -7,7 +7,7 @@ import SearchButton from "./SearchButton"
 
 export const NAV_BAR_HEIGHT_PX = 72
 
-export default function NavBar() {
+export default memo(function NavBar() {
   return (
     <Box
       height={`${NAV_BAR_HEIGHT_PX}px`}
@@ -37,4 +37,4 @@ export default function NavBar() {
       </Box>
     </Box>
   )
-}
+})

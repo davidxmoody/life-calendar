@@ -6,11 +6,11 @@ import {
   MenuList,
 } from "@chakra-ui/react"
 import {useAtom} from "jotai"
-import {startTransition} from "react"
+import {memo, startTransition} from "react"
 import {BsLayersFill} from "react-icons/bs"
 import {layerIdsAtom, selectedLayerIdAtom} from "../../atoms"
 
-export default function LayerList() {
+export default memo(function LayerList() {
   const [layerIds] = useAtom(layerIdsAtom)
   const [selectedLayerId, setSelectedLayerId] = useAtom(selectedLayerIdAtom)
 
@@ -47,4 +47,4 @@ export default function LayerList() {
       </MenuList>
     </Menu>
   )
-}
+})
