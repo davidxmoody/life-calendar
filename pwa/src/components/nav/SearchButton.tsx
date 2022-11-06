@@ -22,12 +22,7 @@ export default memo(function SearchButton() {
           fontSize="sm"
         >
           "
-          <Box
-            display="inline"
-            maxWidth="120px"
-            overflow="hidden"
-            textOverflow="ellipsis"
-          >
+          <Box overflow="hidden" textOverflow="ellipsis">
             {searchRegex}
           </Box>
           "
