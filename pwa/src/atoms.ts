@@ -45,7 +45,7 @@ export const updateTriggerAtom = atom(0)
 
 export const layerIdsAtom = atom(async (get) => {
   get(updateTriggerAtom)
-  return [...(await getLayerIds()), "search"]
+  return getLayerIds()
 })
 
 export const selectedLayerDataAtom = atom(async (get) => {
@@ -54,8 +54,8 @@ export const selectedLayerDataAtom = atom(async (get) => {
   const searchRegex = get(searchRegexAtom)
   const lifeData = get(lifeDataAtom)
 
-  if (selectedLayerId === "search") {
-    if (!searchRegex || !lifeData) {
+  if (searchRegex) {
+    if (!lifeData) {
       return null
     }
 

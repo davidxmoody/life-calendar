@@ -1,4 +1,6 @@
 import {
+  Button,
+  Icon,
   IconButton,
   Menu,
   MenuButton,
@@ -8,38 +10,60 @@ import {
 import {useAtom} from "jotai"
 import {memo, startTransition} from "react"
 import {BsLayersFill} from "react-icons/bs"
-import {layerIdsAtom, selectedLayerIdAtom} from "../../atoms"
+import {layerIdsAtom, searchRegexAtom, selectedLayerIdAtom} from "../../atoms"
 
 export default memo(function LayerList() {
   const [layerIds] = useAtom(layerIdsAtom)
   const [selectedLayerId, setSelectedLayerId] = useAtom(selectedLayerIdAtom)
+  const [searchRegex, setSearchRegex] = useAtom(searchRegexAtom)
 
   const emptyLayerId = "no-layer"
+  const searchLayerId = "search"
   const layerIdsWithEmpty = [emptyLayerId, ...layerIds]
+
+  const activeLayerId = searchRegex
+    ? searchLayerId
+    : selectedLayerId ?? emptyLayerId
+
+  const icon = <Icon as={BsLayersFill} fontSize="20px" />
 
   return (
     <Menu autoSelect={false}>
       <MenuButton
+        display={["inline-flex", "none"]}
         colorScheme="blue"
         aria-label="Change layer"
         as={IconButton}
-        icon={<BsLayersFill />}
-        fontSize="20px"
+        icon={icon}
       />
+
+      <MenuButton
+        display={["none", "inline-flex"]}
+        colorScheme="blue"
+        as={Button}
+        leftIcon={icon}
+        fontSize="sm"
+      >
+        {activeLayerId}
+      </MenuButton>
+
       <MenuList>
+        {searchRegex ? (
+          <MenuItem onClick={() => {}} fontWeight="bold">
+            {searchLayerId}
+          </MenuItem>
+        ) : null}
+
         {layerIdsWithEmpty.map((layerId) => (
           <MenuItem
             key={layerId}
             onClick={() =>
               startTransition(() => {
                 setSelectedLayerId(layerId === emptyLayerId ? null : layerId)
+                setSearchRegex("")
               })
             }
-            fontWeight={
-              (layerId === emptyLayerId ? null : layerId) === selectedLayerId
-                ? "bold"
-                : "normal"
-            }
+            fontWeight={layerId === activeLayerId ? "bold" : "normal"}
           >
             {layerId}
           </MenuItem>

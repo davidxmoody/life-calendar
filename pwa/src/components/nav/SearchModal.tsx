@@ -10,7 +10,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/react"
-import {startTransition, useRef, useState} from "react"
+import {startTransition, useEffect, useRef, useState} from "react"
 import {useAtom} from "jotai"
 import {searchRegexAtom} from "../../atoms"
 
@@ -23,6 +23,10 @@ export default function SearchModal(props: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [searchRegex, setSearchRegex] = useAtom(searchRegexAtom)
   const [inputValue, setInputValue] = useState(searchRegex)
+
+  useEffect(() => {
+    setInputValue(searchRegex)
+  }, [searchRegex, setInputValue])
 
   function submitSearch() {
     startTransition(() => {
