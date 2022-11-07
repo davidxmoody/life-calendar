@@ -2,7 +2,9 @@ import React, {memo, startTransition, useEffect, useMemo, useRef} from "react"
 import generateCalendarData from "./generateCalendarData"
 import useToday from "../../helpers/useToday"
 import drawCalendar from "./drawCalendar"
-import calculateCalendarDimensions from "./calculateCalendarDimensions"
+import calculateCalendarDimensions, {
+  CalendarDimensions,
+} from "./calculateCalendarDimensions"
 import getWeekUnderCursor from "./getWeekUnderCursor"
 import {
   lifeDataAtom,
@@ -13,6 +15,7 @@ import {
 import {useAtom} from "jotai"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
 import {LifeData} from "../../types"
+import {Box} from "@chakra-ui/react"
 
 const defaultLifeData: LifeData = {
   birthDate: "1990-01-01",
@@ -20,36 +23,25 @@ const defaultLifeData: LifeData = {
   eras: [{startDate: "1990-01-01", name: "", color: "rgb(150, 150, 150)"}],
 }
 
-export default memo(function Calendar() {
+function useCalendarData() {
+  const today = useToday()
   const lifeData = useAtom(lifeDataAtom)[0] ?? defaultLifeData
 
+  return useMemo(
+    () => generateCalendarData({today, ...lifeData}),
+    [today, lifeData],
+  )
+}
+
+export default memo(function Calendar() {
+  const data = useCalendarData()
   const [selectedWeekStart, setSelectedWeekStart] = useAtom(
     selectedWeekStartAtom,
   )
   const [, setMobileView] = useAtom(mobileViewAtom)
   const [layerData] = useAtom(selectedLayerDataAtom)
 
-  const today = useToday()
-  const data = useMemo(
-    () => generateCalendarData({today, ...lifeData}),
-    [today, lifeData],
-  )
-
   const ref = useRef<HTMLCanvasElement>(null)
-
-  const selectedWeekPosition = useMemo(() => {
-    for (let d = 0; d < data.decades.length; d++) {
-      for (let y = 0; y < data.decades[d].years.length; y++) {
-        for (let w = 0; w < data.decades[d].years[y].weeks.length; w++) {
-          const week = data.decades[d].years[y].weeks[w]
-          if (week.startDate === selectedWeekStart) {
-            const color = "era" in week ? week.era.color : "red"
-            return {decadeIndex: d, yearIndex: y, weekIndex: w, color}
-          }
-        }
-      }
-    }
-  }, [data, selectedWeekStart])
 
   const ratio = 1.46
   // TODO perhaps measure size of self instead of using this?
@@ -87,79 +79,115 @@ export default memo(function Calendar() {
     }
   }, [ref.current, data, layerData, d]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  function onClick(e: React.MouseEvent) {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = (e.pageX - window.pageXOffset - rect.left) * pixelRatio
+    const y = (e.pageY - window.pageYOffset - rect.top) * pixelRatio
+
+    const c = getWeekUnderCursor({x, y, d})
+
+    if (!c) {
+      return
+    }
+
+    const week =
+      data.decades[c.colIndex].years[c.rowIndex].weeks[
+        c.weekColIndex * d.layout.weeksPerYearRow + c.weekRowIndex
+      ]
+
+    if (!week || !("era" in week)) {
+      return
+    }
+
+    startTransition(() => {
+      setSelectedWeekStart(week.startDate)
+      setMobileView("timeline")
+    })
+  }
+
   return (
-    <div
-      style={{
-        width: canvasWidth,
-        height: canvasHeight,
-        cursor: "pointer",
-        position: "relative",
-      }}
+    <Box
+      width={canvasWidth}
+      height={canvasHeight}
+      cursor="pointer"
+      position="relative"
     >
       <canvas
         ref={ref}
         width={drawWidth}
         height={drawHeight}
         style={{width: canvasWidth, height: canvasHeight}}
-        onClick={(e) => {
-          const rect = e.currentTarget.getBoundingClientRect()
-          const x = (e.pageX - window.pageXOffset - rect.left) * pixelRatio
-          const y = (e.pageY - window.pageYOffset - rect.top) * pixelRatio
-
-          const c = getWeekUnderCursor({x, y, d})
-
-          if (!c) {
-            return
-          }
-
-          const week =
-            data.decades[c.colIndex].years[c.rowIndex].weeks[
-              c.weekColIndex * d.layout.weeksPerYearRow + c.weekRowIndex
-            ]
-
-          if (!week || !("era" in week)) {
-            return
-          }
-
-          startTransition(() => {
-            setSelectedWeekStart(week.startDate)
-            setMobileView("timeline")
-          })
-        }}
+        onClick={onClick}
       />
 
-      {selectedWeekPosition ? (
-        <div
-          style={{
-            width: d.week.w / pixelRatio,
-            height: d.week.h / pixelRatio,
-            boxSizing: "border-box",
-            border: `2px solid ${selectedWeekPosition.color}`,
-            filter: "hue-rotate(180deg) saturate(1000%) contrast(1000%)",
-            top: 0,
-            left: 0,
-            position: "absolute",
-            transform: `translate(${
-              (d.canvas.px +
-                d.year.p +
-                d.year.w * selectedWeekPosition.yearIndex +
-                d.week.w *
-                  (selectedWeekPosition.weekIndex % d.layout.weeksPerYearRow)) /
-              pixelRatio
-            }px, ${
-              (d.canvas.py +
-                d.year.p +
-                d.year.h * selectedWeekPosition.decadeIndex +
-                d.week.h *
-                  Math.floor(
-                    selectedWeekPosition.weekIndex / d.layout.weeksPerYearRow,
-                  )) /
-              pixelRatio
-            }px)`,
-            transition: "all 0.3s",
-          }}
-        />
-      ) : null}
-    </div>
+      <SelectedWeekHighlight
+        data={data}
+        d={d}
+        selectedWeekStart={selectedWeekStart}
+        pixelRatio={pixelRatio}
+      />
+    </Box>
   )
 })
+
+const SelectedWeekHighlight = memo(
+  ({
+    data,
+    d,
+    selectedWeekStart,
+    pixelRatio,
+  }: {
+    data: ReturnType<typeof useCalendarData>
+    d: CalendarDimensions
+    selectedWeekStart: string
+    pixelRatio: number
+  }) => {
+    let selectedWeekPosition:
+      | {di: number; yi: number; wi: number; color: string}
+      | undefined
+
+    for (let di = 0; di < data.decades.length; di++) {
+      for (let yi = 0; yi < data.decades[di].years.length; yi++) {
+        for (let wi = 0; wi < data.decades[di].years[yi].weeks.length; wi++) {
+          const week = data.decades[di].years[yi].weeks[wi]
+          if (week.startDate === selectedWeekStart) {
+            const color = "era" in week ? week.era.color : "red"
+            selectedWeekPosition = {di, yi, wi, color}
+          }
+        }
+      }
+    }
+
+    if (!selectedWeekPosition) {
+      return null
+    }
+
+    return (
+      <Box
+        width={`${d.week.w / pixelRatio}px`}
+        height={`${d.week.h / pixelRatio}px`}
+        boxSizing="border-box"
+        border={`2px solid ${selectedWeekPosition.color}`}
+        filter={"hue-rotate(180deg) saturate(1000%) contrast(1000%)"}
+        top={0}
+        left={0}
+        position="absolute"
+        transform={`translate(${
+          (d.canvas.px +
+            d.year.p +
+            d.year.w * selectedWeekPosition.yi +
+            d.week.w * (selectedWeekPosition.wi % d.layout.weeksPerYearRow)) /
+          pixelRatio
+        }px, ${
+          (d.canvas.py +
+            d.year.p +
+            d.year.h * selectedWeekPosition.di +
+            d.week.h *
+              Math.floor(selectedWeekPosition.wi / d.layout.weeksPerYearRow)) /
+          pixelRatio
+        }px)`}
+        transition="all 0.3s"
+      />
+    )
+  },
+)
