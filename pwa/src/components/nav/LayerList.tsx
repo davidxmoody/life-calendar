@@ -30,7 +30,7 @@ export default memo(function LayerList() {
   return (
     <Menu autoSelect={false}>
       <MenuButton
-        display={["inline-flex", "none"]}
+        display={{base: "inline-flex", md: "none"}}
         colorScheme="blue"
         aria-label="Change layer"
         as={IconButton}
@@ -38,7 +38,7 @@ export default memo(function LayerList() {
       />
 
       <MenuButton
-        display={["none", "inline-flex"]}
+        display={{base: "none", md: "inline-flex"}}
         colorScheme="blue"
         as={Button}
         leftIcon={icon}

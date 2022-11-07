@@ -65,7 +65,7 @@ export default memo(function Timeline() {
 
   return (
     <Box id="timeline" overflowY="scroll" height="100%">
-      <Box mb={16} p={[0, 2]}>
+      <Box mb={16} p={{base: 0, md: 2}}>
         {data[0].date > firstWeekStart ? (
           <YearJumpButton
             weekStart={prevYearWeekStart}

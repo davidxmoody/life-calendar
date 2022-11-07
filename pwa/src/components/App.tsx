@@ -17,14 +17,20 @@ export default function App() {
         <Flex flex={1} overflowY="auto">
           <Box
             flex={0}
-            display={[mobileView === "calendar" ? "block" : "none", "block"]}
+            display={{
+              base: mobileView === "calendar" ? "block" : "none",
+              md: "block",
+            }}
           >
             <Calendar />
           </Box>
 
           <Box
             flex={1}
-            display={[mobileView === "timeline" ? "block" : "none", "block"]}
+            display={{
+              base: mobileView === "timeline" ? "block" : "none",
+              md: "block",
+            }}
           >
             <Timeline />
           </Box>

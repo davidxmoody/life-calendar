@@ -18,7 +18,7 @@ export default memo(function NavBar() {
       zIndex="banner"
       flex={0}
     >
-      <Box display={["flex", "none"]} mr={4}>
+      <Box display={{base: "flex", md: "none"}} mr={4}>
         <MobileViewSwitcher />
       </Box>
 

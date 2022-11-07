@@ -54,10 +54,10 @@ export default memo(function Day(props: Props) {
       />
 
       <Box
-        borderLeftWidth={[0, "thin"]}
-        borderRightWidth={[0, "thin"]}
-        borderBottomWidth={[0, "thin"]}
-        borderBottomRadius={[0, "md"]}
+        borderLeftWidth={{base: 0, md: "thin"}}
+        borderRightWidth={{base: 0, md: "thin"}}
+        borderBottomWidth={{base: 0, md: "thin"}}
+        borderBottomRadius={{base: 0, md: "md"}}
         borderColor="gray.600"
         overflow="hidden"
         onClick={entries ? undefined : onClick}
@@ -75,7 +75,7 @@ export default memo(function Day(props: Props) {
 
 function Container(props: {children: React.ReactNode}) {
   return (
-    <Box maxW="800px" pb={[4, 2]}>
+    <Box maxW="800px" pb={{base: 4, md: 2}}>
       {props.children}
     </Box>
   )
@@ -83,11 +83,11 @@ function Container(props: {children: React.ReactNode}) {
 
 function EmptyDayHeader(props: {date: string; selected: boolean}) {
   return (
-    <Box bg="gray.800" opacity={0.5} pt={[0, 2]}>
+    <Box bg="gray.800" opacity={0.5} pt={{base: 0, md: 2}}>
       <Box
         p={4}
-        borderRadius={[0, "md"]}
-        borderWidth={[0, "thin"]}
+        borderRadius={{base: 0, md: "md"}}
+        borderWidth={{base: 0, md: "thin"}}
         borderColor="gray.600"
         bg={props.selected ? "blue.700" : "blue.900"}
       >
@@ -106,11 +106,17 @@ function DayHeader(props: {
   selected: boolean
 }) {
   return (
-    <Box bg="gray.800" position="sticky" top={0} zIndex="sticky" pt={[0, 2]}>
+    <Box
+      bg="gray.800"
+      position="sticky"
+      top={0}
+      zIndex="sticky"
+      pt={{base: 0, md: 2}}
+    >
       <Box
         p={4}
-        borderTopRadius={[0, "md"]}
-        borderWidth={[0, "thin"]}
+        borderTopRadius={{base: 0, md: "md"}}
+        borderWidth={{base: 0, md: "thin"}}
         borderColor="gray.600"
         bg={props.selected ? "blue.700" : "blue.900"}
         onClick={props.onClick}
@@ -147,7 +153,7 @@ function Full(props: {entries: Entry[]}) {
       {props.entries.map((entry, i) => (
         <Box key={entry.id} mb={i === props.entries.length - 1 ? 0 : 2}>
           {entry.type === "markdown" ? (
-            <Box mx={[4, 8]} my={[4, 6]}>
+            <Box mx={{base: 4, md: 8}} my={{base: 4, md: 6}}>
               <Markdown
                 source={
                   entry.content.startsWith("#")
@@ -159,7 +165,7 @@ function Full(props: {entries: Entry[]}) {
           ) : entry.type === "scanned" ? (
             <ScannedPage entry={entry} />
           ) : entry.type === "audio" ? (
-            <Box mx={[4, 8]} my={[4, 6]}>
+            <Box mx={{base: 4, md: 8}} my={{base: 4, md: 6}}>
               <AudioPlayer sourceUrl={entry.fileUrl} />
             </Box>
           ) : null}
