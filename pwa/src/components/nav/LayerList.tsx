@@ -1,7 +1,7 @@
 import {
+  Box,
   Button,
   Icon,
-  IconButton,
   Menu,
   MenuButton,
   MenuItem,
@@ -25,26 +25,17 @@ export default memo(function LayerList() {
     ? searchLayerId
     : selectedLayerId ?? emptyLayerId
 
-  const icon = <Icon as={BsLayersFill} fontSize="20px" />
-
   return (
     <Menu autoSelect={false}>
       <MenuButton
-        display={{base: "inline-flex", md: "none"}}
-        colorScheme="blue"
-        aria-label="Change layer"
-        as={IconButton}
-        icon={icon}
-      />
-
-      <MenuButton
-        display={{base: "none", md: "inline-flex"}}
         colorScheme="blue"
         as={Button}
-        leftIcon={icon}
+        leftIcon={<Icon as={BsLayersFill} fontSize="20px" />}
         fontSize="sm"
+        px={{base: 2.5, md: 4}}
+        iconSpacing={{base: 0, md: 2}}
       >
-        {activeLayerId}
+        <Box display={{base: "none", md: "inline"}}>{activeLayerId}</Box>
       </MenuButton>
 
       <MenuList>
