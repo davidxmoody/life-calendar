@@ -45,5 +45,5 @@ function Square(props: {x: number; y: number}) {
   const b = scale(amount, startB, endB)
 
   const color = `rgb(${r}, ${g}, ${b})`
-  return <Box m={1} boxSize="30px" background={color} />
+  return <Box m="3px" boxSize="26px" background={color} />
 }
