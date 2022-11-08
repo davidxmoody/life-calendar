@@ -9,8 +9,9 @@ import {
   UnorderedList,
 } from "@chakra-ui/react"
 import {useAtom} from "jotai"
-import {searchRegexAtom, selectedDayAtom} from "../../atoms"
+import {searchRegexAtom} from "../../atoms"
 import {Highlight} from "./HighlightedText"
+import DateLink from "./DateLink"
 
 interface Props {
   source: string
@@ -24,15 +25,6 @@ function heading(size: React.ComponentProps<typeof Heading>["size"]) {
     <Heading size={size} mb={4}>
       {props.children}
     </Heading>
-  )
-}
-
-function DateLink(props: {date: string}) {
-  const [, setSelectedDay] = useAtom(selectedDayAtom)
-  return (
-    <Link color="teal.500" onClick={() => setSelectedDay(props.date)}>
-      {props.date}
-    </Link>
   )
 }
 

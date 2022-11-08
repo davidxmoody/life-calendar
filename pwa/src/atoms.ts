@@ -13,6 +13,7 @@ import {
   searchDb,
 } from "./db"
 import {
+  addDays,
   dateRange,
   getFirstWeekInYear,
   getToday,
@@ -125,6 +126,13 @@ export function createEntriesForDayAtom(date: string) {
   return atom(async (get) => {
     get(updateTriggerAtom)
     return getEntriesForDay(date)
+  })
+}
+
+export function createHeadingsForDayAtom(date: string) {
+  return atom(async (get) => {
+    get(updateTriggerAtom)
+    return (await getHeadingsInRange(date, addDays(date, 1)))[0]?.headings || []
   })
 }
 
