@@ -16,6 +16,7 @@ import {useAtom} from "jotai"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
 import {LifeData} from "../../types"
 import {Box} from "@chakra-ui/react"
+import useWindowSize from "../../helpers/useWindowSize"
 
 const defaultLifeData: LifeData = {
   birthDate: "1990-01-01",
@@ -43,13 +44,13 @@ export default memo(function Calendar() {
 
   const ref = useRef<HTMLCanvasElement>(null)
 
+  const windowSize = useWindowSize()
   const ratio = 1.46
-  // TODO perhaps measure size of self instead of using this?
-  let canvasHeight = window.innerHeight - NAV_BAR_HEIGHT_PX
+  let canvasHeight = windowSize.height - NAV_BAR_HEIGHT_PX
   let canvasWidth = Math.floor(canvasHeight / ratio)
 
-  if (canvasWidth > window.innerWidth) {
-    canvasWidth = Math.min(700, window.innerWidth)
+  if (canvasWidth > windowSize.width) {
+    canvasWidth = Math.min(700, windowSize.width)
     canvasHeight = canvasWidth * ratio
   }
 
