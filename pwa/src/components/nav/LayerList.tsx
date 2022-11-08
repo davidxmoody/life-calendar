@@ -28,6 +28,7 @@ export default memo(function LayerList() {
   return (
     <Menu autoSelect={false}>
       <MenuButton
+        aria-label="Change layer"
         colorScheme="blue"
         as={Button}
         leftIcon={<Icon as={BsLayersFill} fontSize="20px" />}
