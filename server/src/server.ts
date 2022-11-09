@@ -37,8 +37,8 @@ app.use(
 )
 
 app.use((req, res, next) => {
-  const token = req.header("token")
-  if (!token) {
+  const token = req.header("token") || req.query.token
+  if (typeof token !== "string" || !token) {
     console.log("Request missing auth token")
     res.sendStatus(401)
   } else if (!VALID_TOKENS[token]) {
