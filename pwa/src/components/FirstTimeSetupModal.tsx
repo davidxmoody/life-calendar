@@ -24,6 +24,7 @@ export default memo(function FirstTimeSetupModal() {
       isOpen={!remoteUrl}
       onClose={() => {}}
       initialFocusRef={inputRef}
+      motionPreset="none"
       size="xs"
     >
       <ModalOverlay />
