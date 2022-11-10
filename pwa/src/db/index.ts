@@ -2,7 +2,7 @@
 
 import {DBSchema, IDBPDatabase, openDB} from "idb"
 import {Entry, Layer, LifeData, ScannedEntry} from "../types"
-import authedFetch from "../helpers/authedFetch"
+import {authedFetch} from "../helpers/auth"
 import recalculateEntriesLayers from "./recalculateEntriesLayers"
 import {addDays, getNextWeekStart, getWeekStart} from "../helpers/dates"
 import {uniq} from "ramda"

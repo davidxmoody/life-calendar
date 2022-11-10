@@ -1,4 +1,4 @@
-import {createAuthedUrl} from "../../helpers/authedFetch"
+import {createAuthedUrl} from "../../helpers/auth"
 
 interface Props {
   sourceUrl: string
