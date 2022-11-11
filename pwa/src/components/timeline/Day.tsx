@@ -75,7 +75,7 @@ export default memo(function Day(props: Props) {
 
 function Container(props: {children: React.ReactNode}) {
   return (
-    <Box maxW="800px" pb={{base: 4, md: 2}}>
+    <Box maxW="800px" px={{base: 0, md: 2}} pb={{base: 4, md: 2}}>
       {props.children}
     </Box>
   )
