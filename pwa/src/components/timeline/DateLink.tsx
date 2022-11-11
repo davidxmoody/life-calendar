@@ -10,6 +10,7 @@ import {
   PopoverFooter,
   PopoverHeader,
   PopoverTrigger,
+  Portal,
   useDisclosure,
 } from "@chakra-ui/react"
 import {Atom, useAtom} from "jotai"
@@ -40,31 +41,37 @@ export default function DateLink(props: Props) {
       <PopoverTrigger>
         <Link color="teal.500">{props.date}</Link>
       </PopoverTrigger>
-      <PopoverContent bg="blue.800" borderColor="blue.800">
-        <PopoverArrow />
-        <PopoverCloseButton />
-        <PopoverHeader pt={4} fontWeight="bold" border={0}>
-          {prettyFormatDateTime({date: props.date})}
-        </PopoverHeader>
-        <PopoverBody>
-          {headings?.length ? (
-            headings.map((heading, index) => <Box key={index}>{heading}</Box>)
-          ) : (
-            <Box opacity={0.5}>No entries</Box>
-          )}
-        </PopoverBody>
-        <PopoverFooter pb={4} border={0}>
-          <Button
-            onClick={() => {
-              startTransition(() => {
-                setSelectedDay(props.date)
-              })
-            }}
-          >
-            Go to day
-          </Button>
-        </PopoverFooter>
-      </PopoverContent>
+      <Portal>
+        <Box sx={{".chakra-popover__popper": {zIndex: "popover"}}}>
+          <PopoverContent bg="blue.800" borderColor="blue.800">
+            <PopoverArrow />
+            <PopoverCloseButton />
+            <PopoverHeader pt={4} fontWeight="bold" border={0}>
+              {prettyFormatDateTime({date: props.date})}
+            </PopoverHeader>
+            <PopoverBody>
+              {headings?.length ? (
+                headings.map((heading, index) => (
+                  <Box key={index}>{heading}</Box>
+                ))
+              ) : (
+                <Box opacity={0.5}>No entries</Box>
+              )}
+            </PopoverBody>
+            <PopoverFooter pb={4} border={0}>
+              <Button
+                onClick={() => {
+                  startTransition(() => {
+                    setSelectedDay(props.date)
+                  })
+                }}
+              >
+                Go to day
+              </Button>
+            </PopoverFooter>
+          </PopoverContent>
+        </Box>
+      </Portal>
     </Popover>
   )
 }
