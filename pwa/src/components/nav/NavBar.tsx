@@ -1,4 +1,4 @@
-import React, {memo, Suspense} from "react"
+import React, {memo} from "react"
 import {Box, Flex} from "@chakra-ui/react"
 import LayerList from "./LayerList"
 import SyncButton from "./SyncButton"
@@ -18,23 +18,21 @@ export default memo(function NavBar() {
       zIndex="banner"
       flex={0}
     >
-      <Suspense>
-        <Box display={{base: "flex", md: "none"}} mr={4}>
-          <MobileViewSwitcher />
-        </Box>
+      <Box display={{base: "flex", md: "none"}} mr={4}>
+        <MobileViewSwitcher />
+      </Box>
 
-        <Box mr={4}>
-          <LayerList />
-        </Box>
+      <Box mr={4}>
+        <LayerList />
+      </Box>
 
-        <Flex flex={1} justifyContent="flex-end" minWidth="100px">
-          <SearchButton />
-        </Flex>
+      <Flex flex={1} justifyContent="flex-end" minWidth="100px">
+        <SearchButton />
+      </Flex>
 
-        <Box ml={4}>
-          <SyncButton />
-        </Box>
-      </Suspense>
+      <Box ml={4}>
+        <SyncButton />
+      </Box>
     </Box>
   )
 })

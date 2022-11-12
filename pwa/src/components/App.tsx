@@ -12,10 +12,10 @@ export default function App() {
 
   return (
     <>
-      <Flex height="100vh" flexDirection="column">
-        <NavBar />
+      <Suspense>
+        <Flex height="100vh" flexDirection="column">
+          <NavBar />
 
-        <Suspense>
           <Flex flex={1} overflowY="auto">
             <Box
               flex={0}
@@ -37,8 +37,8 @@ export default function App() {
               <Timeline />
             </Box>
           </Flex>
-        </Suspense>
-      </Flex>
+        </Flex>
+      </Suspense>
       <FirstTimeSetupModal />
     </>
   )
