@@ -79,6 +79,7 @@ export default memo(function Day(props: Props) {
           borderColor={borderColor}
           onClick={entries ? undefined : onToggle}
           cursor={entries ? undefined : "pointer"}
+          overflow="hidden"
         >
           {entries ? (
             <Full entries={entries} />
