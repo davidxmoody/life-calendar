@@ -29,7 +29,6 @@ function useEntriesData(date: string) {
   const [entries] = useAtom(entriesAtom)
 
   function onToggle() {
-    console.log("onToggle")
     startTransition(() => {
       if (entriesAtom === nullAtom) {
         setEntriesAtom(createEntriesForDayAtom(date))
@@ -66,9 +65,8 @@ export default memo(function Day(props: Props) {
       >
         <DayHeader
           date={props.date}
-          headings={props.headings}
-          onClick={onToggle}
           selected={props.selected}
+          onClick={onToggle}
         />
 
         <Box
@@ -139,9 +137,8 @@ function EmptyDayHeader(props: {date: string; selected: boolean}) {
 
 function DayHeader(props: {
   date: string
-  headings: NonNullable<Props["headings"]>
-  onClick: () => void
   selected: boolean
+  onClick: () => void
 }) {
   return (
     <Box
