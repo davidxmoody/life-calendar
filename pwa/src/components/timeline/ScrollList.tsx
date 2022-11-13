@@ -9,14 +9,13 @@ import {memo} from "react"
 const DEBOUNCE_DELAY_MS = 100
 const TOP_OFFSET_PX = 58
 
-type RenderItem<T> = (args: {
-  item: T
-  isFirst: boolean
-  isLast: boolean
-  isSelected: boolean
-}) => React.ReactNode
+const genericMemo: <C>(component: C) => C = memo
+
+type RenderItem<T> = (args: {item: T; isSelected: boolean}) => React.ReactNode
 
 interface Props<T> {
+  header: React.ReactNode
+  footer: React.ReactNode
   items: T[]
   renderItem: RenderItem<T>
   getScrollKey: (item: T) => string
@@ -82,9 +81,9 @@ export default function ScrollList<T>(props: Props<T>) {
       {props.items.map((item, index) => (
         <ScrollBlock
           key={props.getScrollKey(item)}
+          header={index === 0 ? props.header : null}
+          footer={index === props.items.length - 1 ? props.footer : null}
           scrollKey={props.getScrollKey(item)}
-          isFirst={index === 0}
-          isLast={index === props.items.length - 1}
           isSelected={props.getScrollKey(item) === props.currentScrollKey}
           item={item}
           renderItem={props.renderItem}
@@ -100,13 +99,11 @@ export default function ScrollList<T>(props: Props<T>) {
   )
 }
 
-const genericMemo: <C>(component: C) => C = memo
-
 const ScrollBlock = genericMemo(
   <T,>(props: {
+    header: React.ReactNode
+    footer: React.ReactNode
     scrollKey: string
-    isFirst: boolean
-    isLast: boolean
     isSelected: boolean
     item: T
     renderItem: RenderItem<T>
@@ -140,12 +137,9 @@ const ScrollBlock = genericMemo(
         data-scroll-key={props.scrollKey}
         minHeight={props.minHeight}
       >
-        {props.renderItem({
-          item: props.item,
-          isFirst: props.isFirst,
-          isLast: props.isLast,
-          isSelected: props.isSelected,
-        })}
+        {props.header}
+        {props.renderItem({item: props.item, isSelected: props.isSelected})}
+        {props.footer}
       </Box>
     )
   },

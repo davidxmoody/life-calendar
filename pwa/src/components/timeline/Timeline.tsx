@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import {memo, startTransition, useCallback} from "react"
-import {Box, Button, Flex} from "@chakra-ui/react"
+import {memo, startTransition, useCallback, useMemo} from "react"
+import {Button, Flex} from "@chakra-ui/react"
 import {useAtom} from "jotai"
 import {
   lifeDataAtom,
   searchRegexAtom,
   selectedDayAtom,
+  selectedDayAtomSetOnly,
   timelineDataAtom,
 } from "../../atoms"
 import Day from "./Day"
@@ -27,11 +28,6 @@ export default memo(function Timeline() {
   const [data] = useAtom(timelineDataAtom)
   const [selectedDay, setSelectedDay] = useAtom(selectedDayAtom)
 
-  const setSelectedDayWithTransition = useCallback(
-    (date: string) => startTransition(() => setSelectedDay(date)),
-    [setSelectedDay],
-  )
-
   const birthDate = lifeData?.birthDate ?? "1970-01-01"
   const firstWeekStart = getWeekStart(birthDate)
   const lastWeekStart = getWeekStart(today)
@@ -44,61 +40,47 @@ export default memo(function Timeline() {
   )
 
   const showPrevYearButton = data[0].date > firstWeekStart
+  const header = useMemo(
+    () =>
+      showPrevYearButton ? (
+        <YearJumpButton weekStart={prevYearWeekStart} direction="prev" />
+      ) : null,
+    [showPrevYearButton, prevYearWeekStart],
+  )
+
   const showNextYearButton = nextYearWeekStart <= lastWeekStart
+  const footer = useMemo(
+    () =>
+      showNextYearButton ? (
+        <YearJumpButton weekStart={nextYearWeekStart} direction="next" />
+      ) : null,
+    [showNextYearButton, nextYearWeekStart],
+  )
+
+  const setSelectedDayWithTransition = useCallback(
+    (date: string) => startTransition(() => setSelectedDay(date)),
+    [setSelectedDay],
+  )
 
   const renderItem = useCallback(
-    ({
-      item,
-      isFirst,
-      isLast,
-      isSelected,
-    }: {
+    (args: {
       item: {date: string; headings: string[] | null}
-      isFirst: boolean
-      isLast: boolean
       isSelected: boolean
     }) => (
-      <>
-        {isFirst && showPrevYearButton ? (
-          <Box pt={10} pb={8}>
-            <YearJumpButton
-              weekStart={prevYearWeekStart}
-              direction="prev"
-              onClick={() => setSelectedDayWithTransition(prevYearWeekStart)}
-            />
-          </Box>
-        ) : null}
-
-        <Day
-          date={item.date}
-          headings={item.headings}
-          searchRegex={searchRegex}
-          selected={isSelected}
-        />
-
-        {isLast && showNextYearButton ? (
-          <Box pt={8} pb={10}>
-            <YearJumpButton
-              weekStart={nextYearWeekStart}
-              direction="next"
-              onClick={() => setSelectedDayWithTransition(nextYearWeekStart)}
-            />
-          </Box>
-        ) : null}
-      </>
+      <Day
+        date={args.item.date}
+        headings={args.item.headings}
+        searchRegex={searchRegex}
+        selected={args.isSelected}
+      />
     ),
-    [
-      showPrevYearButton,
-      showNextYearButton,
-      prevYearWeekStart,
-      nextYearWeekStart,
-      searchRegex,
-      setSelectedDayWithTransition,
-    ],
+    [searchRegex],
   )
 
   return (
     <ScrollList
+      header={header}
+      footer={footer}
       items={visibleTimeline}
       renderItem={renderItem}
       getScrollKey={(day) => day.date}
@@ -108,18 +90,27 @@ export default memo(function Timeline() {
   )
 })
 
-function YearJumpButton(props: {
+function YearJumpButton({
+  direction,
+  weekStart,
+}: {
   weekStart: string
   direction: "next" | "prev"
-  onClick: () => void
 }) {
+  const [, setSelectedDay] = useAtom(selectedDayAtomSetOnly)
+
   return (
-    <Flex maxWidth="800px" justifyContent="center">
+    <Flex
+      maxWidth="800px"
+      justifyContent="center"
+      pt={direction === "next" ? 8 : 10}
+      pb={direction === "next" ? 10 : 8}
+    >
       <Button
-        leftIcon={props.direction === "next" ? <BsArrowDown /> : <BsArrowUp />}
-        onClick={props.onClick}
+        leftIcon={direction === "next" ? <BsArrowDown /> : <BsArrowUp />}
+        onClick={() => startTransition(() => setSelectedDay(weekStart))}
       >
-        Go to {parseYear(props.weekStart)}
+        Go to {parseYear(weekStart)}
       </Button>
     </Flex>
   )

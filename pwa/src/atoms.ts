@@ -76,6 +76,10 @@ export const selectedLayerDataAtom = atom(async (get) => {
 
 export const selectedDayAtom = atomWithStorage("selectedDay", getToday())
 
+export const selectedDayAtomSetOnly = atom(null, (_get, set, value: string) =>
+  set(selectedDayAtom, value),
+)
+
 export const selectedWeekStartAtom = atom(
   (get) => getWeekStart(get(selectedDayAtom)),
   (_get, set, value: string) => set(selectedDayAtom, value),

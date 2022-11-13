@@ -15,7 +15,11 @@ import {
 } from "@chakra-ui/react"
 import {Atom, useAtom} from "jotai"
 import {startTransition, useState} from "react"
-import {createHeadingsForDayAtom, nullAtom, selectedDayAtom} from "../../atoms"
+import {
+  createHeadingsForDayAtom,
+  nullAtom,
+  selectedDayAtomSetOnly,
+} from "../../atoms"
 import {prettyFormatDateTime} from "../../helpers/dates"
 
 interface Props {
@@ -23,7 +27,7 @@ interface Props {
 }
 
 export default function DateLink(props: Props) {
-  const [, setSelectedDay] = useAtom(selectedDayAtom)
+  const [, setSelectedDay] = useAtom(selectedDayAtomSetOnly)
   const {isOpen, onOpen, onClose} = useDisclosure()
   const [headingsAtom, setHeadingsAtom] =
     useState<Atom<Promise<string[]> | null>>(nullAtom)
