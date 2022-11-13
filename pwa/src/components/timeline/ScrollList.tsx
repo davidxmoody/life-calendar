@@ -4,13 +4,21 @@ import React, {useCallback, useEffect, useRef} from "react"
 import {Box} from "@chakra-ui/react"
 import debounce from "lodash.debounce"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
+import {memo} from "react"
 
 const DEBOUNCE_DELAY_MS = 100
 const TOP_OFFSET_PX = 58
 
+type RenderItem<T> = (args: {
+  item: T
+  isFirst: boolean
+  isLast: boolean
+  isSelected: boolean
+}) => React.ReactNode
+
 interface Props<T> {
   items: T[]
-  renderItem: (item: T, index: number) => React.ReactNode
+  renderItem: RenderItem<T>
   getScrollKey: (item: T) => string
   currentScrollKey: string
   onChangeScrollKey: (newKey: string) => void
@@ -75,54 +83,70 @@ export default function ScrollList<T>(props: Props<T>) {
         <ScrollBlock
           key={props.getScrollKey(item)}
           scrollKey={props.getScrollKey(item)}
+          isFirst={index === 0}
+          isLast={index === props.items.length - 1}
+          isSelected={props.getScrollKey(item) === props.currentScrollKey}
+          item={item}
+          renderItem={props.renderItem}
           minHeight={
             index === props.items.length - 1
               ? `calc(100vh - ${NAV_BAR_HEIGHT_PX}px)`
               : undefined
           }
           onHeightChange={onHeightChange}
-        >
-          {props.renderItem(item, index)}
-        </ScrollBlock>
+        />
       ))}
     </Box>
   )
 }
 
-function ScrollBlock(props: {
-  children: React.ReactNode
-  scrollKey: string
-  minHeight?: string
-  onHeightChange: (scrollKey: string, height: number) => void
-}) {
-  const ref = useRef<HTMLDivElement>(null)
+const genericMemo: <C>(component: C) => C = memo
 
-  useEffect(() => {
-    const boxElement = ref.current
-    if (boxElement) {
-      const resizeObserver = new ResizeObserver((entries) => {
-        props.onHeightChange(
-          props.scrollKey,
-          entries[0]?.borderBoxSize[0].blockSize,
-        )
-      })
-      resizeObserver.observe(boxElement)
-      return () => {
-        resizeObserver.unobserve(boxElement)
-        props.onHeightChange(props.scrollKey, 0)
+const ScrollBlock = genericMemo(
+  <T,>(props: {
+    scrollKey: string
+    isFirst: boolean
+    isLast: boolean
+    isSelected: boolean
+    item: T
+    renderItem: RenderItem<T>
+    minHeight?: string
+    onHeightChange: (scrollKey: string, height: number) => void
+  }) => {
+    const ref = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+      const boxElement = ref.current
+      if (boxElement) {
+        const resizeObserver = new ResizeObserver((entries) => {
+          props.onHeightChange(
+            props.scrollKey,
+            entries[0]?.borderBoxSize[0].blockSize,
+          )
+        })
+        resizeObserver.observe(boxElement)
+        return () => {
+          resizeObserver.unobserve(boxElement)
+          props.onHeightChange(props.scrollKey, 0)
+        }
       }
-    }
-  }, [props.scrollKey, props.onHeightChange])
+    }, [props.scrollKey, props.onHeightChange])
 
-  // TODO fix minHeight not working properly when last element is zero height
+    // TODO fix minHeight not working properly when last element is zero height
 
-  return (
-    <Box
-      ref={ref}
-      data-scroll-key={props.scrollKey}
-      minHeight={props.minHeight}
-    >
-      {props.children}
-    </Box>
-  )
-}
+    return (
+      <Box
+        ref={ref}
+        data-scroll-key={props.scrollKey}
+        minHeight={props.minHeight}
+      >
+        {props.renderItem({
+          item: props.item,
+          isFirst: props.isFirst,
+          isLast: props.isLast,
+          isSelected: props.isSelected,
+        })}
+      </Box>
+    )
+  },
+)

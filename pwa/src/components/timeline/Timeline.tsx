@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import {memo, startTransition} from "react"
+import {memo, startTransition, useCallback} from "react"
 import {Box, Button, Flex} from "@chakra-ui/react"
 import {useAtom} from "jotai"
 import {
@@ -27,11 +27,10 @@ export default memo(function Timeline() {
   const [data] = useAtom(timelineDataAtom)
   const [selectedDay, setSelectedDay] = useAtom(selectedDayAtom)
 
-  function setSelectedDayWithTransition(date: string) {
-    startTransition(() => {
-      setSelectedDay(date)
-    })
-  }
+  const setSelectedDayWithTransition = useCallback(
+    (date: string) => startTransition(() => setSelectedDay(date)),
+    [setSelectedDay],
+  )
 
   const birthDate = lifeData?.birthDate ?? "1970-01-01"
   const firstWeekStart = getWeekStart(birthDate)
@@ -44,40 +43,64 @@ export default memo(function Timeline() {
     (day) => day.date <= today && day.date >= firstWeekStart,
   )
 
+  const showPrevYearButton = data[0].date > firstWeekStart
+  const showNextYearButton = nextYearWeekStart <= lastWeekStart
+
+  const renderItem = useCallback(
+    ({
+      item,
+      isFirst,
+      isLast,
+      isSelected,
+    }: {
+      item: {date: string; headings: string[] | null}
+      isFirst: boolean
+      isLast: boolean
+      isSelected: boolean
+    }) => (
+      <>
+        {isFirst && showPrevYearButton ? (
+          <Box pt={10} pb={8}>
+            <YearJumpButton
+              weekStart={prevYearWeekStart}
+              direction="prev"
+              onClick={() => setSelectedDayWithTransition(prevYearWeekStart)}
+            />
+          </Box>
+        ) : null}
+
+        <Day
+          date={item.date}
+          headings={item.headings}
+          searchRegex={searchRegex}
+          selected={isSelected}
+        />
+
+        {isLast && showNextYearButton ? (
+          <Box pt={8} pb={10}>
+            <YearJumpButton
+              weekStart={nextYearWeekStart}
+              direction="next"
+              onClick={() => setSelectedDayWithTransition(nextYearWeekStart)}
+            />
+          </Box>
+        ) : null}
+      </>
+    ),
+    [
+      showPrevYearButton,
+      showNextYearButton,
+      prevYearWeekStart,
+      nextYearWeekStart,
+      searchRegex,
+      setSelectedDayWithTransition,
+    ],
+  )
+
   return (
     <ScrollList
       items={visibleTimeline}
-      renderItem={(day, index) => (
-        <>
-          {index === 0 && data[0].date > firstWeekStart ? (
-            <Box pt={10} pb={8}>
-              <YearJumpButton
-                weekStart={prevYearWeekStart}
-                direction="prev"
-                onClick={() => setSelectedDayWithTransition(prevYearWeekStart)}
-              />
-            </Box>
-          ) : null}
-
-          <Day
-            date={day.date}
-            headings={day.headings}
-            searchRegex={searchRegex}
-            selected={day.date === selectedDay}
-          />
-
-          {index === visibleTimeline.length - 1 &&
-          nextYearWeekStart <= lastWeekStart ? (
-            <Box pt={8} pb={10}>
-              <YearJumpButton
-                weekStart={nextYearWeekStart}
-                direction="next"
-                onClick={() => setSelectedDayWithTransition(nextYearWeekStart)}
-              />
-            </Box>
-          ) : null}
-        </>
-      )}
+      renderItem={renderItem}
       getScrollKey={(day) => day.date}
       currentScrollKey={selectedDay}
       onChangeScrollKey={setSelectedDayWithTransition}
