@@ -72,7 +72,7 @@ export default memo(function Timeline() {
               <YearJumpButton
                 weekStart={nextYearWeekStart}
                 direction="next"
-                onClick={() => setSelectedDay(nextYearWeekStart)}
+                onClick={() => setSelectedDayWithTransition(nextYearWeekStart)}
               />
             </Box>
           ) : null}
