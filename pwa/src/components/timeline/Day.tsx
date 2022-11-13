@@ -90,6 +90,7 @@ function EmptyDayHeader(props: {date: string; selected: boolean}) {
         borderWidth={{base: 0, md: "thin"}}
         borderColor="gray.600"
         bg={props.selected ? "blue.700" : "blue.900"}
+        transition="background 0.3s"
       >
         <Heading size="md" color="white">
           {prettyFormatDateTime({date: props.date})}
@@ -119,6 +120,7 @@ function DayHeader(props: {
         borderWidth={{base: 0, md: "thin"}}
         borderColor="gray.600"
         bg={props.selected ? "blue.700" : "blue.900"}
+        transition="background 0.3s"
         onClick={props.onClick}
         cursor="pointer"
       >
