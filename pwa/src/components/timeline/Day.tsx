@@ -10,6 +10,12 @@ import AudioPlayer from "./AudioPlayer"
 import Markdown from "./Markdown"
 import ScannedPage from "./ScannedPage"
 
+const borderColor = "gray.600"
+const borderRadius = "md"
+const borderWidth = "thin"
+const headerColor = "blue.900"
+const headerColorSelected = "blue.700"
+
 interface Props {
   date: string
   headings: string[] | null
@@ -54,12 +60,11 @@ export default memo(function Day(props: Props) {
       />
 
       <Box
-        borderLeftWidth={{base: 0, md: "thin"}}
-        borderRightWidth={{base: 0, md: "thin"}}
-        borderBottomWidth={{base: 0, md: "thin"}}
-        borderBottomRadius={{base: 0, md: "md"}}
-        borderColor="gray.600"
-        overflow="hidden"
+        borderLeftWidth={{base: 0, md: borderWidth}}
+        borderRightWidth={{base: 0, md: borderWidth}}
+        borderBottomWidth={{base: 0, md: borderWidth}}
+        borderBottomRadius={{base: 0, md: borderRadius}}
+        borderColor={borderColor}
         onClick={entries ? undefined : onClick}
         cursor={entries ? undefined : "pointer"}
       >
@@ -69,6 +74,20 @@ export default memo(function Day(props: Props) {
           <Summary headings={props.headings} searchRegex={props.searchRegex} />
         )}
       </Box>
+
+      <Box
+        position="absolute"
+        bottom={0}
+        left={0}
+        right={0}
+        zIndex="sticky"
+        height="20px"
+        borderLeftWidth={{base: 0, md: borderWidth}}
+        borderRightWidth={{base: 0, md: borderWidth}}
+        borderBottomWidth={{base: 0, md: borderWidth}}
+        borderBottomRadius={{base: 0, md: borderRadius}}
+        borderColor={borderColor}
+      />
     </Container>
   )
 })
@@ -76,7 +95,13 @@ export default memo(function Day(props: Props) {
 function Container(props: {children: React.ReactNode}) {
   return (
     <Box maxW="800px" px={{base: 0, md: 2}} pb={{base: 4, md: 2}}>
-      {props.children}
+      <Box
+        style={{contain: "paint"}}
+        borderRadius={{base: 0, md: borderRadius}}
+        position="relative"
+      >
+        {props.children}
+      </Box>
     </Box>
   )
 }
@@ -86,10 +111,10 @@ function EmptyDayHeader(props: {date: string; selected: boolean}) {
     <Box bg="gray.800" opacity={0.5} pt={{base: 0, md: 2}}>
       <Box
         p={4}
-        borderRadius={{base: 0, md: "md"}}
-        borderWidth={{base: 0, md: "thin"}}
-        borderColor="gray.600"
-        bg={props.selected ? "blue.700" : "blue.900"}
+        borderRadius={{base: 0, md: borderRadius}}
+        borderWidth={{base: 0, md: borderWidth}}
+        borderColor={borderColor}
+        bg={props.selected ? headerColorSelected : headerColor}
         transition="background 0.3s"
       >
         <Heading size="md" color="white">
@@ -116,10 +141,10 @@ function DayHeader(props: {
     >
       <Box
         p={4}
-        borderTopRadius={{base: 0, md: "md"}}
-        borderWidth={{base: 0, md: "thin"}}
-        borderColor="gray.600"
-        bg={props.selected ? "blue.700" : "blue.900"}
+        borderTopRadius={{base: 0, md: borderRadius}}
+        borderWidth={{base: 0, md: borderWidth}}
+        borderColor={borderColor}
+        bg={props.selected ? headerColorSelected : headerColor}
         transition="background 0.3s"
         onClick={props.onClick}
         cursor="pointer"
