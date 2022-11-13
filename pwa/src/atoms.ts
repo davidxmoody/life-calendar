@@ -24,9 +24,16 @@ import generateLayer from "./helpers/generateLayer"
 
 export const nullAtom = atom(null)
 
-export const mobileViewAtom = atomWithStorage<"calendar" | "timeline">(
+type MobileView = "calendar" | "timeline"
+
+export const mobileViewAtom = atomWithStorage<MobileView>(
   "mobileView",
   "calendar",
+)
+
+export const mobileViewAtomSetOnly = atom(
+  null,
+  (_get, set, value: MobileView) => set(mobileViewAtom, value),
 )
 
 export const selectedLayerIdAtom = atomWithStorage<string | null>(

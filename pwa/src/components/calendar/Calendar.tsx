@@ -8,7 +8,7 @@ import calculateCalendarDimensions, {
 import getWeekUnderCursor from "./getWeekUnderCursor"
 import {
   lifeDataAtom,
-  mobileViewAtom,
+  mobileViewAtomSetOnly,
   selectedLayerDataAtom,
   selectedWeekStartAtom,
 } from "../../atoms"
@@ -39,7 +39,7 @@ export default memo(function Calendar() {
   const [selectedWeekStart, setSelectedWeekStart] = useAtom(
     selectedWeekStartAtom,
   )
-  const [, setMobileView] = useAtom(mobileViewAtom)
+  const [, setMobileView] = useAtom(mobileViewAtomSetOnly)
   const [layerData] = useAtom(selectedLayerDataAtom)
 
   const ref = useRef<HTMLCanvasElement>(null)
