@@ -23,20 +23,27 @@ interface Props {
   selected: boolean
 }
 
-export default memo(function Day(props: Props) {
+function useEntriesData(date: string) {
   const [entriesAtom, setEntriesAtom] =
     useState<Atom<Promise<Entry[]> | null>>(nullAtom)
   const [entries] = useAtom(entriesAtom)
 
-  function onClick() {
+  function onToggle() {
+    console.log("onToggle")
     startTransition(() => {
       if (entriesAtom === nullAtom) {
-        setEntriesAtom(createEntriesForDayAtom(props.date))
+        setEntriesAtom(createEntriesForDayAtom(date))
       } else {
         setEntriesAtom(nullAtom)
       }
     })
   }
+
+  return {entries, onToggle}
+}
+
+export default memo(function Day(props: Props) {
+  const {entries, onToggle} = useEntriesData(props.date)
 
   if (!props.headings?.length) {
     if (props.searchRegex) {
@@ -52,42 +59,52 @@ export default memo(function Day(props: Props) {
 
   return (
     <Container>
-      <DayHeader
-        date={props.date}
-        headings={props.headings}
-        onClick={onClick}
-        selected={props.selected}
-      />
-
       <Box
-        borderLeftWidth={{base: 0, md: borderWidth}}
-        borderRightWidth={{base: 0, md: borderWidth}}
-        borderBottomWidth={{base: 0, md: borderWidth}}
-        borderBottomRadius={{base: 0, md: borderRadius}}
-        borderColor={borderColor}
-        onClick={entries ? undefined : onClick}
-        cursor={entries ? undefined : "pointer"}
+        style={{contain: "paint"}}
+        borderRadius={{base: 0, md: borderRadius}}
+        position="relative"
       >
-        {entries ? (
-          <Full entries={entries} />
-        ) : (
-          <Summary headings={props.headings} searchRegex={props.searchRegex} />
-        )}
-      </Box>
+        <DayHeader
+          date={props.date}
+          headings={props.headings}
+          onClick={onToggle}
+          selected={props.selected}
+        />
 
-      <Box
-        position="absolute"
-        bottom={0}
-        left={0}
-        right={0}
-        zIndex="sticky"
-        height="20px"
-        borderLeftWidth={{base: 0, md: borderWidth}}
-        borderRightWidth={{base: 0, md: borderWidth}}
-        borderBottomWidth={{base: 0, md: borderWidth}}
-        borderBottomRadius={{base: 0, md: borderRadius}}
-        borderColor={borderColor}
-      />
+        <Box
+          borderLeftWidth={{base: 0, md: borderWidth}}
+          borderRightWidth={{base: 0, md: borderWidth}}
+          borderBottomWidth={{base: 0, md: borderWidth}}
+          borderBottomRadius={{base: 0, md: borderRadius}}
+          borderColor={borderColor}
+          onClick={entries ? undefined : onToggle}
+          cursor={entries ? undefined : "pointer"}
+        >
+          {entries ? (
+            <Full entries={entries} />
+          ) : (
+            <Summary
+              headings={props.headings}
+              searchRegex={props.searchRegex}
+            />
+          )}
+        </Box>
+
+        <Box
+          position="absolute"
+          pointerEvents="none"
+          bottom={0}
+          left={0}
+          right={0}
+          zIndex="sticky"
+          height="20px"
+          borderLeftWidth={{base: 0, md: borderWidth}}
+          borderRightWidth={{base: 0, md: borderWidth}}
+          borderBottomWidth={{base: 0, md: borderWidth}}
+          borderBottomRadius={{base: 0, md: borderRadius}}
+          borderColor={borderColor}
+        />
+      </Box>
     </Container>
   )
 })
@@ -95,13 +112,7 @@ export default memo(function Day(props: Props) {
 function Container(props: {children: React.ReactNode}) {
   return (
     <Box maxW="800px" px={{base: 0, md: 2}} pb={{base: 4, md: 2}}>
-      <Box
-        style={{contain: "paint"}}
-        borderRadius={{base: 0, md: borderRadius}}
-        position="relative"
-      >
-        {props.children}
-      </Box>
+      {props.children}
     </Box>
   )
 }
