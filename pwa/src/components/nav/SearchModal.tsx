@@ -71,6 +71,7 @@ export default function SearchModal(props: Props) {
               placeholder="Regex"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
+              onFocus={(e) => e.target.select()}
             />
           </ModalBody>
 
