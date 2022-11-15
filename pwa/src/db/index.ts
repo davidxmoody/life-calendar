@@ -91,9 +91,16 @@ export async function getHeadingsInRange(
   startInclusive: string,
   endExclusive: string,
 ) {
-  return (await dbPromise).getAll(
+  const headingsList = await (
+    await dbPromise
+  ).getAll(
     "cachedHeadings",
     IDBKeyRange.bound(startInclusive, endExclusive, false, true),
+  )
+
+  return headingsList.reduce<Record<string, string[] | undefined>>(
+    (acc, {date, headings}) => ({...acc, [date]: headings}),
+    {},
   )
 }
 

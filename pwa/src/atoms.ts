@@ -114,7 +114,7 @@ export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
   const startInclusive = getFirstWeekInYear(selectedYear)
   const endExclusive = getFirstWeekInYear(selectedYear + 1)
 
-  let allHeadingsInYear = await getHeadingsInRange(startInclusive, endExclusive)
+  let headingsInYear = await getHeadingsInRange(startInclusive, endExclusive)
 
   if (searchRegex) {
     const searchResults = await searchDb(searchRegex, {
@@ -122,17 +122,15 @@ export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
       endExclusive,
     })
     const visibleDays = uniq(searchResults.map((e) => e.date)).sort()
-
     return visibleDays.map((date) => ({
       date,
-      headings:
-        allHeadingsInYear.find((h) => h.date === date)?.headings ?? null,
+      headings: headingsInYear[date] ?? null,
     }))
   }
 
   return dateRange(startInclusive, endExclusive).map((date) => ({
     date,
-    headings: allHeadingsInYear.find((h) => h.date === date)?.headings ?? null,
+    headings: headingsInYear[date] ?? null,
   }))
 })
 
@@ -146,7 +144,7 @@ export function createEntriesForDayAtom(date: string) {
 export function createHeadingsForDayAtom(date: string) {
   return atom(async (get) => {
     get(updateTriggerAtom)
-    return (await getHeadingsInRange(date, addDays(date, 1)))[0]?.headings || []
+    return (await getHeadingsInRange(date, addDays(date, 1)))[date] || []
   })
 }
 
