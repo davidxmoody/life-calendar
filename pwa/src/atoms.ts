@@ -121,10 +121,13 @@ export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
       startInclusive,
       endExclusive,
     })
-    const visibleDays = uniq(searchResults.map((e) => e.date))
-    allHeadingsInYear = allHeadingsInYear.filter((h) =>
-      visibleDays.includes(h.date),
-    )
+    const visibleDays = uniq(searchResults.map((e) => e.date)).sort()
+
+    return visibleDays.map((date) => ({
+      date,
+      headings:
+        allHeadingsInYear.find((h) => h.date === date)?.headings ?? null,
+    }))
   }
 
   return dateRange(startInclusive, endExclusive).map((date) => ({

@@ -45,10 +45,6 @@ export default memo(function Day(props: Props) {
   const {entries, onToggle} = useEntriesData(props.date)
 
   if (!props.headings?.length) {
-    if (props.searchRegex) {
-      return null
-    }
-
     return (
       <Container>
         <EmptyDayHeader date={props.date} selected={props.selected} />
