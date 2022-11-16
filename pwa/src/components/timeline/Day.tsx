@@ -1,7 +1,7 @@
 import {Box, Heading} from "@chakra-ui/react"
 import {Atom, useAtom} from "jotai"
 import * as React from "react"
-import {memo, startTransition, useState} from "react"
+import {memo, startTransition, useRef, useState} from "react"
 import {createEntriesForDayAtom, nullAtom} from "../../atoms"
 import {prettyFormatDateTime} from "../../helpers/dates"
 import {Entry} from "../../types"
@@ -9,6 +9,7 @@ import HighlightedText from "./HighlightedText"
 import AudioPlayer from "./AudioPlayer"
 import Markdown from "./Markdown"
 import ScannedPage from "./ScannedPage"
+import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
 
 const borderColor = "gray.600"
 const borderRadius = "md"
@@ -23,43 +24,52 @@ interface Props {
   selected: boolean
 }
 
-function useEntriesData(date: string) {
+export default memo(function Day(props: Props) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLDivElement>(null)
   const [entriesAtom, setEntriesAtom] =
     useState<Atom<Promise<Entry[]> | null>>(nullAtom)
   const [entries] = useAtom(entriesAtom)
 
+  if (!props.headings?.length) {
+    return (
+      <Box maxW="800px" px={{base: 0, md: 2}} pb={{base: 4, md: 2}}>
+        <EmptyDayHeader date={props.date} selected={props.selected} />
+      </Box>
+    )
+  }
+
   function onToggle() {
     startTransition(() => {
       if (entriesAtom === nullAtom) {
-        setEntriesAtom(createEntriesForDayAtom(date))
+        setEntriesAtom(createEntriesForDayAtom(props.date))
       } else {
         setEntriesAtom(nullAtom)
+      }
+
+      const isHeaderSticky =
+        headerRef.current?.getBoundingClientRect().top === NAV_BAR_HEIGHT_PX
+
+      if (isHeaderSticky) {
+        containerRef.current?.scrollIntoView()
       }
     })
   }
 
-  return {entries, onToggle}
-}
-
-export default memo(function Day(props: Props) {
-  const {entries, onToggle} = useEntriesData(props.date)
-
-  if (!props.headings?.length) {
-    return (
-      <Container>
-        <EmptyDayHeader date={props.date} selected={props.selected} />
-      </Container>
-    )
-  }
-
   return (
-    <Container>
+    <Box
+      maxW="800px"
+      px={{base: 0, md: 2}}
+      pb={{base: 4, md: 2}}
+      ref={containerRef}
+    >
       <Box
         style={{contain: "paint"}}
         borderRadius={{base: 0, md: borderRadius}}
         position="relative"
       >
         <DayHeader
+          headerRef={headerRef}
           date={props.date}
           selected={props.selected}
           onClick={onToggle}
@@ -100,17 +110,9 @@ export default memo(function Day(props: Props) {
           borderColor={borderColor}
         />
       </Box>
-    </Container>
-  )
-})
-
-function Container(props: {children: React.ReactNode}) {
-  return (
-    <Box maxW="800px" px={{base: 0, md: 2}} pb={{base: 4, md: 2}}>
-      {props.children}
     </Box>
   )
-}
+})
 
 function EmptyDayHeader(props: {date: string; selected: boolean}) {
   return (
@@ -135,9 +137,11 @@ function DayHeader(props: {
   date: string
   selected: boolean
   onClick: () => void
+  headerRef: React.Ref<HTMLDivElement>
 }) {
   return (
     <Box
+      ref={props.headerRef}
       bg="gray.800"
       position="sticky"
       top={0}
