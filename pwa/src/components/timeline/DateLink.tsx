@@ -18,15 +18,18 @@ import {startTransition, useState} from "react"
 import {
   createHeadingsForDayAtom,
   nullAtom,
+  searchRegexAtom,
   selectedDayAtomSetOnly,
 } from "../../atoms"
 import {prettyFormatDateTime} from "../../helpers/dates"
+import HighlightedText from "./HighlightedText"
 
 interface Props {
   date: string
 }
 
 export default function DateLink(props: Props) {
+  const [searchRegex] = useAtom(searchRegexAtom)
   const [, setSelectedDay] = useAtom(selectedDayAtomSetOnly)
   const {isOpen, onOpen, onClose} = useDisclosure()
   const [headingsAtom, setHeadingsAtom] =
@@ -56,7 +59,11 @@ export default function DateLink(props: Props) {
             <PopoverBody>
               {headings?.length ? (
                 headings.map((heading, index) => (
-                  <Box key={index}>{heading}</Box>
+                  <Box key={index}>
+                    <HighlightedText searchRegex={searchRegex}>
+                      {heading}
+                    </HighlightedText>
+                  </Box>
                 ))
               ) : (
                 <Box opacity={0.5}>No entries</Box>

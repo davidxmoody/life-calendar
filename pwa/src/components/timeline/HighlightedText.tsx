@@ -28,7 +28,12 @@ export default function HighlightedText(props: Props) {
 
 export function Highlight(props: {children: React.ReactNode}) {
   return (
-    <Box as="span" bg="orange.500" borderRadius="sm">
+    <Box
+      as="span"
+      borderRadius="sm"
+      bg="orange.500"
+      sx={{"::selection": {background: "orange.300"}}}
+    >
       {props.children}
     </Box>
   )
