@@ -1,4 +1,3 @@
-import * as React from "react"
 import {IconButton} from "@chakra-ui/react"
 import {useAtom} from "jotai"
 import {memo, startTransition} from "react"

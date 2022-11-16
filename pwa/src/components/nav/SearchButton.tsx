@@ -1,4 +1,3 @@
-import * as React from "react"
 import {Box, Button, Icon, IconButton, useDisclosure} from "@chakra-ui/react"
 import {useAtomValue} from "jotai"
 import {BsSearch} from "react-icons/bs"

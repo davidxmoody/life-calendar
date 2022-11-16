@@ -1,4 +1,4 @@
-import React, {memo} from "react"
+import {memo} from "react"
 import {Box, Flex} from "@chakra-ui/react"
 import LayerList from "./LayerList"
 import SyncButton from "./SyncButton"

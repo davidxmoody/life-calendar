@@ -1,6 +1,5 @@
 import {Box, Heading} from "@chakra-ui/react"
 import {Atom, useAtomValue} from "jotai"
-import * as React from "react"
 import {memo, startTransition, useRef, useState} from "react"
 import {createEntriesForDayAtom, nullAtom} from "../../atoms"
 import {prettyFormatDateTime} from "../../helpers/dates"

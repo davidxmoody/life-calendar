@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import React, {useCallback, useEffect, useRef} from "react"
+import {useCallback, useEffect, useRef} from "react"
 import {Box} from "@chakra-ui/react"
 import debounce from "lodash.debounce"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"

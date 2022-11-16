@@ -1,4 +1,3 @@
-import * as React from "react"
 import {AspectRatio, Box, Flex, Icon, Image, keyframes} from "@chakra-ui/react"
 import {BsExclamationTriangleFill} from "react-icons/bs"
 import useScannedUrl from "../../helpers/useScannedUrl"

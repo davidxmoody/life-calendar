@@ -1,4 +1,4 @@
-import React, {memo} from "react"
+import {memo} from "react"
 import {IconButton, useDisclosure} from "@chakra-ui/react"
 import {useAtomValue} from "jotai"
 import {syncStateAtom} from "../../atoms"

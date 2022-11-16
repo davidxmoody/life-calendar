@@ -1,4 +1,4 @@
-import React, {memo, startTransition, useEffect, useMemo, useRef} from "react"
+import {memo, startTransition, useEffect, useMemo, useRef} from "react"
 import generateCalendarData from "./generateCalendarData"
 import useToday from "../../helpers/useToday"
 import drawCalendar from "./drawCalendar"
