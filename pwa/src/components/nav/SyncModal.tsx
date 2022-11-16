@@ -9,7 +9,13 @@ import {
   ModalOverlay,
   Stack,
 } from "@chakra-ui/react"
-import {Suspense, useCallback, useEffect, useState} from "react"
+import {
+  startTransition,
+  Suspense,
+  useCallback,
+  useEffect,
+  useState,
+} from "react"
 import {downloadScanned, sync} from "../../db"
 import DatabaseStats from "./DatabaseStats"
 import {useAtom} from "jotai"
@@ -31,10 +37,12 @@ export default function SyncModal(props: Props) {
       setSyncState({type: "loading"})
       sync(args)
         .then(({receievedNewData, timestamp}) => {
-          setSyncState({type: "success", timestamp})
-          if (receievedNewData) {
-            triggerUpdate(timestamp)
-          }
+          startTransition(() => {
+            setSyncState({type: "success", timestamp})
+            if (receievedNewData) {
+              triggerUpdate(timestamp)
+            }
+          })
         })
         .catch(() => {
           setSyncState({type: "error"})
