@@ -32,6 +32,18 @@ export function getFirstWeekInYear(year: number) {
     : weekStartOfFirstDay
 }
 
+export function getLastWeekOfPrevYear(year: number) {
+  return addDays(getFirstWeekInYear(year), -7)
+}
+
+export function getFirstWeekOfNextYear(year: number) {
+  return getFirstWeekInYear(year + 1)
+}
+
+export function latest(date1: string, date2: string) {
+  return date1 > date2 ? date1 : date2
+}
+
 export function dateRange(startInclusive: string, endExclusive: string) {
   const range: string[] = []
 

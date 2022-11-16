@@ -71,11 +71,26 @@ export default function ScrollList<T>(props: Props<T>) {
     if (skipNextScrollToRef.current === props.currentScrollKey) {
       skipNextScrollToRef.current = null
     } else {
-      document
-        .querySelector(
-          `#${containerId} [data-scroll-key="${props.currentScrollKey}"]`,
-        )
-        ?.scrollIntoView()
+      const match = document.querySelector(
+        `#${containerId} [data-scroll-key="${props.currentScrollKey}"]`,
+      )
+
+      if (match) {
+        match.scrollIntoView()
+        return
+      }
+
+      const allElements = Array.from(
+        document.querySelectorAll(`#${containerId} [data-scroll-key]`),
+      )
+
+      for (const element of allElements) {
+        const elementScrollKey = element.getAttribute("data-scroll-key")
+        if (elementScrollKey && elementScrollKey >= props.currentScrollKey) {
+          element.scrollIntoView()
+          return
+        }
+      }
     }
   }, [props.currentScrollKey])
 
@@ -86,6 +101,13 @@ export default function ScrollList<T>(props: Props<T>) {
       height="100%"
       onScroll={checkCurrentScrollKey}
     >
+      {props.items.length === 0 ? (
+        <>
+          {props.header}
+          {props.footer}
+        </>
+      ) : null}
+
       {props.items.map((item, index) => (
         <ScrollBlock
           key={props.getScrollKey(item)}
@@ -136,8 +158,6 @@ const ScrollBlock = genericMemo(
         }
       }
     }, [props.scrollKey, props.onHeightChange])
-
-    // TODO fix minHeight not working properly when last element is zero height
 
     return (
       <Box

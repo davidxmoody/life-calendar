@@ -14,19 +14,12 @@ import {
 } from "../../atoms"
 import {useAtom} from "jotai"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
-import {LifeData} from "../../types"
 import {Box} from "@chakra-ui/react"
 import useWindowSize from "../../helpers/useWindowSize"
 
-const defaultLifeData: LifeData = {
-  birthDate: "1990-01-01",
-  deathDate: "2089-12-31",
-  eras: [{startDate: "1990-01-01", name: "", color: "rgb(150, 150, 150)"}],
-}
-
 function useCalendarData() {
   const today = useToday()
-  const lifeData = useAtom(lifeDataAtom)[0] ?? defaultLifeData
+  const lifeData = useAtom(lifeDataAtom)[0]
 
   return useMemo(
     () => generateCalendarData({today, ...lifeData}),

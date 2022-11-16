@@ -15,6 +15,7 @@ import {
 import {
   addDays,
   dateRange,
+  latest,
   getFirstWeekInYear,
   getToday,
   getWeekStart,
@@ -63,10 +64,6 @@ export const selectedLayerDataAtom = atom(async (get) => {
   const lifeData = get(lifeDataAtom)
 
   if (searchRegex) {
-    if (!lifeData) {
-      return null
-    }
-
     const searchResults = await searchDb(searchRegex, {
       startInclusive: lifeData.birthDate,
       endExclusive: lifeData.deathDate,
@@ -108,10 +105,14 @@ type TimelineData = Array<{
 
 export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
   get(updateTriggerAtom)
+  const lifeData = get(lifeDataAtom)
   const selectedYear = get(selectedYearAtom)
   const searchRegex = get(searchRegexAtom)
 
-  const startInclusive = getFirstWeekInYear(selectedYear)
+  const startInclusive = latest(
+    getFirstWeekInYear(selectedYear),
+    getWeekStart(lifeData.birthDate),
+  )
   const endExclusive = getFirstWeekInYear(selectedYear + 1)
 
   let headingsInYear = await getHeadingsInRange(startInclusive, endExclusive)

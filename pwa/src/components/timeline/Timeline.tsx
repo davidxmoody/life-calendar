@@ -13,8 +13,8 @@ import {
 import Day from "./Day"
 import useToday from "../../helpers/useToday"
 import {
-  getNextWeekStart,
-  getPrevWeekStart,
+  getFirstWeekOfNextYear,
+  getLastWeekOfPrevYear,
   getWeekStart,
   parseYear,
 } from "../../helpers/dates"
@@ -28,33 +28,29 @@ export default memo(function Timeline() {
   const [data] = useAtom(timelineDataAtom)
   const [selectedDay, setSelectedDay] = useAtom(selectedDayAtom)
 
-  const birthDate = lifeData?.birthDate ?? "1970-01-01"
-  const firstWeekStart = getWeekStart(birthDate)
-  const lastWeekStart = getWeekStart(today)
+  const birthWeekStart = getWeekStart(lifeData.birthDate)
+  const todayWeekStart = getWeekStart(today)
 
-  const prevYearWeekStart = getPrevWeekStart(data[0].date)
-  const nextYearWeekStart = getNextWeekStart(data[data.length - 1].date)
+  const selectedYear = parseYear(getWeekStart(selectedDay))
+  const prevYearWeekStart = getLastWeekOfPrevYear(selectedYear)
+  const nextYearWeekStart = getFirstWeekOfNextYear(selectedYear)
 
-  const visibleTimeline = data.filter(
-    (day) => day.date <= today && day.date >= firstWeekStart,
-  )
+  const visibleTimeline = data.filter((day) => day.date <= today)
 
-  const showPrevYearButton = data[0].date > firstWeekStart
   const header = useMemo(
     () =>
-      showPrevYearButton ? (
+      prevYearWeekStart >= birthWeekStart ? (
         <YearJumpButton weekStart={prevYearWeekStart} direction="prev" />
       ) : null,
-    [showPrevYearButton, prevYearWeekStart],
+    [birthWeekStart, prevYearWeekStart],
   )
 
-  const showNextYearButton = nextYearWeekStart <= lastWeekStart
   const footer = useMemo(
     () =>
-      showNextYearButton ? (
+      nextYearWeekStart <= todayWeekStart ? (
         <YearJumpButton weekStart={nextYearWeekStart} direction="next" />
       ) : null,
-    [showNextYearButton, nextYearWeekStart],
+    [todayWeekStart, nextYearWeekStart],
   )
 
   const setSelectedDayWithTransition = useCallback(
