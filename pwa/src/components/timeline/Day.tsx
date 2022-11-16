@@ -20,7 +20,6 @@ const headerColorSelected = "blue.700"
 interface Props {
   date: string
   headings: string[] | null
-  searchRegex: string
   selected: boolean
 }
 
@@ -88,10 +87,7 @@ export default memo(function Day(props: Props) {
           {entries ? (
             <Full entries={entries} />
           ) : (
-            <Summary
-              headings={props.headings}
-              searchRegex={props.searchRegex}
-            />
+            <Summary headings={props.headings} />
           )}
         </Box>
 
@@ -166,18 +162,13 @@ function DayHeader(props: {
   )
 }
 
-function Summary(props: {
-  headings: NonNullable<Props["headings"]>
-  searchRegex: string
-}) {
+function Summary(props: {headings: NonNullable<Props["headings"]>}) {
   return (
     <Box px={4} py={2}>
       {props.headings.map((heading, index) => (
-        <Box key={index}>
-          <HighlightedText searchRegex={props.searchRegex}>
-            {heading}
-          </HighlightedText>
-        </Box>
+        <HighlightedText key={index} as="div">
+          {heading}
+        </HighlightedText>
       ))}
     </Box>
   )

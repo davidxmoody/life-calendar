@@ -18,18 +18,17 @@ import {startTransition, useState} from "react"
 import {
   createHeadingsForDayAtom,
   nullAtom,
-  searchRegexAtom,
   selectedDayAtomSetOnly,
 } from "../../atoms"
 import {prettyFormatDateTime} from "../../helpers/dates"
 import HighlightedText from "./HighlightedText"
 
 interface Props {
-  date: string
+  children: string
 }
 
 export default function DateLink(props: Props) {
-  const [searchRegex] = useAtom(searchRegexAtom)
+  const date = props.children
   const [, setSelectedDay] = useAtom(selectedDayAtomSetOnly)
   const {isOpen, onOpen, onClose} = useDisclosure()
   const [headingsAtom, setHeadingsAtom] =
@@ -38,7 +37,7 @@ export default function DateLink(props: Props) {
 
   function openAndLoad() {
     startTransition(() => {
-      setHeadingsAtom(createHeadingsForDayAtom(props.date))
+      setHeadingsAtom(createHeadingsForDayAtom(date))
       onOpen()
     })
   }
@@ -46,7 +45,7 @@ export default function DateLink(props: Props) {
   return (
     <Popover isOpen={isOpen} onOpen={openAndLoad} onClose={onClose}>
       <PopoverTrigger>
-        <Link color="teal.500">{props.date}</Link>
+        <Link color="teal.500">{date}</Link>
       </PopoverTrigger>
       <Portal>
         <Box sx={{".chakra-popover__popper": {zIndex: "popover"}}}>
@@ -54,16 +53,14 @@ export default function DateLink(props: Props) {
             <PopoverArrow />
             <PopoverCloseButton />
             <PopoverHeader pt={4} fontWeight="bold" border={0}>
-              {prettyFormatDateTime({date: props.date})}
+              {prettyFormatDateTime({date})}
             </PopoverHeader>
             <PopoverBody>
               {headings?.length ? (
                 headings.map((heading, index) => (
-                  <Box key={index}>
-                    <HighlightedText searchRegex={searchRegex}>
-                      {heading}
-                    </HighlightedText>
-                  </Box>
+                  <HighlightedText key={index} as="div">
+                    {heading}
+                  </HighlightedText>
                 ))
               ) : (
                 <Box opacity={0.5}>No entries</Box>
@@ -71,11 +68,7 @@ export default function DateLink(props: Props) {
             </PopoverBody>
             <PopoverFooter pb={4} border={0}>
               <Button
-                onClick={() => {
-                  startTransition(() => {
-                    setSelectedDay(props.date)
-                  })
-                }}
+                onClick={() => startTransition(() => setSelectedDay(date))}
               >
                 Go to day
               </Button>

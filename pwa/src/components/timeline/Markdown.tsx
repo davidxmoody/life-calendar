@@ -8,14 +8,7 @@ import {
   Text,
   UnorderedList,
 } from "@chakra-ui/react"
-import {useAtom} from "jotai"
-import {searchRegexAtom} from "../../atoms"
-import {Highlight} from "./HighlightedText"
-import DateLink from "./DateLink"
-
-interface Props {
-  source: string
-}
+import HighlightedText from "./HighlightedText"
 
 const paraMarginBottom = 5
 const codeBackgroudColor = "rgba(120, 120, 120, 0.5)"
@@ -25,17 +18,13 @@ function MarkdownHeading(props: {level: number; children: React.ReactNode}) {
 
   return (
     <Heading size={size} mb={4}>
-      {props.children}
+      <HighlightedText addDateLinks>{props.children}</HighlightedText>
     </Heading>
   )
 }
 
 function MarkdownLink(props: {href?: string; children: React.ReactNode}) {
-  return props.href?.startsWith("/highlight") ? (
-    <Highlight>{props.children}</Highlight>
-  ) : props.href?.startsWith("/datelink/") ? (
-    <DateLink date={props.href!.replace("/datelink/", "")} />
-  ) : (
+  return (
     <Link href={props.href} isExternal rel="noreferrer" color="teal.500">
       {props.children}
     </Link>
@@ -43,7 +32,11 @@ function MarkdownLink(props: {href?: string; children: React.ReactNode}) {
 }
 
 function MarkdownParagraph(props: {children: React.ReactNode}) {
-  return <Text mb={paraMarginBottom} {...props} />
+  return (
+    <Text mb={paraMarginBottom}>
+      <HighlightedText addDateLinks>{props.children}</HighlightedText>
+    </Text>
+  )
 }
 
 function MarkdownBlockquote(props: {children: React.ReactNode}) {
@@ -73,7 +66,11 @@ function MarkdownUnorderedList(props: {children: React.ReactNode}) {
 }
 
 function MarkdownListItem(props: {children: React.ReactNode}) {
-  return <li>{props.children}</li>
+  return (
+    <HighlightedText addDateLinks as="li">
+      {props.children}
+    </HighlightedText>
+  )
 }
 
 function MarkdownCode(props: {inline?: boolean; children: React.ReactNode}) {
@@ -84,7 +81,7 @@ function MarkdownCode(props: {inline?: boolean; children: React.ReactNode}) {
       borderRadius="sm"
       px={1}
     >
-      {props.children}
+      <HighlightedText addDateLinks>{props.children}</HighlightedText>
     </Box>
   ) : (
     <Box
@@ -96,17 +93,25 @@ function MarkdownCode(props: {inline?: boolean; children: React.ReactNode}) {
       px={3}
       borderRadius={3}
     >
-      {props.children}
+      <HighlightedText addDateLinks>{props.children}</HighlightedText>
     </Box>
   )
 }
 
 function MarkdownEmphasis(props: {children: React.ReactNode}) {
-  return <em>{props.children}</em>
+  return (
+    <HighlightedText addDateLinks as="em">
+      {props.children}
+    </HighlightedText>
+  )
 }
 
 function MarkdownStrong(props: {children: React.ReactNode}) {
-  return <strong>{props.children}</strong>
+  return (
+    <HighlightedText addDateLinks as="strong">
+      {props.children}
+    </HighlightedText>
+  )
 }
 
 const components: Components = {
@@ -128,28 +133,6 @@ const components: Components = {
   ul: MarkdownUnorderedList,
 }
 
-function addDateLinks(source: string): string {
-  return source.replace(
-    /\b\d{4}-\d{2}-\d{2}\b/g,
-    (match) => `[${match}](/datelink/${match})`,
-  )
-}
-
-function addHighlights(source: string, searchRegex: string) {
-  if (!searchRegex) {
-    return source
-  }
-
-  return source.replace(
-    new RegExp(searchRegex, "gi"),
-    (match) => `[${match}](/highlight)`,
-  )
-}
-
-export default memo(function Markdown(props: Props) {
-  const [searchRegex] = useAtom(searchRegexAtom)
-
-  const modifiedSource = addDateLinks(addHighlights(props.source, searchRegex))
-
-  return <ReactMarkdown components={components}>{modifiedSource}</ReactMarkdown>
+export default memo(function Markdown(props: {source: string}) {
+  return <ReactMarkdown components={components}>{props.source}</ReactMarkdown>
 })

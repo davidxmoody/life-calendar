@@ -1,32 +1,74 @@
-import * as React from "react"
 import {Box} from "@chakra-ui/react"
+import {useAtomValue} from "jotai"
+import {Children, Fragment} from "react"
+import {searchRegexAtom} from "../../atoms"
+import DateLink from "./DateLink"
+
+const DATE_REGEX = /\b\d{4}-\d{2}-\d{2}\b/g
 
 interface Props {
-  searchRegex: string
-  children: string
+  as?: React.ElementType<{children: React.ReactNode}>
+  addDateLinks?: boolean
+  children: React.ReactNode
 }
 
 export default function HighlightedText(props: Props) {
-  if (!props.searchRegex) {
-    return <>{props.children}</>
-  }
+  const searchRegexString = useAtomValue(searchRegexAtom)
+  const searchRegex = searchRegexString
+    ? new RegExp(searchRegexString, "gi")
+    : null
 
-  const regex = new RegExp(props.searchRegex, "gi")
-  const matches = props.children.match(regex)
-  const parts = props.children.split(regex)
+  const Container = props.as ?? Fragment
 
-  const results = parts.flatMap((part, index) => {
-    if (index === 0) {
-      return [part]
-    }
+  return (
+    <Container>
+      {Children.map(props.children, (child) => {
+        if (typeof child !== "string") {
+          return child
+        }
 
-    return [<Highlight key={index}>{matches?.[index - 1]}</Highlight>, part]
-  })
-
-  return <>{results}</>
+        return surroundMatches(child, [
+          ...(searchRegex
+            ? [{regex: searchRegex, MatchComponent: HighlightMatch}]
+            : []),
+          ...(props.addDateLinks
+            ? [{regex: DATE_REGEX, MatchComponent: DateLink}]
+            : []),
+        ])
+      })}
+    </Container>
+  )
 }
 
-export function Highlight(props: {children: React.ReactNode}) {
+function surroundMatches(
+  text: string,
+  replacements: Array<{
+    regex: RegExp
+    MatchComponent: React.ComponentType<{children: string}>
+  }>,
+): React.ReactNode {
+  if (replacements.length === 0) {
+    return text
+  }
+
+  const [{regex, MatchComponent}, ...rest] = replacements
+
+  const matches = text.match(regex)
+  const parts = text.split(regex)
+
+  return parts.flatMap((part, index) => {
+    if (index === 0) {
+      return [surroundMatches(part, rest)]
+    }
+
+    return [
+      <MatchComponent key={index}>{matches?.[index - 1] ?? ""}</MatchComponent>,
+      surroundMatches(part, rest),
+    ]
+  })
+}
+
+function HighlightMatch(props: {children: React.ReactNode}) {
   return (
     <Box
       as="span"

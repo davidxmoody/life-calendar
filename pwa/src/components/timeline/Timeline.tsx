@@ -5,7 +5,6 @@ import {Button, Flex} from "@chakra-ui/react"
 import {useAtom} from "jotai"
 import {
   lifeDataAtom,
-  searchRegexAtom,
   selectedDayAtom,
   selectedDayAtomSetOnly,
   timelineDataAtom,
@@ -24,7 +23,6 @@ import ScrollList from "./ScrollList"
 export default memo(function Timeline() {
   const [lifeData] = useAtom(lifeDataAtom)
   const today = useToday()
-  const [searchRegex] = useAtom(searchRegexAtom)
   const [data] = useAtom(timelineDataAtom)
   const [selectedDay, setSelectedDay] = useAtom(selectedDayAtom)
 
@@ -66,11 +64,10 @@ export default memo(function Timeline() {
       <Day
         date={args.item.date}
         headings={args.item.headings}
-        searchRegex={searchRegex}
         selected={args.isSelected}
       />
     ),
-    [searchRegex],
+    [],
   )
 
   return (
