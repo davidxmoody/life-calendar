@@ -20,33 +20,34 @@ interface Props {
 const paraMarginBottom = 5
 const codeBackgroudColor = "rgba(120, 120, 120, 0.5)"
 
-function heading(size: React.ComponentProps<typeof Heading>["size"]) {
-  return (props: {children: any}) => (
+function MarkdownHeading(props: {level: number; children: React.ReactNode}) {
+  const size = {"1": "xl", "2": "xl", "3": "lg"}[props.level] ?? "md"
+
+  return (
     <Heading size={size} mb={4}>
       {props.children}
     </Heading>
   )
 }
 
-const components: Components = {
-  a: (props) =>
-    props.href?.startsWith("/highlight") ? (
-      <Highlight>{props.children}</Highlight>
-    ) : props.href?.startsWith("/datelink/") ? (
-      <DateLink date={props.href!.replace("/datelink/", "")} />
-    ) : (
-      <Link href={props.href} isExternal rel="noreferrer" color="teal.500">
-        {props.children}
-      </Link>
-    ),
-  p: (props) => <Text mb={paraMarginBottom} {...props} />,
-  h1: heading("xl"),
-  h2: heading("xl"),
-  h3: heading("lg"),
-  h4: heading("md"),
-  h5: heading("md"),
-  h6: heading("md"),
-  blockquote: (props) => (
+function MarkdownLink(props: {href?: string; children: React.ReactNode}) {
+  return props.href?.startsWith("/highlight") ? (
+    <Highlight>{props.children}</Highlight>
+  ) : props.href?.startsWith("/datelink/") ? (
+    <DateLink date={props.href!.replace("/datelink/", "")} />
+  ) : (
+    <Link href={props.href} isExternal rel="noreferrer" color="teal.500">
+      {props.children}
+    </Link>
+  )
+}
+
+function MarkdownParagraph(props: {children: React.ReactNode}) {
+  return <Text mb={paraMarginBottom} {...props} />
+}
+
+function MarkdownBlockquote(props: {children: React.ReactNode}) {
+  return (
     <Box
       pl={4}
       fontStyle="italic"
@@ -56,39 +57,75 @@ const components: Components = {
     >
       {props.children}
     </Box>
-  ),
-  img: (props) => (
-    <img style={{maxWidth: "100%"}} src={props.src} alt={props.alt} />
-  ),
-  ol: (props) => (
-    <OrderedList mb={paraMarginBottom}>{props.children}</OrderedList>
-  ),
-  ul: (props) => (
-    <UnorderedList mb={paraMarginBottom}>{props.children}</UnorderedList>
-  ),
-  code: (props) =>
-    props.inline ? (
-      <Box
-        as="code"
-        backgroundColor={codeBackgroudColor}
-        borderRadius="sm"
-        px={1}
-      >
-        {props.children}
-      </Box>
-    ) : (
-      <Box
-        display="block"
-        as="code"
-        mb={paraMarginBottom}
-        backgroundColor={codeBackgroudColor}
-        py={2}
-        px={3}
-        borderRadius={3}
-      >
-        {props.children}
-      </Box>
-    ),
+  )
+}
+
+function MarkdownImage(props: {src?: string; alt?: string}) {
+  return <img style={{maxWidth: "100%"}} src={props.src} alt={props.alt} />
+}
+
+function MarkdownOrderedList(props: {children: React.ReactNode}) {
+  return <OrderedList mb={paraMarginBottom}>{props.children}</OrderedList>
+}
+
+function MarkdownUnorderedList(props: {children: React.ReactNode}) {
+  return <UnorderedList mb={paraMarginBottom}>{props.children}</UnorderedList>
+}
+
+function MarkdownListItem(props: {children: React.ReactNode}) {
+  return <li>{props.children}</li>
+}
+
+function MarkdownCode(props: {inline?: boolean; children: React.ReactNode}) {
+  return props.inline ? (
+    <Box
+      as="code"
+      backgroundColor={codeBackgroudColor}
+      borderRadius="sm"
+      px={1}
+    >
+      {props.children}
+    </Box>
+  ) : (
+    <Box
+      display="block"
+      as="code"
+      mb={paraMarginBottom}
+      backgroundColor={codeBackgroudColor}
+      py={2}
+      px={3}
+      borderRadius={3}
+    >
+      {props.children}
+    </Box>
+  )
+}
+
+function MarkdownEmphasis(props: {children: React.ReactNode}) {
+  return <em>{props.children}</em>
+}
+
+function MarkdownStrong(props: {children: React.ReactNode}) {
+  return <strong>{props.children}</strong>
+}
+
+const components: Components = {
+  a: MarkdownLink,
+  blockquote: MarkdownBlockquote,
+  code: MarkdownCode,
+  em: MarkdownEmphasis,
+  h1: MarkdownHeading,
+  h2: MarkdownHeading,
+  h3: MarkdownHeading,
+  h4: MarkdownHeading,
+  h5: MarkdownHeading,
+  h6: MarkdownHeading,
+  img: MarkdownImage,
+  li: MarkdownListItem,
+  ol: MarkdownOrderedList,
+  p: MarkdownParagraph,
+  strong: MarkdownStrong,
+  ul: MarkdownUnorderedList,
 }
 
 function addDateLinks(source: string): string {
