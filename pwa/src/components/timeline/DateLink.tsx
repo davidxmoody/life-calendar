@@ -13,13 +13,9 @@ import {
   Portal,
   useDisclosure,
 } from "@chakra-ui/react"
-import {Atom, useAtom} from "jotai"
+import {Atom, useAtomValue, useSetAtom} from "jotai"
 import {startTransition, useState} from "react"
-import {
-  createHeadingsForDayAtom,
-  nullAtom,
-  selectedDayAtomSetOnly,
-} from "../../atoms"
+import {createHeadingsForDayAtom, nullAtom, selectedDayAtom} from "../../atoms"
 import {prettyFormatDateTime} from "../../helpers/dates"
 import HighlightedText from "./HighlightedText"
 
@@ -29,11 +25,11 @@ interface Props {
 
 export default function DateLink(props: Props) {
   const date = props.children
-  const [, setSelectedDay] = useAtom(selectedDayAtomSetOnly)
+  const setSelectedDay = useSetAtom(selectedDayAtom)
   const {isOpen, onOpen, onClose} = useDisclosure()
   const [headingsAtom, setHeadingsAtom] =
     useState<Atom<Promise<string[]> | null>>(nullAtom)
-  const [headings] = useAtom(headingsAtom)
+  const headings = useAtomValue(headingsAtom)
 
   function openAndLoad() {
     startTransition(() => {

@@ -7,13 +7,13 @@ import {
   MenuItem,
   MenuList,
 } from "@chakra-ui/react"
-import {useAtom} from "jotai"
+import {useAtom, useAtomValue} from "jotai"
 import {memo, startTransition} from "react"
 import {BsLayersFill} from "react-icons/bs"
 import {layerIdsAtom, searchRegexAtom, selectedLayerIdAtom} from "../../atoms"
 
 export default memo(function LayerList() {
-  const [layerIds] = useAtom(layerIdsAtom)
+  const layerIds = useAtomValue(layerIdsAtom)
   const [selectedLayerId, setSelectedLayerId] = useAtom(selectedLayerIdAtom)
   const [searchRegex, setSearchRegex] = useAtom(searchRegexAtom)
 

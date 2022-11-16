@@ -8,18 +8,18 @@ import calculateCalendarDimensions, {
 import getWeekUnderCursor from "./getWeekUnderCursor"
 import {
   lifeDataAtom,
-  mobileViewAtomSetOnly,
+  mobileViewAtom,
   selectedLayerDataAtom,
   selectedWeekStartAtom,
 } from "../../atoms"
-import {useAtom} from "jotai"
+import {useAtom, useAtomValue, useSetAtom} from "jotai"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
 import {Box} from "@chakra-ui/react"
 import useWindowSize from "../../helpers/useWindowSize"
 
 function useCalendarData() {
   const today = useToday()
-  const lifeData = useAtom(lifeDataAtom)[0]
+  const lifeData = useAtomValue(lifeDataAtom)
 
   return useMemo(
     () => generateCalendarData({today, ...lifeData}),
@@ -32,8 +32,8 @@ export default memo(function Calendar() {
   const [selectedWeekStart, setSelectedWeekStart] = useAtom(
     selectedWeekStartAtom,
   )
-  const [, setMobileView] = useAtom(mobileViewAtomSetOnly)
-  const [layerData] = useAtom(selectedLayerDataAtom)
+  const setMobileView = useSetAtom(mobileViewAtom)
+  const layerData = useAtomValue(selectedLayerDataAtom)
 
   const ref = useRef<HTMLCanvasElement>(null)
 

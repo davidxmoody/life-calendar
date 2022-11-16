@@ -3,12 +3,12 @@ import NavBar from "./nav/NavBar"
 import {Box, Flex} from "@chakra-ui/react"
 import Calendar from "./calendar/Calendar"
 import {Suspense} from "react"
-import {useAtom} from "jotai"
+import {useAtomValue} from "jotai"
 import {mobileViewAtom} from "../atoms"
 import FirstTimeSetupModal from "./FirstTimeSetupModal"
 
 export default function App() {
-  const [mobileView] = useAtom(mobileViewAtom)
+  const mobileView = useAtomValue(mobileViewAtom)
 
   return (
     <>

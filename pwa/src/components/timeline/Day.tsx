@@ -1,5 +1,5 @@
 import {Box, Heading} from "@chakra-ui/react"
-import {Atom, useAtom} from "jotai"
+import {Atom, useAtomValue} from "jotai"
 import * as React from "react"
 import {memo, startTransition, useRef, useState} from "react"
 import {createEntriesForDayAtom, nullAtom} from "../../atoms"
@@ -28,7 +28,7 @@ export default memo(function Day(props: Props) {
   const headerRef = useRef<HTMLDivElement>(null)
   const [entriesAtom, setEntriesAtom] =
     useState<Atom<Promise<Entry[]> | null>>(nullAtom)
-  const [entries] = useAtom(entriesAtom)
+  const entries = useAtomValue(entriesAtom)
 
   if (!props.headings?.length) {
     return (

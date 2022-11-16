@@ -2,13 +2,8 @@
 
 import {memo, startTransition, useCallback, useMemo} from "react"
 import {Button, Flex} from "@chakra-ui/react"
-import {useAtom} from "jotai"
-import {
-  lifeDataAtom,
-  selectedDayAtom,
-  selectedDayAtomSetOnly,
-  timelineDataAtom,
-} from "../../atoms"
+import {useAtom, useAtomValue, useSetAtom} from "jotai"
+import {lifeDataAtom, selectedDayAtom, timelineDataAtom} from "../../atoms"
 import Day from "./Day"
 import useToday from "../../helpers/useToday"
 import {
@@ -21,9 +16,9 @@ import {BsArrowDown, BsArrowUp} from "react-icons/bs"
 import ScrollList from "./ScrollList"
 
 export default memo(function Timeline() {
-  const [lifeData] = useAtom(lifeDataAtom)
+  const lifeData = useAtomValue(lifeDataAtom)
   const today = useToday()
-  const [data] = useAtom(timelineDataAtom)
+  const data = useAtomValue(timelineDataAtom)
   const [selectedDay, setSelectedDay] = useAtom(selectedDayAtom)
 
   const birthWeekStart = getWeekStart(lifeData.birthDate)
@@ -90,7 +85,7 @@ function YearJumpButton({
   weekStart: string
   direction: "next" | "prev"
 }) {
-  const [, setSelectedDay] = useAtom(selectedDayAtomSetOnly)
+  const setSelectedDay = useSetAtom(selectedDayAtom)
 
   return (
     <Flex

@@ -32,11 +32,6 @@ export const mobileViewAtom = atomWithStorage<MobileView>(
   "calendar",
 )
 
-export const mobileViewAtomSetOnly = atom(
-  null,
-  (_get, set, value: MobileView) => set(mobileViewAtom, value),
-)
-
 export const selectedLayerIdAtom = atomWithStorage<string | null>(
   "selectedLayerId",
   null,
@@ -79,10 +74,6 @@ export const selectedLayerDataAtom = atom(async (get) => {
 })
 
 export const selectedDayAtom = atomWithStorage("selectedDay", getToday())
-
-export const selectedDayAtomSetOnly = atom(null, (_get, set, value: string) =>
-  set(selectedDayAtom, value),
-)
 
 export const selectedWeekStartAtom = atom(
   (get) => getWeekStart(get(selectedDayAtom)),

@@ -18,7 +18,7 @@ import {
 } from "react"
 import {downloadScanned, sync} from "../../db"
 import DatabaseStats from "./DatabaseStats"
-import {useAtom} from "jotai"
+import {useAtom, useSetAtom} from "jotai"
 import {syncStateAtom, updateTriggerAtom} from "../../atoms"
 
 const syncIntervalMs = 5 * 60 * 1000
@@ -30,7 +30,7 @@ interface Props {
 
 export default function SyncModal(props: Props) {
   const [syncState, setSyncState] = useAtom(syncStateAtom)
-  const [, triggerUpdate] = useAtom(updateTriggerAtom)
+  const triggerUpdate = useSetAtom(updateTriggerAtom)
 
   const startSync = useCallback(
     (args: {fullSync: boolean}) => {

@@ -1,6 +1,6 @@
 import * as React from "react"
 import {Box, Button, Icon, IconButton, useDisclosure} from "@chakra-ui/react"
-import {useAtom} from "jotai"
+import {useAtomValue} from "jotai"
 import {BsSearch} from "react-icons/bs"
 import {searchRegexAtom} from "../../atoms"
 import SearchModal from "./SearchModal"
@@ -8,7 +8,7 @@ import {memo} from "react"
 
 export default memo(function SearchButton() {
   const {isOpen, onOpen, onClose} = useDisclosure()
-  const [searchRegex] = useAtom(searchRegexAtom)
+  const searchRegex = useAtomValue(searchRegexAtom)
 
   const icon = <Icon as={BsSearch} fontSize="20px" />
 

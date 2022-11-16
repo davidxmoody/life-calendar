@@ -9,12 +9,12 @@ import {
   TableCaption,
   Box,
 } from "@chakra-ui/react"
-import {useAtom} from "jotai"
+import {useAtomValue} from "jotai"
 import {databaseStatsAtom} from "../../atoms"
 import {formatTimestampAgo} from "../../helpers/dates"
 
 export default function DatabaseStats() {
-  const [stats] = useAtom(databaseStatsAtom)
+  const stats = useAtomValue(databaseStatsAtom)
 
   return (
     <Box marginX={-4}>
