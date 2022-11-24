@@ -21,10 +21,18 @@ export function createAuthedUrl(path: string): string {
   return `${getRemoteUrl()}${path}?token=${getAuthToken()}`
 }
 
-export function authedFetch(path: string): Promise<Response> {
-  return fetch(`${getRemoteUrl()}${path}`, {
+export async function authedFetch(
+  path: string,
+  options: {timeoutMs: number} = {timeoutMs: 120000},
+): Promise<Response> {
+  const controller = new AbortController()
+  const id = setTimeout(() => controller.abort(), options.timeoutMs)
+  const response = await fetch(`${getRemoteUrl()}${path}`, {
     headers: {token: getAuthToken()},
+    signal: controller.signal,
   })
+  clearTimeout(id)
+  return response
 }
 
 export function isValidRemoteUrl(url: string | undefined | null): boolean {

@@ -53,6 +53,10 @@ app.use((req, res, next) => {
 app.use("/scanned", express.static("scanned"))
 app.use("/audio", express.static("audio"))
 
+app.get("/ping", async (_req, res) => {
+  res.sendStatus(200)
+})
+
 app.get("/sync", async (req, res) => {
   const sinceMsFromQs = parseInt(req.query.sinceMs as string, 10)
   const sinceMs = isNaN(sinceMsFromQs) ? null : sinceMsFromQs

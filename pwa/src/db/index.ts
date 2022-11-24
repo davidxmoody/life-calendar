@@ -107,6 +107,8 @@ export async function getHeadingsInRange(
 export async function sync({fullSync}: {fullSync: boolean}) {
   const db = await dbPromise
 
+  await authedFetch("/ping", {timeoutMs: 1000})
+
   const lastSyncTimestamp = fullSync
     ? null
     : (await db.get("config", "lastSyncTimestamp")) ?? null
