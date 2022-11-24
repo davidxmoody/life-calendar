@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import {memo, startTransition, useCallback, useMemo} from "react"
-import {Button, Flex} from "@chakra-ui/react"
+import {Box, Button, Flex} from "@chakra-ui/react"
 import {useAtom, useAtomValue, useSetAtom} from "jotai"
 import {lifeDataAtom, selectedDayAtom, timelineDataAtom} from "../../atoms"
 import Day from "./Day"
@@ -39,10 +39,13 @@ export default memo(function Timeline() {
   )
 
   const footer = useMemo(
-    () =>
-      nextYearWeekStart <= todayWeekStart ? (
-        <YearJumpButton weekStart={nextYearWeekStart} direction="next" />
-      ) : null,
+    () => (
+      <Box pb={10}>
+        {nextYearWeekStart <= todayWeekStart ? (
+          <YearJumpButton weekStart={nextYearWeekStart} direction="next" />
+        ) : null}
+      </Box>
+    ),
     [todayWeekStart, nextYearWeekStart],
   )
 
