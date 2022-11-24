@@ -37,7 +37,6 @@ export default function getWeekUnderCursor({
       weekYIndex < 0 ||
       weekYIndex >= d.layout.weeksPerYearCol
     ) {
-      console.log("out of bounds")
       return null
     }
 
@@ -51,31 +50,31 @@ export default function getWeekUnderCursor({
   const xInCal = x - d.canvas.px
   const yInCal = y - d.canvas.py
 
-  const rowIndex = Math.floor(xInCal / d.year.w)
-  const colIndex = Math.floor(yInCal / d.year.h)
+  const yearXIndex = Math.floor(xInCal / d.year.w)
+  const yearYIndex = Math.floor(yInCal / d.year.h)
 
-  const weekRowIndex = Math.floor(
-    (xInCal - rowIndex * d.year.w - d.year.p) / d.week.w,
+  const weekXIndex = Math.floor(
+    (xInCal - yearXIndex * d.year.w - d.year.p) / d.week.w,
   )
-  const weekColIndex = Math.floor(
-    (yInCal - colIndex * d.year.h - d.year.p) / d.week.h,
+  const weekYIndex = Math.floor(
+    (yInCal - yearYIndex * d.year.h - d.year.p) / d.week.h,
   )
 
   if (
-    colIndex < 0 ||
-    rowIndex < 0 ||
-    rowIndex >= d.layout.yearsPerRow ||
-    weekRowIndex < 0 ||
-    weekRowIndex >= d.layout.weeksPerYearRow ||
-    weekColIndex < 0 ||
-    weekColIndex >= d.layout.weeksPerYearCol
+    yearYIndex < 0 ||
+    yearXIndex < 0 ||
+    yearXIndex >= d.layout.yearsPerRow ||
+    weekXIndex < 0 ||
+    weekXIndex >= d.layout.weeksPerYearRow ||
+    weekYIndex < 0 ||
+    weekYIndex >= d.layout.weeksPerYearCol
   ) {
     return null
   }
 
   return (
-    data.decades[colIndex]?.years[rowIndex]?.weeks[
-      weekColIndex * d.layout.weeksPerYearRow + weekRowIndex
+    data.decades[yearYIndex]?.years[yearXIndex]?.weeks[
+      weekYIndex * d.layout.weeksPerYearRow + weekXIndex
     ] ?? null
   )
 }
