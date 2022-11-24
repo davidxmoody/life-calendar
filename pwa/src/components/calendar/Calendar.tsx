@@ -1,4 +1,11 @@
-import {memo, startTransition, useEffect, useMemo, useRef} from "react"
+import {
+  memo,
+  startTransition,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import generateCalendarData from "./generateCalendarData"
 import useToday from "../../helpers/useToday"
 import drawCalendar from "./drawCalendar"
@@ -14,8 +21,11 @@ import {
 } from "../../atoms"
 import {useAtom, useAtomValue, useSetAtom} from "jotai"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
-import {Box} from "@chakra-ui/react"
+import {Box, useBreakpointValue} from "@chakra-ui/react"
 import useWindowSize from "../../helpers/useWindowSize"
+import {getWeekStart, parseYear} from "../../helpers/dates"
+
+const ZOOM_SCALE = 8
 
 function useCalendarData() {
   const today = useToday()
@@ -34,6 +44,12 @@ export default memo(function Calendar() {
   )
   const setMobileView = useSetAtom(mobileViewAtom)
   const layerData = useAtomValue(selectedLayerDataAtom)
+
+  const [zoomedYearIndex, setZoomedYearIndex] = useState<number | null>(null)
+  const useZoomBehaviour = useBreakpointValue(
+    {base: true, md: false},
+    {ssr: false},
+  )
 
   const ref = useRef<HTMLCanvasElement>(null)
 
@@ -78,22 +94,30 @@ export default memo(function Calendar() {
     const x = (e.pageX - window.pageXOffset - rect.left) * pixelRatio
     const y = (e.pageY - window.pageYOffset - rect.top) * pixelRatio
 
-    const c = getWeekUnderCursor({x, y, d})
+    const week = getWeekUnderCursor({
+      x,
+      y,
+      d,
+      data,
+      zoomScale: ZOOM_SCALE,
+      zoomedYearIndex: useZoomBehaviour ? zoomedYearIndex : null,
+    })
 
-    if (!c) {
+    if (!week || !("era" in week)) {
+      setZoomedYearIndex(null)
       return
     }
 
-    const week =
-      data.decades[c.colIndex].years[c.rowIndex].weeks[
-        c.weekColIndex * d.layout.weeksPerYearRow + c.weekRowIndex
-      ]
-
-    if (!week || !("era" in week)) {
+    if (useZoomBehaviour && zoomedYearIndex === null) {
+      setZoomedYearIndex(
+        parseYear(week.startDate) -
+          parseYear(getWeekStart(data.decades[0].years[0].weeks[0].startDate)),
+      )
       return
     }
 
     startTransition(() => {
+      setZoomedYearIndex(null)
       setSelectedWeekStart(week.startDate)
       setMobileView("timeline")
     })
@@ -104,22 +128,49 @@ export default memo(function Calendar() {
       width={canvasWidth}
       height={canvasHeight}
       cursor="pointer"
-      position="relative"
+      onClick={onClick}
     >
-      <canvas
-        ref={ref}
-        width={drawWidth}
-        height={drawHeight}
-        style={{width: canvasWidth, height: canvasHeight}}
-        onClick={onClick}
-      />
+      <Box
+        width="100%"
+        height="100%"
+        position="relative"
+        transition={useZoomBehaviour ? "transform 1s" : undefined}
+        transform={
+          useZoomBehaviour && zoomedYearIndex !== null
+            ? `translate(${
+                ((d.canvas.w / 2 -
+                  d.canvas.px -
+                  d.year.w / 2 -
+                  d.year.w * (zoomedYearIndex % d.layout.yearsPerRow)) /
+                  pixelRatio) *
+                ZOOM_SCALE
+              }px, ${
+                ((d.canvas.h / 2 -
+                  d.canvas.py -
+                  d.year.h / 2 -
+                  d.year.h *
+                    Math.floor(zoomedYearIndex / d.layout.yearsPerRow)) /
+                  pixelRatio) *
+                ZOOM_SCALE
+              }px) scale(${ZOOM_SCALE})`
+            : undefined
+        }
+      >
+        <canvas
+          ref={ref}
+          width={drawWidth}
+          height={drawHeight}
+          style={{width: canvasWidth, height: canvasHeight}}
+        />
 
-      <SelectedWeekHighlight
-        data={data}
-        d={d}
-        selectedWeekStart={selectedWeekStart}
-        pixelRatio={pixelRatio}
-      />
+        <SelectedWeekHighlight
+          data={data}
+          d={d}
+          selectedWeekStart={selectedWeekStart}
+          pixelRatio={pixelRatio}
+          animate={!useZoomBehaviour}
+        />
+      </Box>
     </Box>
   )
 })
@@ -130,11 +181,13 @@ const SelectedWeekHighlight = memo(
     d,
     selectedWeekStart,
     pixelRatio,
+    animate,
   }: {
     data: ReturnType<typeof useCalendarData>
     d: CalendarDimensions
     selectedWeekStart: string
     pixelRatio: number
+    animate: boolean
   }) => {
     let selectedWeekPosition:
       | {di: number; yi: number; wi: number; color: string}
@@ -180,7 +233,7 @@ const SelectedWeekHighlight = memo(
               Math.floor(selectedWeekPosition.wi / d.layout.weeksPerYearRow)) /
           pixelRatio
         }px)`}
-        transition="all 0.3s"
+        transition={animate ? "all 0.3s" : undefined}
       />
     )
   },
