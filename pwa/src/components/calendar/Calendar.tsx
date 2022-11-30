@@ -134,7 +134,7 @@ export default memo(function Calendar() {
         width="100%"
         height="100%"
         position="relative"
-        transition={useZoomBehaviour ? "transform 1s" : undefined}
+        transition={useZoomBehaviour ? "transform 0.3s" : undefined}
         transform={
           useZoomBehaviour && zoomedYearIndex !== null
             ? `translate(${
