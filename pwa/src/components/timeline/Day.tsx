@@ -1,9 +1,9 @@
-import {Box, Heading} from "@chakra-ui/react"
+import {Box, Flex, Heading} from "@chakra-ui/react"
 import {Atom, useAtomValue} from "jotai"
 import {memo, startTransition, useRef, useState} from "react"
 import {createEntriesForDayAtom, nullAtom} from "../../atoms"
 import {prettyFormatDateTime} from "../../helpers/dates"
-import {Entry} from "../../types"
+import {Entry, MarkdownEntry} from "../../types"
 import HighlightedText from "./HighlightedText"
 import AudioPlayer from "./AudioPlayer"
 import Markdown from "./Markdown"
@@ -69,6 +69,7 @@ export default memo(function Day(props: Props) {
         <DayHeader
           headerRef={headerRef}
           date={props.date}
+          time={getTimeOfFirstEntry(entries)}
           selected={props.selected}
           onClick={onToggle}
         />
@@ -130,6 +131,7 @@ function EmptyDayHeader(props: {date: string; selected: boolean}) {
 
 function DayHeader(props: {
   date: string
+  time?: string
   selected: boolean
   onClick: () => void
   headerRef: React.Ref<HTMLDivElement>
@@ -143,7 +145,7 @@ function DayHeader(props: {
       zIndex="sticky"
       pt={{base: 0, md: 2}}
     >
-      <Box
+      <Flex
         p={4}
         borderTopRadius={{base: 0, md: borderRadius}}
         borderWidth={{base: 0, md: borderWidth}}
@@ -152,11 +154,15 @@ function DayHeader(props: {
         transition="background 0.3s"
         onClick={props.onClick}
         cursor="pointer"
+        justifyContent="space-between"
       >
         <Heading size="md" color="white">
           {prettyFormatDateTime({date: props.date})}
         </Heading>
-      </Box>
+        <Box fontSize="sm" opacity={0.5}>
+          {props.time}
+        </Box>
+      </Flex>
     </Box>
   )
 }
@@ -180,13 +186,7 @@ function Full(props: {entries: Entry[]}) {
         <Box key={entry.id} mb={i === props.entries.length - 1 ? 0 : 2}>
           {entry.type === "markdown" ? (
             <Box mx={{base: 4, md: 8}} my={{base: 4, md: 6}}>
-              <Markdown
-                source={
-                  entry.content.startsWith("#")
-                    ? entry.content
-                    : "### " + entry.time + "\n\n" + entry.content
-                }
-              />
+              <Markdown source={getMarkdownContent(entry)} />
             </Box>
           ) : entry.type === "scanned" ? (
             <ScannedPage entry={entry} />
@@ -199,4 +199,18 @@ function Full(props: {entries: Entry[]}) {
       ))}
     </Box>
   )
+}
+
+function getTimeOfFirstEntry(entries: Entry[] | null) {
+  for (const entry of entries ?? []) {
+    if ("time" in entry) {
+      return entry.time
+    }
+  }
+}
+
+function getMarkdownContent(entry: MarkdownEntry) {
+  return entry.content.startsWith("#")
+    ? entry.content
+    : "### " + entry.time + "\n\n" + entry.content
 }
