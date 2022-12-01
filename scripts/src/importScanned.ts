@@ -4,7 +4,7 @@ import {sortBy} from "ramda"
 import {join} from "path"
 import moment from "moment"
 import fs from "fs"
-import {DIARY_DIR} from "./config"
+import {diaryPath} from "./helpers/directories"
 
 const DATE_REGEX = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/
 
@@ -49,7 +49,7 @@ function getAverageColor(file: string) {
 }
 
 function importFile(inputFile: string, date: string, headings: string[]) {
-  const outputDir = `${DIARY_DIR}/scanned/${date.replace(/-/g, "/")}`
+  const outputDir = diaryPath("scanned", date.replace(/-/g, "/"))
 
   makeDir(outputDir)
 

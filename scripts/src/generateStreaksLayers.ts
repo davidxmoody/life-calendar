@@ -1,20 +1,12 @@
 import * as fs from "fs"
 import * as R from "ramda"
 import {join} from "path"
-import moment from "moment"
+import {getWeekStart} from "./helpers/dates"
 
 type ShortEntryType = "completed" | "skipped" | "missed"
 
 const INPUT_DIR = join(__dirname, "../data/streaks")
 const OUTPUT_DIR = join(__dirname, "../layers/streaks")
-
-function getWeekStart(date: string): string {
-  const mDate = moment(date, "YYYY-MM-DD", true)
-  if (!mDate.isValid()) {
-    throw new Error(`Invalid date: "${date}"`)
-  }
-  return mDate.startOf("isoWeek").format("YYYY-MM-DD")
-}
 
 function scoreWeek(types: ShortEntryType[]): number {
   if (!R.includes("completed", types)) {

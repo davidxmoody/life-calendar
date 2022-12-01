@@ -1,40 +1,15 @@
 import {execSync} from "node:child_process"
 import {writeFileSync} from "node:fs"
+import {clamp, countBy, mapObjIndexed} from "ramda"
+import {getWeekStart} from "./helpers/dates"
+import {diaryPath} from "./helpers/directories"
 
 if (!process.env.P_DIR) {
   throw new Error("P_DIR not defined")
 }
 
-if (!process.env.DIARY_DIR) {
-  throw new Error("DIARY_DIR not defined")
-}
-
 function shell(command: string) {
   return execSync(command, {encoding: "utf-8"}).trim()
-}
-
-function count(list: Array<string>): Record<string, number> {
-  return list.reduce((acc, date) => {
-    acc[date] = (acc[date] ?? 0) + 1
-    return acc
-  }, {})
-}
-
-function mapObj<A, B>(object: Record<string, A>, fn: (a: A) => B): Record<string, B> {
-  return Object.fromEntries(
-    Object.entries(object).map(([key, value]) => [key, fn(value)]),
-  )
-}
-
-function clamp(value: number) {
-  return Math.min(Math.max(value, 0), 1)
-}
-
-function getWeekStart(date: string) {
-  const d = new Date(date)
-  const day = d.getDay()
-  const diff = d.getDate() - day + (day == 0 ? -6 : 1)
-  return new Date(d.setDate(diff)).toISOString().split("T")[0]
 }
 
 function processLayer(repoName: string) {
@@ -44,13 +19,13 @@ function processLayer(repoName: string) {
     .split("\n")
     .sort()
 
-  const scores = mapObj(
-    count(commitDates.map(getWeekStart)),
-    (x) => Math.round(clamp(Math.pow(x / 7, 0.5)) * 1000) / 1000,
+  const scores = mapObjIndexed(
+    (x: number) => Math.round(clamp(0, 1, Math.pow(x / 7, 0.5)) * 1000) / 1000,
+    countBy((x) => x, commitDates.map(getWeekStart)),
   )
 
   writeFileSync(
-    `${process.env.DIARY_DIR}/layers/git/${repoName}.json`,
+    diaryPath(`layers/git/${repoName}.json`),
     JSON.stringify(scores, null, 2),
   )
 }

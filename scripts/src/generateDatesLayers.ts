@@ -1,42 +1,20 @@
 import {writeFileSync, readdirSync, readFileSync} from "node:fs"
 import {join} from "node:path"
+import {clamp, countBy, mapObjIndexed} from "ramda"
+import {getWeekStart} from "./helpers/dates"
+import {diaryPath} from "./helpers/directories"
 
-const INPUT_DIR = join(__dirname, "../data/dates")
-const OUTPUT_DIR = join(__dirname, "../layers/dates")
-
-function mapObj<A, B>(
-  object: Record<string, A>,
-  fn: (a: A) => B,
-): Record<string, B> {
-  return Object.fromEntries(
-    Object.entries(object).map(([key, value]) => [key, fn(value)]),
-  )
-}
-
-function count(list: Array<string>): Record<string, number> {
-  return list.reduce((acc, date) => {
-    acc[date] = (acc[date] ?? 0) + 1
-    return acc
-  }, {})
-}
-
-function clamp(value: number) {
-  return Math.min(Math.max(value, 0), 1)
-}
-
-function getWeekStart(date: string) {
-  const d = new Date(date)
-  const day = d.getDay()
-  const diff = d.getDate() - day + (day == 0 ? -6 : 1)
-  return new Date(d.setDate(diff)).toISOString().split("T")[0]
-}
+const INPUT_DIR = diaryPath("data/dates")
+const OUTPUT_DIR = diaryPath("layers/dates")
 
 readdirSync(INPUT_DIR).forEach((file) => {
-  const dates = JSON.parse(readFileSync(join(INPUT_DIR, file), "utf-8"))
+  const dates: string[] = JSON.parse(
+    readFileSync(join(INPUT_DIR, file), "utf-8"),
+  )
 
-  const scores = mapObj(
-    count(dates.map(getWeekStart)),
-    (x) => Math.round(clamp(Math.pow(x / 7, 0.4)) * 1000) / 1000,
+  const scores = mapObjIndexed(
+    (x: number) => Math.round(clamp(0, 1, Math.pow(x / 7, 0.4)) * 1000) / 1000,
+    countBy((x) => x, dates.map(getWeekStart)),
   )
 
   writeFileSync(`${OUTPUT_DIR}/${file}`, JSON.stringify(scores, null, 2))
