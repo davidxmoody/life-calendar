@@ -4,8 +4,17 @@ import {join} from "path"
 import {getWeekStart} from "./helpers/dates"
 import {diaryPath} from "./helpers/directories"
 import writeLayer from "./helpers/writeLayer"
+import {z} from "zod"
 
-type ShortEntryType = "completed" | "skipped" | "missed"
+const shortEntrySchema = z.union([
+  z.literal("completed"),
+  z.literal("skipped"),
+  z.literal("missed"),
+])
+
+type ShortEntryType = z.infer<typeof shortEntrySchema>
+
+const streaksSchema = z.record(shortEntrySchema)
 
 const INPUT_DIR = diaryPath("data/streaks")
 
@@ -28,8 +37,8 @@ export default function generateStreaksLayers() {
   const files = fs.readdirSync(INPUT_DIR)
 
   files.forEach((file) => {
-    const data: Record<string, ShortEntryType> = JSON.parse(
-      fs.readFileSync(join(INPUT_DIR, file), "utf-8"),
+    const data = streaksSchema.parse(
+      JSON.parse(fs.readFileSync(join(INPUT_DIR, file), "utf-8")),
     )
 
     const typesByWeek: Record<string, ShortEntryType[]> = {}
