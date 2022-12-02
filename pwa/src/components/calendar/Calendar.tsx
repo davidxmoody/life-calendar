@@ -87,7 +87,7 @@ export default memo(function Calendar() {
         lastDraw.current = d
       }
     }
-  }, [ref.current, data, layerData, d]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [data, layerData, d])
 
   function onClick(e: React.MouseEvent) {
     const rect = e.currentTarget.getBoundingClientRect()
