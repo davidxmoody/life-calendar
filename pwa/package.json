@@ -3,19 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@chakra-ui/react": "^2.3.7",
+    "@chakra-ui/react": "^2.4.2",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "framer-motion": "^7.6.4",
-    "idb": "^7.1.0",
-    "jotai": "^1.9.1",
+    "framer-motion": "^7.6.17",
+    "idb": "^7.1.1",
+    "jotai": "^1.11.0",
     "lodash.debounce": "^4.0.8",
     "moment": "^2.29.4",
     "ramda": "^0.28.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^4.6.0",
-    "react-markdown": "^8.0.3",
+    "react-icons": "^4.7.1",
+    "react-markdown": "^8.0.4",
     "react-scripts": "^5.0.1",
     "uuid": "^9.0.0",
     "workbox-core": "^6.5.4",
@@ -49,14 +49,14 @@
     ]
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^29.2.3",
     "@types/lodash.debounce": "^4.0.7",
-    "@types/node": "^18.11.9",
-    "@types/ramda": "^0.28.18",
-    "@types/react": "^18.0.24",
-    "@types/react-dom": "^18.0.8",
-    "@types/uuid": "^8.3.4",
-    "prettier": "^2.6.2",
-    "typescript": "^4.8.4"
+    "@types/node": "^18.11.10",
+    "@types/ramda": "^0.28.20",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.9",
+    "@types/uuid": "^9.0.0",
+    "prettier": "^2.8.0",
+    "typescript": "^4.9.3"
   }
 }
