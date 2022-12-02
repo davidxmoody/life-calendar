@@ -1,6 +1,6 @@
 import {memo} from "react"
 import {Box, Flex} from "@chakra-ui/react"
-import LayerList from "./LayerList"
+import LayerButton from "./LayerButton"
 import SyncButton from "./SyncButton"
 import MobileViewSwitcher from "./MobileViewSwitcher"
 import SearchButton from "./SearchButton"
@@ -23,7 +23,7 @@ export default memo(function NavBar() {
       </Box>
 
       <Box mr={4}>
-        <LayerList />
+        <LayerButton />
       </Box>
 
       <Flex flex={1} justifyContent="flex-end" minWidth="100px">
