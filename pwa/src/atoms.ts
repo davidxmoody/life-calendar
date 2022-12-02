@@ -22,6 +22,7 @@ import {
   parseYear,
 } from "./helpers/dates"
 import generateLayer from "./helpers/generateLayer"
+import mergeLayers from "./helpers/mergeLayers"
 
 export const nullAtom = atom(null)
 
@@ -32,9 +33,9 @@ export const mobileViewAtom = atomWithStorage<MobileView>(
   "calendar",
 )
 
-export const selectedLayerIdAtom = atomWithStorage<string | null>(
-  "selectedLayerId",
-  null,
+export const selectedLayerIdsAtom = atomWithStorage<string[]>(
+  "selectedLayerIds",
+  [],
 )
 
 export type SyncState =
@@ -54,7 +55,7 @@ export const layerIdsAtom = atom(async (get) => {
 
 export const selectedLayerDataAtom = atom(async (get) => {
   get(updateTriggerAtom)
-  const selectedLayerId = get(selectedLayerIdAtom)
+  const selectedLayerIds = get(selectedLayerIdsAtom)
   const searchRegex = get(searchRegexAtom)
   const lifeData = get(lifeDataAtom)
 
@@ -70,7 +71,7 @@ export const selectedLayerDataAtom = atom(async (get) => {
     })
   }
 
-  return selectedLayerId ? getLayerData(selectedLayerId) : null
+  return mergeLayers(await Promise.all(selectedLayerIds.map(getLayerData)))
 })
 
 export const selectedDayAtom = atomWithStorage("selectedDay", getToday())

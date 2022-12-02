@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react"
 import {useAtom, useAtomValue} from "jotai"
 import {startTransition} from "react"
-import {layerIdsAtom, searchRegexAtom, selectedLayerIdAtom} from "../../atoms"
+import {layerIdsAtom, selectedLayerIdsAtom} from "../../atoms"
 
 interface Props {
   isOpen: boolean
@@ -17,17 +17,8 @@ interface Props {
 }
 
 export default function LayerModal(props: Props) {
-  const [searchRegex, setSearchRegex] = useAtom(searchRegexAtom)
   const layerIds = useAtomValue(layerIdsAtom)
-  const [selectedLayerId, setSelectedLayerId] = useAtom(selectedLayerIdAtom)
-
-  const emptyLayerId = "no-layer"
-  const searchLayerId = "search"
-  const activeLayerId = searchRegex
-    ? searchLayerId
-    : selectedLayerId ?? emptyLayerId
-
-  const layerIdsWithEmpty = [emptyLayerId, ...layerIds]
+  const [selectedLayerIds, setSelectedLayerIds] = useAtom(selectedLayerIdsAtom)
 
   return (
     <Modal isOpen={props.isOpen} onClose={props.onClose} size="xs">
@@ -36,23 +27,22 @@ export default function LayerModal(props: Props) {
         <ModalHeader>Search</ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={4}>
-          {searchRegex ? (
-            <Box onClick={() => {}} fontWeight="bold" cursor="pointer">
-              {searchLayerId}
-            </Box>
-          ) : null}
-
-          {layerIdsWithEmpty.map((layerId) => (
+          {layerIds.map((layerId) => (
             <Box
               key={layerId}
               cursor="pointer"
               onClick={() =>
                 startTransition(() => {
-                  setSelectedLayerId(layerId === emptyLayerId ? null : layerId)
-                  setSearchRegex("")
+                  setSelectedLayerIds((existingLayerIds) =>
+                    existingLayerIds.includes(layerId)
+                      ? existingLayerIds.filter((x) => x !== layerId)
+                      : [...existingLayerIds, layerId],
+                  )
                 })
               }
-              fontWeight={layerId === activeLayerId ? "bold" : "normal"}
+              fontWeight={
+                selectedLayerIds.includes(layerId) ? "bold" : "normal"
+              }
             >
               {layerId}
             </Box>
