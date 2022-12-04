@@ -49,13 +49,9 @@ const dbPromise = openDB<DataDBSchema>("data", 6, {
       case 2:
         db.createObjectStore("scanned")
       case 3:
-        ;(db as IDBPDatabase<unknown>).createObjectStore("headings", {
-          keyPath: "date",
-        })
       case 4:
         db.createObjectStore("lifeData")
       case 5:
-        ;(db as IDBPDatabase<unknown>).deleteObjectStore("headings")
         db.createObjectStore("cachedHeadings", {keyPath: "date"})
     }
   },
@@ -194,7 +190,7 @@ async function downloadSingleScannedImage(entry: ScannedEntry) {
   if (!blob.type.startsWith("image")) {
     throw new Error("Received non-image response")
   }
-  db.put("scanned", blob, entry.id)
+  await db.put("scanned", blob, entry.id)
 }
 
 export async function getScannedBlob(entry: ScannedEntry): Promise<Blob> {
