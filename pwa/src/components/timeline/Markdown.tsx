@@ -114,6 +114,17 @@ function MarkdownStrong(props: {children: React.ReactNode}) {
   )
 }
 
+function HorizontalRule() {
+  return (
+    <Box
+      borderBottomWidth="thin"
+      borderColor="gray.600"
+      mb={paraMarginBottom}
+      borderStyle="dashed"
+    />
+  )
+}
+
 const components: Components = {
   a: MarkdownLink,
   blockquote: MarkdownBlockquote,
@@ -125,6 +136,7 @@ const components: Components = {
   h4: MarkdownHeading,
   h5: MarkdownHeading,
   h6: MarkdownHeading,
+  hr: HorizontalRule,
   img: MarkdownImage,
   li: MarkdownListItem,
   ol: MarkdownOrderedList,
