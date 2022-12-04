@@ -1,6 +1,6 @@
 /* eslint-disable no-fallthrough */
 
-import {DBSchema, IDBPDatabase, openDB} from "idb"
+import {DBSchema, openDB} from "idb"
 import {Entry, Layer, LifeData, ScannedEntry} from "../types"
 import {authedFetch} from "../helpers/auth"
 import recalculateEntriesLayers from "./recalculateEntriesLayers"
