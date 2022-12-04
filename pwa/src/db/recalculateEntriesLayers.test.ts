@@ -138,12 +138,4 @@ test("updates layers for all content types", async () => {
     id: "diary/audio",
     data: {"2022-09-19": wordcountToScore(audioWordcountRatio)},
   })
-  expect(saveLayer).toHaveBeenCalledWith({
-    id: "diary/all",
-    data: {
-      "2022-09-19": wordcountToScore(
-        numMarkdownWords + scannedWordcountRatio + audioWordcountRatio,
-      ),
-    },
-  })
 })

@@ -31,7 +31,6 @@ export default async function recalculateEntriesLayers({
   const markdownLayerData = {...(await getLayer("diary/markdown"))?.data}
   const scannedLayerData = {...(await getLayer("diary/scanned"))?.data}
   const audioLayerData = {...(await getLayer("diary/audio"))?.data}
-  const allLayerData = {...(await getLayer("diary/all"))?.data}
 
   for (const weekStart of changedWeeks) {
     const weekEntries = await getEntriesForWeek(weekStart)
@@ -49,16 +48,12 @@ export default async function recalculateEntriesLayers({
     const audioWordcount =
       audioWordcountRatio * weekEntries.filter((e) => e.type === "audio").length
 
-    const allWordcount = markdownWordcount + scannedWordcount + audioWordcount
-
     markdownLayerData[weekStart] = wordcountToScore(markdownWordcount)
     scannedLayerData[weekStart] = wordcountToScore(scannedWordcount)
     audioLayerData[weekStart] = wordcountToScore(audioWordcount)
-    allLayerData[weekStart] = wordcountToScore(allWordcount)
   }
 
   await saveLayer({id: "diary/markdown", data: markdownLayerData})
   await saveLayer({id: "diary/scanned", data: scannedLayerData})
   await saveLayer({id: "diary/audio", data: audioLayerData})
-  await saveLayer({id: "diary/all", data: allLayerData})
 }
