@@ -1,6 +1,12 @@
 import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Box,
   Checkbox,
+  Flex,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -31,11 +37,18 @@ export default function LayerModal(props: Props) {
         <ModalHeader>Layers</ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={8}>
-          <Stack spacing={4}>
+          <Accordion
+            allowMultiple={true}
+            defaultIndex={groups.flatMap((group, index) =>
+              group.layers.some((l) => l.isSelected) ? [index] : [],
+            )}
+          >
             {groups.map(({groupName, allSelected, someSelected, layers}) => (
-              <Box key={groupName}>
-                <Box>
+              <AccordionItem key={groupName}>
+                <Flex>
                   <Checkbox
+                    pl={4}
+                    pr={2}
                     isChecked={allSelected}
                     isIndeterminate={someSelected && !allSelected}
                     onChange={() =>
@@ -51,27 +64,34 @@ export default function LayerModal(props: Props) {
                   >
                     {groupName}
                   </Checkbox>
-                </Box>
+                  <AccordionButton justifyContent="flex-end">
+                    <AccordionIcon />
+                  </AccordionButton>
+                </Flex>
 
-                {layers.map(({layerId, layerName, isSelected}) => (
-                  <Box key={layerId} ml={6}>
-                    <Checkbox
-                      isChecked={isSelected}
-                      onChange={() =>
-                        startTransition(() =>
-                          setSelectedLayerIds((existingLayerIds) =>
-                            toggle(existingLayerIds, [layerId]),
-                          ),
-                        )
-                      }
-                    >
-                      {layerName}
-                    </Checkbox>
-                  </Box>
-                ))}
-              </Box>
+                <AccordionPanel>
+                  <Stack spacing={1} ml={6}>
+                    {layers.map(({layerId, layerName, isSelected}) => (
+                      <Box key={layerId}>
+                        <Checkbox
+                          isChecked={isSelected}
+                          onChange={() =>
+                            startTransition(() =>
+                              setSelectedLayerIds((existingLayerIds) =>
+                                toggle(existingLayerIds, [layerId]),
+                              ),
+                            )
+                          }
+                        >
+                          {layerName}
+                        </Checkbox>
+                      </Box>
+                    ))}
+                  </Stack>
+                </AccordionPanel>
+              </AccordionItem>
             ))}
-          </Stack>
+          </Accordion>
         </ModalBody>
       </ModalContent>
     </Modal>
