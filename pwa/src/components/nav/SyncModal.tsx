@@ -8,13 +8,7 @@ import {
   ModalOverlay,
   Stack,
 } from "@chakra-ui/react"
-import {
-  startTransition,
-  Suspense,
-  useCallback,
-  useEffect,
-  useState,
-} from "react"
+import {startTransition, useCallback, useEffect, useState} from "react"
 import {downloadScanned, sync} from "../../db"
 import DatabaseStats from "./DatabaseStats"
 import {useAtom, useSetAtom} from "jotai"
@@ -92,35 +86,33 @@ export default function SyncModal(props: Props) {
         <ModalHeader>Database stats</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Suspense>
-            <Stack spacing={4} mb={2}>
-              <DatabaseStats />
+          <Stack spacing={4} mb={2}>
+            <DatabaseStats />
 
-              <Button
-                colorScheme="blue"
-                onClick={() => startSync({fullSync: false})}
-                isLoading={syncState.type === "loading"}
-              >
-                Sync
-              </Button>
+            <Button
+              colorScheme="blue"
+              onClick={() => startSync({fullSync: false})}
+              isLoading={syncState.type === "loading"}
+            >
+              Sync
+            </Button>
 
-              <Button
-                colorScheme="blue"
-                onClick={() => startSync({fullSync: true})}
-                isLoading={syncState.type === "loading"}
-              >
-                Full sync
-              </Button>
+            <Button
+              colorScheme="blue"
+              onClick={() => startSync({fullSync: true})}
+              isLoading={syncState.type === "loading"}
+            >
+              Full sync
+            </Button>
 
-              <Button
-                colorScheme="blue"
-                onClick={startBulkDownload}
-                isLoading={bulkDownloadBusy}
-              >
-                Bulk download
-              </Button>
-            </Stack>
-          </Suspense>
+            <Button
+              colorScheme="blue"
+              onClick={startBulkDownload}
+              isLoading={bulkDownloadBusy}
+            >
+              Bulk download
+            </Button>
+          </Stack>
         </ModalBody>
       </ModalContent>
     </Modal>

@@ -229,7 +229,16 @@ export async function searchDb(
   return search({regex, cursor})
 }
 
-export async function getStats() {
+export interface DBStats {
+  lastSyncTimestamp: number | null
+  markdown: number
+  scanned: number
+  audio: number
+  layers: number
+  images: number
+}
+
+export async function getStats(): Promise<DBStats> {
   const db = await dbPromise
 
   const lastSyncTimestamp =
