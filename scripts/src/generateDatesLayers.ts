@@ -29,12 +29,20 @@ export default function generateDatesLayers() {
       typeof x === "string" ? [x] : dateRange(x.start, x.end),
     )
 
+    const weekStartCounts = countBy((x) => x, expandedDates.map(getWeekStart))
+    const maxValue = Math.max(getNintiethPercentile(weekStartCounts), 7)
+
     const scores = mapObjIndexed(
       (x: number) =>
-        Math.round(clamp(0, 1, Math.pow(x / 7, 0.4)) * 1000) / 1000,
-      countBy((x) => x, expandedDates.map(getWeekStart)),
+        Math.round(clamp(0, 1, Math.pow(x / maxValue, 0.4)) * 1000) / 1000,
+      weekStartCounts,
     )
 
     writeLayer("dates", file.replace(/\.json$/, ""), scores)
   })
+}
+
+function getNintiethPercentile(counts: Record<string, number>) {
+  const values = Object.values(counts).sort((a, b) => a - b)
+  return values[Math.floor(values.length * 0.9)]
 }
