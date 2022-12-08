@@ -53,7 +53,7 @@ export default function DateLink(props: Props) {
             </PopoverHeader>
             <PopoverBody>
               {headings?.length ? (
-                headings.map((heading, index) => (
+                limitMaxHeadings(headings).map((heading, index) => (
                   <HighlightedText key={index} as="div">
                     {heading}
                   </HighlightedText>
@@ -74,4 +74,17 @@ export default function DateLink(props: Props) {
       </Portal>
     </Popover>
   )
+}
+
+function limitMaxHeadings(headings: string[]) {
+  const maxNum = 8
+
+  if (headings.length > maxNum) {
+    return [
+      ...headings.slice(0, maxNum - 1),
+      `${headings.length - maxNum + 1} more headings...`,
+    ]
+  }
+
+  return headings
 }
