@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react"
 import {useAtom, useAtomValue} from "jotai"
 import {startTransition} from "react"
-import {layerIdsAtom, selectedLayerIdsAtom} from "../../atoms"
+import {layerIdsAtom, searchRegexAtom, selectedLayerIdsAtom} from "../../atoms"
 
 interface Props {
   isOpen: boolean
@@ -25,6 +25,7 @@ interface Props {
 }
 
 export default function LayerModal(props: Props) {
+  const [searchRegex, setSearchRegex] = useAtom(searchRegexAtom)
   const layerIds = useAtomValue(layerIdsAtom)
   const [selectedLayerIds, setSelectedLayerIds] = useAtom(selectedLayerIdsAtom)
 
@@ -43,12 +44,30 @@ export default function LayerModal(props: Props) {
               group.layers.some((l) => l.isSelected) ? [index] : [],
             )}
           >
+            <AccordionItem
+              height={searchRegex ? 9 : 0}
+              opacity={searchRegex ? 1 : 0}
+              overflow="hidden"
+              transition="all 0.4s"
+            >
+              <Checkbox
+                pl={4}
+                width="100%"
+                height={9}
+                isChecked={!!searchRegex}
+                onChange={() => startTransition(() => setSearchRegex(""))}
+              >
+                search
+              </Checkbox>
+            </AccordionItem>
+
             {groups.map(({groupName, allSelected, someSelected, layers}) => (
               <AccordionItem key={groupName}>
                 <Flex>
                   <Checkbox
                     pl={4}
                     pr={2}
+                    disabled={!!searchRegex}
                     isChecked={allSelected}
                     isIndeterminate={someSelected && !allSelected}
                     onChange={() =>
@@ -74,6 +93,7 @@ export default function LayerModal(props: Props) {
                     {layers.map(({layerId, layerName, isSelected}) => (
                       <Box key={layerId}>
                         <Checkbox
+                          disabled={!!searchRegex}
                           isChecked={isSelected}
                           onChange={() =>
                             startTransition(() =>

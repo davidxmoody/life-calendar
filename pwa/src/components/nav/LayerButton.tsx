@@ -2,19 +2,21 @@ import {Button, Icon, IconButton, useDisclosure} from "@chakra-ui/react"
 import {useAtomValue} from "jotai"
 import {memo} from "react"
 import {BsLayersFill} from "react-icons/bs"
-import {selectedLayerIdsAtom} from "../../atoms"
+import {searchRegexAtom, selectedLayerIdsAtom} from "../../atoms"
 import LayerModal from "./LayerModal"
 
 export default memo(function LayerButton() {
   const {isOpen, onOpen, onClose} = useDisclosure()
 
+  const hasSearchRegex = !!useAtomValue(searchRegexAtom)
   const selectedLayerIds = useAtomValue(selectedLayerIdsAtom)
 
-  const buttonLabel =
-    selectedLayerIds.length === 0
-      ? "no-layer"
-      : selectedLayerIds[0] +
-        (selectedLayerIds.length > 1 ? ` +${selectedLayerIds.length - 1}` : "")
+  const buttonLabel = hasSearchRegex
+    ? "search"
+    : selectedLayerIds.length === 0
+    ? "no-layer"
+    : selectedLayerIds[0] +
+      (selectedLayerIds.length > 1 ? ` +${selectedLayerIds.length - 1}` : "")
 
   const icon = <Icon as={BsLayersFill} fontSize="20px" />
 
