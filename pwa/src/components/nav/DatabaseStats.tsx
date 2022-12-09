@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react"
 import {useAtomValue} from "jotai"
 import {Suspense} from "react"
-import {databaseStatsAtom} from "../../atoms"
+import {databaseStatsAtom, SyncState, syncStateAtom} from "../../atoms"
 import {DBStats} from "../../db"
 import {formatTimestampAgo} from "../../helpers/dates"
 
@@ -24,17 +24,23 @@ export default function DatabaseStats() {
 
 function StatsTableWithData() {
   const stats = useAtomValue(databaseStatsAtom)
-  return <StatsTable stats={stats} />
+  const syncState = useAtomValue(syncStateAtom)
+  return <StatsTable stats={stats} syncState={syncState} />
 }
 
-function StatsTable({stats}: {stats?: DBStats}) {
+function StatsTable({
+  stats,
+  syncState,
+}: {
+  stats?: DBStats
+  syncState?: SyncState
+}) {
+  const lastSyncTimestamp =
+    syncState?.lastSyncTimestamp ?? stats?.lastSyncTimestamp
+
   return (
     <Box marginX={-4}>
       <Table size="sm">
-        <TableCaption opacity={stats ? 1 : 0}>
-          Last synced{" "}
-          {stats ? formatTimestampAgo(stats.lastSyncTimestamp) : null}
-        </TableCaption>
         <Thead>
           <Tr>
             <Th>Type</Th>
@@ -63,6 +69,12 @@ function StatsTable({stats}: {stats?: DBStats}) {
             <Td isNumeric>{stats?.layers.toLocaleString()}</Td>
           </Tr>
         </Tbody>
+        <TableCaption opacity={lastSyncTimestamp != null ? 1 : 0}>
+          Last synced{" "}
+          {lastSyncTimestamp != null
+            ? formatTimestampAgo(lastSyncTimestamp)
+            : null}
+        </TableCaption>
       </Table>
     </Box>
   )

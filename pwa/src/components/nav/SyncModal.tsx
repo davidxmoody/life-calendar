@@ -27,18 +27,18 @@ export default function SyncModal(props: Props) {
 
   const startSync = useCallback(
     (args: {fullSync: boolean}) => {
-      setSyncState({type: "loading"})
+      setSyncState((oldSyncState) => ({...oldSyncState, type: "loading"}))
       sync(args)
         .then(({receievedNewData, timestamp}) => {
           startTransition(() => {
-            setSyncState({type: "success", timestamp})
+            setSyncState({type: "success", lastSyncTimestamp: timestamp})
             if (receievedNewData) {
               triggerUpdate(timestamp)
             }
           })
         })
         .catch(() => {
-          setSyncState({type: "error"})
+          setSyncState((oldSyncState) => ({...oldSyncState, type: "error"}))
         })
     },
     [triggerUpdate, setSyncState],
@@ -51,14 +51,12 @@ export default function SyncModal(props: Props) {
 
   const syncIfNotSyncedRecently = useCallback(() => {
     if (
-      syncState.type === "initial" ||
-      syncState.type === "error" ||
-      (syncState.type === "success" &&
-        syncState.timestamp + syncIntervalMs <= new Date().getTime())
+      syncState.lastSyncTimestamp !== null &&
+      syncState.lastSyncTimestamp + syncIntervalMs <= new Date().getTime()
     ) {
       startSync({fullSync: false})
     }
-  }, [startSync, syncState])
+  }, [startSync, syncState.lastSyncTimestamp])
 
   useEffect(() => {
     window.addEventListener("focus", syncIfNotSyncedRecently)

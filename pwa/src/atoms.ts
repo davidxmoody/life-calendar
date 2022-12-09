@@ -26,9 +26,7 @@ import mergeLayers from "./helpers/mergeLayers"
 
 export const nullAtom = atom(null)
 
-type MobileView = "calendar" | "timeline"
-
-export const mobileViewAtom = atomWithStorage<MobileView>(
+export const mobileViewAtom = atomWithStorage<"calendar" | "timeline">(
   "mobileView",
   "calendar",
 )
@@ -38,13 +36,15 @@ export const selectedLayerIdsAtom = atomWithStorage<string[]>(
   [],
 )
 
-export type SyncState =
-  | {type: "initial"}
-  | {type: "loading"}
-  | {type: "error"}
-  | {type: "success"; timestamp: number}
+export interface SyncState {
+  type: "initial" | "loading" | "error" | "success"
+  lastSyncTimestamp: number | null
+}
 
-export const syncStateAtom = atom<SyncState>({type: "initial"})
+export const syncStateAtom = atom<SyncState>({
+  type: "initial",
+  lastSyncTimestamp: null,
+})
 
 export const updateTriggerAtom = atom(0)
 
