@@ -1,14 +1,10 @@
-import {execSync} from "node:child_process"
 import {clamp, countBy, mapObjIndexed} from "ramda"
 import {getWeekStart} from "./helpers/dates"
+import shell from "./helpers/shell"
 import writeLayer from "./helpers/writeLayer"
 
 if (!process.env.P_DIR) {
   throw new Error("P_DIR not defined")
-}
-
-function shell(command: string) {
-  return execSync(command, {encoding: "utf-8"}).trim()
 }
 
 export default function generateGitLayer(repoName: string) {

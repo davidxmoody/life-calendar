@@ -1,16 +1,12 @@
 import prompt from "prompt"
-import {execSync} from "node:child_process"
 import {sortBy} from "ramda"
 import {join} from "path"
 import moment from "moment"
 import fs from "fs"
 import {diaryPath} from "./helpers/directories"
+import shell from "./helpers/shell"
 
 const DATE_REGEX = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/
-
-function shell(command: string) {
-  return execSync(command, {encoding: "utf-8"}).trim()
-}
 
 function makeDir(dir: string) {
   shell(`mkdir -pv "${dir}"`)
