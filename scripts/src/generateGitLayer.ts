@@ -1,5 +1,6 @@
-import {clamp, countBy, mapObjIndexed} from "ramda"
+import {countBy, mapObjIndexed} from "ramda"
 import {getWeekStart} from "./helpers/dates"
+import formatScore from "./helpers/formatScore"
 import shell from "./helpers/shell"
 import writeLayer from "./helpers/writeLayer"
 
@@ -15,7 +16,7 @@ export default function generateGitLayer(repoName: string) {
     .sort()
 
   const scores = mapObjIndexed(
-    (x: number) => Math.round(clamp(0, 1, Math.pow(x / 7, 0.5)) * 1000) / 1000,
+    (x: number) => formatScore(Math.pow(x / 7, 0.5)),
     countBy((x) => x, commitDates.map(getWeekStart)),
   )
 

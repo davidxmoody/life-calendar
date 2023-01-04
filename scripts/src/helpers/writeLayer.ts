@@ -6,8 +6,17 @@ export default function writeLayer(
   layerName: string,
   layerData: Record<string, number | undefined>,
 ) {
-  const dirPath = diaryPath("layers", layerCategory)
-  const filePath = diaryPath("layers", layerCategory, `${layerName}.json`)
+  writeFile("layers", layerCategory, layerName, layerData)
+}
+
+export function writeFile(
+  topDir: "layers" | "data",
+  subDir: string,
+  name: string,
+  data: Object | Array<never>,
+) {
+  const dirPath = diaryPath(topDir, subDir)
+  const filePath = diaryPath(topDir, subDir, `${name}.json`)
 
   mkdirSync(dirPath, {recursive: true})
 
@@ -16,7 +25,7 @@ export default function writeLayer(
     existingContents = readFileSync(filePath, {encoding: "utf-8"})
   } catch {}
 
-  const newContents = JSON.stringify(layerData, null, 2)
+  const newContents = JSON.stringify(data, null, 2)
 
   const skip = newContents === existingContents
 
@@ -24,10 +33,11 @@ export default function writeLayer(
     writeFileSync(filePath, newContents)
   }
 
-  log(
-    `${layerCategory}/${layerName} (${Object.keys(layerData).length} weeks)`,
-    skip,
-  )
+  log(`${topDir}/${subDir}/${name} (${count(data)})`, skip)
+}
+
+function count(data: Object | Array<never>) {
+  return Array.isArray(data) ? data.length : Object.keys(data).length
 }
 
 function log(text: string, dim: boolean) {

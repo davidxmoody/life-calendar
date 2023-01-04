@@ -1,9 +1,10 @@
 import {readdirSync, readFileSync} from "node:fs"
 import {join} from "node:path"
-import {clamp, countBy, mapObjIndexed} from "ramda"
+import {countBy, mapObjIndexed} from "ramda"
 import {z} from "zod"
 import {dateRange, getWeekStart} from "./helpers/dates"
 import {diaryPath} from "./helpers/directories"
+import formatScore from "./helpers/formatScore"
 import writeLayer from "./helpers/writeLayer"
 
 const datesSchema = z.union([
@@ -33,8 +34,7 @@ export default function generateDatesLayers() {
     const maxValue = Math.max(getNintiethPercentile(weekStartCounts), 7)
 
     const scores = mapObjIndexed(
-      (x: number) =>
-        Math.round(clamp(0, 1, Math.pow(x / maxValue, 0.4)) * 1000) / 1000,
+      (x: number) => formatScore(Math.pow(x / maxValue, 0.4)),
       weekStartCounts,
     )
 
