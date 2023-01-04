@@ -1,6 +1,6 @@
 import {join} from "node:path"
 
-export function diaryPath(...paths: string[]) {
+export default function diaryPath(...paths: string[]) {
   const DIARY_DIR = process.env.DIARY_DIR
 
   if (!DIARY_DIR) {

@@ -1,6 +1,6 @@
 import {writeFileSync} from "node:fs"
 import {uniq} from "ramda"
-import {diaryPath} from "./helpers/directories"
+import diaryPath from "./helpers/diaryPath"
 
 const INPUT_FILE = process.env.INPUT_FILE
 

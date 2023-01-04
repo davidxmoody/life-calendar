@@ -2,7 +2,7 @@ import {countBy, mapObjIndexed} from "ramda"
 import {getWeekStart} from "./helpers/dates"
 import formatScore from "./helpers/formatScore"
 import shell from "./helpers/shell"
-import writeLayer from "./helpers/writeLayer"
+import writeDiaryFile from "./helpers/writeDiaryFile"
 
 if (!process.env.P_DIR) {
   throw new Error("P_DIR not defined")
@@ -20,5 +20,5 @@ export default function generateGitLayer(repoName: string) {
     countBy((x) => x, commitDates.map(getWeekStart)),
   )
 
-  writeLayer("git", repoName, scores)
+  writeDiaryFile("layers", "git", repoName, scores)
 }

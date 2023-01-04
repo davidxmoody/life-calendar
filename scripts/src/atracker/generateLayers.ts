@@ -1,9 +1,9 @@
 import {readFileSync} from "fs"
 import {mapObjIndexed} from "ramda"
 import {getWeekStart} from "../helpers/dates"
-import {diaryPath} from "../helpers/directories"
+import diaryPath from "../helpers/diaryPath"
 import formatScore from "../helpers/formatScore"
-import writeLayer from "../helpers/writeLayer"
+import writeDiaryFile from "../helpers/writeDiaryFile"
 import {CalendarEvent} from "./extract"
 
 const calendarEvents: CalendarEvent[] = JSON.parse(
@@ -36,5 +36,5 @@ for (const [category, weeklyDurations] of Object.entries(results)) {
     weeklyDurations,
   )
 
-  writeLayer("atracker", category, scores)
+  writeDiaryFile("layers", "atracker", category, scores)
 }

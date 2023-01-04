@@ -1,15 +1,7 @@
 import {writeFileSync, mkdirSync, readFileSync} from "node:fs"
-import {diaryPath} from "./directories"
+import diaryPath from "./diaryPath"
 
-export default function writeLayer(
-  layerCategory: string,
-  layerName: string,
-  layerData: Record<string, number | undefined>,
-) {
-  writeFile("layers", layerCategory, layerName, layerData)
-}
-
-export function writeFile(
+export default function writeDiaryFile(
   topDir: "layers" | "data",
   subDir: string,
   name: string,

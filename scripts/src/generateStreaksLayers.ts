@@ -2,8 +2,8 @@ import * as fs from "fs"
 import * as R from "ramda"
 import {join} from "path"
 import {getWeekStart} from "./helpers/dates"
-import {diaryPath} from "./helpers/directories"
-import writeLayer from "./helpers/writeLayer"
+import diaryPath from "./helpers/diaryPath"
+import writeDiaryFile from "./helpers/writeDiaryFile"
 import {z} from "zod"
 
 const shortEntrySchema = z.union([
@@ -52,6 +52,6 @@ export default function generateStreaksLayers() {
 
     const outputData = R.mapObjIndexed(scoreWeek, typesByWeek)
 
-    writeLayer("streaks", file.replace(/\.json$/, ""), outputData)
+    writeDiaryFile("layers", "streaks", file.replace(/\.json$/, ""), outputData)
   })
 }

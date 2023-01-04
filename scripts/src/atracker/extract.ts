@@ -1,7 +1,7 @@
 import {z} from "zod"
-import {diaryPath} from "../helpers/directories"
+import diaryPath from "../helpers/diaryPath"
 import shell from "../helpers/shell"
-import {writeFile} from "../helpers/writeLayer"
+import writeDiaryFile from "../helpers/writeDiaryFile"
 
 export interface CalendarEvent {
   id: string
@@ -52,4 +52,4 @@ const calendarEvents: CalendarEvent[] = rawData.map((x) => ({
   color: convertColor(x.color),
 }))
 
-writeFile("data", "events", "atracker", calendarEvents)
+writeDiaryFile("data", "events", "atracker", calendarEvents)

@@ -3,7 +3,7 @@ import {sortBy} from "ramda"
 import {join} from "path"
 import moment from "moment"
 import fs from "fs"
-import {diaryPath} from "./helpers/directories"
+import diaryPath from "./helpers/diaryPath"
 import shell from "./helpers/shell"
 
 const DATE_REGEX = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/

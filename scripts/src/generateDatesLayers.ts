@@ -3,9 +3,9 @@ import {join} from "node:path"
 import {countBy, mapObjIndexed} from "ramda"
 import {z} from "zod"
 import {dateRange, getWeekStart} from "./helpers/dates"
-import {diaryPath} from "./helpers/directories"
+import diaryPath from "./helpers/diaryPath"
 import formatScore from "./helpers/formatScore"
-import writeLayer from "./helpers/writeLayer"
+import writeDiaryFile from "./helpers/writeDiaryFile"
 
 const datesSchema = z.union([
   z.array(z.string()),
@@ -38,7 +38,7 @@ export default function generateDatesLayers() {
       weekStartCounts,
     )
 
-    writeLayer("dates", file.replace(/\.json$/, ""), scores)
+    writeDiaryFile("layers", "dates", file.replace(/\.json$/, ""), scores)
   })
 }
 
