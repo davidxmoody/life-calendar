@@ -5,6 +5,7 @@ import {atomWithStorage} from "jotai/utils"
 import {uniq} from "ramda"
 import {
   getEntriesForDay,
+  getEventsForDay,
   getHeadingsInRange,
   getLayerData,
   getLayerIds,
@@ -127,10 +128,12 @@ export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
   }))
 })
 
-export function createEntriesForDayAtom(date: string) {
+export function createDataForDayAtom(date: string) {
   return atom(async (get) => {
     get(updateTriggerAtom)
-    return getEntriesForDay(date)
+    const entries = await getEntriesForDay(date)
+    const events = await getEventsForDay(date)
+    return {entries, events}
   })
 }
 
