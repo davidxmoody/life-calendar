@@ -68,6 +68,10 @@ function StatsTable({
             <Td>Layers</Td>
             <Td isNumeric>{stats?.layers.toLocaleString()}</Td>
           </Tr>
+          <Tr>
+            <Td>Events</Td>
+            <Td isNumeric>{stats?.events.toLocaleString()}</Td>
+          </Tr>
         </Tbody>
         <TableCaption opacity={lastSyncTimestamp != null ? 1 : 0}>
           Last synced{" "}

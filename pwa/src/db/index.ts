@@ -275,6 +275,7 @@ export interface DBStats {
   audio: number
   layers: number
   images: number
+  events: number
 }
 
 export async function getStats(): Promise<DBStats> {
@@ -289,6 +290,7 @@ export async function getStats(): Promise<DBStats> {
   const scanned = await db.countFromIndex("entries", "type", "scanned")
   const audio = await db.countFromIndex("entries", "type", "audio")
   const images = await db.count("scanned")
+  const events = await db.count("events")
 
   return {
     lastSyncTimestamp,
@@ -297,6 +299,7 @@ export async function getStats(): Promise<DBStats> {
     audio,
     layers,
     images,
+    events,
   }
 }
 
