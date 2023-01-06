@@ -6,9 +6,14 @@ import formatScore from "../helpers/formatScore"
 import writeDiaryFile from "../helpers/writeDiaryFile"
 import {CalendarEvent} from "./extract"
 
-const calendarEvents: CalendarEvent[] = JSON.parse(
-  readFileSync(diaryPath("data", "events", "atracker.json"), "utf-8"),
-)
+const calendarEvents: CalendarEvent[] = [
+  ...JSON.parse(
+    readFileSync(diaryPath("data", "events", "old-atracker.json"), "utf-8"),
+  ),
+  ...JSON.parse(
+    readFileSync(diaryPath("data", "events", "atracker.json"), "utf-8"),
+  ),
+]
 
 const results: Record<string, Record<string, number>> = {}
 
