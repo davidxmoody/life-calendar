@@ -1,5 +1,3 @@
-/* eslint-disable no-loop-func */
-
 import {atom} from "jotai"
 import {atomWithStorage} from "jotai/utils"
 import {uniq} from "ramda"
@@ -58,7 +56,7 @@ export const selectedLayerDataAtom = atom(async (get) => {
   get(updateTriggerAtom)
   const selectedLayerIds = get(selectedLayerIdsAtom)
   const searchRegex = get(searchRegexAtom)
-  const lifeData = get(lifeDataAtom)
+  const lifeData = await get(lifeDataAtom)
 
   if (searchRegex) {
     const searchResults = await searchDb(searchRegex, {
@@ -98,7 +96,7 @@ type TimelineData = Array<{
 
 export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
   get(updateTriggerAtom)
-  const lifeData = get(lifeDataAtom)
+  const lifeData = await get(lifeDataAtom)
   const selectedYear = get(selectedYearAtom)
   const searchRegex = get(searchRegexAtom)
 
