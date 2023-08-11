@@ -1,8 +1,8 @@
-import prompt from "prompt"
+import * as prompt from "prompt"
 import {sortBy} from "ramda"
 import {join} from "path"
-import moment from "moment"
-import fs from "fs"
+import * as moment from "moment"
+import {writeFileSync} from "fs"
 import diaryPath from "./helpers/diaryPath"
 import shell from "./helpers/shell"
 
@@ -71,7 +71,7 @@ function importFile(inputFile: string, date: string, headings: string[]) {
   const metaContents = JSON.stringify(meta, null, 2) + "\n"
 
   makeParentDir(metaFile)
-  fs.writeFileSync(metaFile, metaContents)
+  writeFileSync(metaFile, metaContents)
   console.log("META", metaFile)
   console.log(metaContents)
 }

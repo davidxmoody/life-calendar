@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "import-scanned": "ts-node src/importScanned.ts",
     "generate-all-layers": "ts-node src/generateAllLayers.ts"
   },
   "dependencies": {
