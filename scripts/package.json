@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "import-scanned": "ts-node src/importScanned.ts",
-    "generate-all-layers": "ts-node src/generateAllLayers.ts"
+    "import-scanned": "tsx src/importScanned.ts",
+    "generate-all-layers": "tsx src/generateAllLayers.ts"
   },
   "dependencies": {
     "prompt": "^1.3.0",
@@ -16,7 +16,7 @@
     "@types/prompt": "^1.1.7",
     "@types/ramda": "^0.29.7",
     "prettier": "^3.0.3",
-    "ts-node": "^10.9.1",
+    "tsx": "^3.14.0",
     "typescript": "^5.2.2"
   }
 }
