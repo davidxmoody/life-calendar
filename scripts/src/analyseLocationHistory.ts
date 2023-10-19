@@ -84,8 +84,8 @@ for (const date of Object.keys(results)) {
 }
 
 for (const placeName of [...places.map((p) => p.name), "other"]) {
-  const dates = Object.keys(results).filter((date) =>
-    results[date]?.includes(placeName),
+  const dates = Object.keys(results).filter(
+    (date) => results[date]?.includes(placeName),
   )
   writeFileSync(
     diaryPath("data", "dates", `location-${placeName}.json`),

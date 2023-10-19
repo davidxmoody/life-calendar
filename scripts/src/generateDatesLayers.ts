@@ -26,7 +26,7 @@ export default function generateDatesLayers() {
       JSON.parse(readFileSync(join(INPUT_DIR, file), "utf-8")),
     )
 
-    const expandedDates = dates.flatMap((x: typeof dates[number]) =>
+    const expandedDates = dates.flatMap((x: (typeof dates)[number]) =>
       typeof x === "string" ? [x] : dateRange(x.start, x.end),
     )
 

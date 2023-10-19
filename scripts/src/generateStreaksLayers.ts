@@ -26,7 +26,7 @@ function scoreWeek(types: ShortEntryType[]): number {
   const score =
     Math.max(
       0,
-      R.sum(types.map((x) => ({completed: 1, skipped: 0.9, missed: -2}[x]))),
+      R.sum(types.map((x) => ({completed: 1, skipped: 0.9, missed: -2})[x])),
     ) / types.length
   const adjustedScore = score * 0.8 + 0.2
 
