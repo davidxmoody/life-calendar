@@ -88,6 +88,8 @@ function previewFile(previewDir: string, file: string) {
 }
 
 async function start() {
+  prompt.start()
+
   const inputDir = process.argv[2]
   if (!inputDir) {
     console.log("Requires dir as first arg")
@@ -148,5 +150,4 @@ async function start() {
   }
 }
 
-prompt.start()
 start()

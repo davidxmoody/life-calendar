@@ -1,4 +1,4 @@
-import moment = require("moment")
+import moment from "moment"
 
 export function getWeekStart(date: string): string {
   const mDate = moment(date, "YYYY-MM-DD", true)
