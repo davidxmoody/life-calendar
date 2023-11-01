@@ -3,6 +3,8 @@ import flow from "xml-flow"
 import homePath from "../helpers/homePath"
 import diaryPath from "../helpers/diaryPath"
 
+// TODO exclude data for last day (because it's probably incomplete)
+
 const importFile = homePath("Downloads", "apple_health_export", "export.xml")
 const outputFile = diaryPath("data", "apple-health.json")
 

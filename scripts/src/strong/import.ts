@@ -18,6 +18,30 @@ function getOneRepMax(weight: number, reps: number) {
   return Math.round(weight / (1.0278 - 0.0278 * reps))
 }
 
+// TODO attach "program" based on name
+// [
+//   {
+//     "name": "Beginner",
+//     "start": "2020-06-28"
+//   },
+//   {
+//     "name": "PPL",
+//     "start": "2020-09-23"
+//   },
+//   {
+//     "name": "Upper/Lower",
+//     "start": "2021-02-02"
+//   },
+//   {
+//     "name": "531",
+//     "start": "2021-09-29"
+//   },
+//   {
+//     "name": "GZCLP",
+//     "start": "2023-03-06"
+//   }
+// ]
+
 const dataToIgnore: Record<string, string[]> = {
   "2021-03-08": ["squat"],
   "2021-03-09": ["bench"],
@@ -69,7 +93,7 @@ for (const item of rawData) {
 const workoutDates = Object.keys(workouts).sort()
 const paddedDates = dateRange(
   rawData[0].Date.split(" ")[0],
-  workoutDates[workoutDates.length - 1]
+  workoutDates[workoutDates.length - 1],
 )
 
 const data = paddedDates.map((date) => {
@@ -91,7 +115,7 @@ const data = paddedDates.map((date) => {
   }
 
   const oneRepMaxes = Object.fromEntries(
-    Object.values(bestSets).map((set) => [set.exercise, set.oneRepMax])
+    Object.values(bestSets).map((set) => [set.exercise, set.oneRepMax]),
   )
 
   return {date, ...oneRepMaxes}
