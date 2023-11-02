@@ -12,17 +12,17 @@ const xmlStream = flow(createReadStream(importFile), {
   simplifyNodes: false,
 })
 
-type Category = "weight" | "food" | "activity"
+type Category = "weight" | "diet" | "activity"
 
 const data: Record<Category, Record<string, Record<string, number>>> = {
   weight: {},
-  food: {},
+  diet: {},
   activity: {},
 }
 
 const ranges: Record<Category, {minDate?: string; omitLast?: boolean}> = {
   weight: {minDate: "2017-10-22"},
-  food: {omitLast: true},
+  diet: {omitLast: true},
   activity: {minDate: "2017-12-16", omitLast: true},
 }
 
@@ -52,42 +52,42 @@ const recordParsers: Record<string, RecordParser> = {
   },
 
   DietaryEnergyConsumed: {
-    category: "food",
+    category: "diet",
     name: "calories",
     unit: "Cal",
     sourceNames: ["Calorie Counter"],
     round: 0,
   },
   DietaryProtein: {
-    category: "food",
+    category: "diet",
     name: "protein",
     unit: "g",
     sourceNames: ["Calorie Counter"],
     round: 1,
   },
   DietaryFatTotal: {
-    category: "food",
+    category: "diet",
     name: "fat",
     unit: "g",
     sourceNames: ["Calorie Counter"],
     round: 1,
   },
   DietaryCarbohydrates: {
-    category: "food",
+    category: "diet",
     name: "carbs",
     unit: "g",
     sourceNames: ["Calorie Counter"],
     round: 1,
   },
   DietarySugar: {
-    category: "food",
+    category: "diet",
     name: "sugar",
     unit: "g",
     sourceNames: ["Calorie Counter"],
     round: 1,
   },
   DietaryFiber: {
-    category: "food",
+    category: "diet",
     name: "fiber",
     unit: "g",
     sourceNames: ["Calorie Counter"],
