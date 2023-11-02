@@ -2,11 +2,9 @@ import {createReadStream, writeFileSync} from "fs"
 import flow from "xml-flow"
 import homePath from "../helpers/homePath"
 import diaryPath from "../helpers/diaryPath"
-
-// TODO exclude data for last day (because it's probably incomplete)
+import formatTsv from "../helpers/formatTsv"
 
 const importFile = homePath("Downloads", "apple_health_export", "export.xml")
-const outputFile = diaryPath("data", "apple-health.json")
 
 const xmlStream = flow(createReadStream(importFile), {
   trim: false,
@@ -14,131 +12,169 @@ const xmlStream = flow(createReadStream(importFile), {
   simplifyNodes: false,
 })
 
-const recordParsers: Record<
-  string,
-  {shortType: string; expectedUnit: string; sourceNames: string[]}
-> = {
-  HKQuantityTypeIdentifierBodyMass: {
-    shortType: "bodyMassLb",
-    expectedUnit: "lb",
+type Category = "weight" | "food" | "activity"
+
+const data: Record<Category, Record<string, Record<string, number>>> = {
+  weight: {},
+  food: {},
+  activity: {},
+}
+
+const ranges: Record<Category, {minDate?: string; omitLast?: boolean}> = {
+  weight: {minDate: "2017-10-22"},
+  food: {omitLast: true},
+  activity: {minDate: "2017-12-16", omitLast: true},
+}
+
+interface RecordParser {
+  category: Category
+  name: string
+  unit: string
+  sourceNames: string[]
+  round: number
+  sum?: boolean
+}
+
+const recordParsers: Record<string, RecordParser> = {
+  BodyMass: {
+    category: "weight",
+    name: "weight",
+    unit: "lb",
     sourceNames: ["Withings"],
+    round: 2,
   },
-  HKQuantityTypeIdentifierBodyFatPercentage: {
-    shortType: "bodyFat",
-    expectedUnit: "%",
+  BodyFatPercentage: {
+    category: "weight",
+    name: "fat",
+    unit: "%",
     sourceNames: ["Withings"],
-  },
-  HKQuantityTypeIdentifierLeanBodyMass: {
-    shortType: "leanBodyMassKg",
-    expectedUnit: "kg",
-    sourceNames: ["Withings"],
+    round: 3,
   },
 
-  HKQuantityTypeIdentifierDietaryEnergyConsumed: {
-    shortType: "eatenCalories",
-    expectedUnit: "Cal",
+  DietaryEnergyConsumed: {
+    category: "food",
+    name: "calories",
+    unit: "Cal",
     sourceNames: ["Calorie Counter"],
+    round: 0,
   },
-  HKQuantityTypeIdentifierDietaryProtein: {
-    shortType: "eatenProtein",
-    expectedUnit: "g",
+  DietaryProtein: {
+    category: "food",
+    name: "protein",
+    unit: "g",
     sourceNames: ["Calorie Counter"],
+    round: 1,
   },
-  HKQuantityTypeIdentifierDietarySugar: {
-    shortType: "eatenSugar",
-    expectedUnit: "g",
+  DietaryFatTotal: {
+    category: "food",
+    name: "fat",
+    unit: "g",
     sourceNames: ["Calorie Counter"],
+    round: 1,
   },
-  HKQuantityTypeIdentifierDietarySodium: {
-    shortType: "eatenSodium",
-    expectedUnit: "mg",
+  DietaryCarbohydrates: {
+    category: "food",
+    name: "carbs",
+    unit: "g",
     sourceNames: ["Calorie Counter"],
+    round: 1,
   },
-  HKQuantityTypeIdentifierDietaryFatTotal: {
-    shortType: "eatenFat",
-    expectedUnit: "g",
+  DietarySugar: {
+    category: "food",
+    name: "sugar",
+    unit: "g",
     sourceNames: ["Calorie Counter"],
+    round: 1,
   },
-  HKQuantityTypeIdentifierDietaryFatSaturated: {
-    shortType: "eatenFatSaturated",
-    expectedUnit: "g",
+  DietaryFiber: {
+    category: "food",
+    name: "fiber",
+    unit: "g",
     sourceNames: ["Calorie Counter"],
-  },
-  HKQuantityTypeIdentifierDietaryCarbohydrates: {
-    shortType: "eatenCarbs",
-    expectedUnit: "g",
-    sourceNames: ["Calorie Counter"],
-  },
-  HKQuantityTypeIdentifierDietaryFiber: {
-    shortType: "eatenFiber",
-    expectedUnit: "g",
-    sourceNames: ["Calorie Counter"],
+    round: 1,
   },
 
-  HKQuantityTypeIdentifierActiveEnergyBurned: {
-    shortType: "energyBurnedActive",
-    expectedUnit: "Cal",
+  ActiveEnergyBurned: {
+    category: "activity",
+    name: "activeCalories",
+    unit: "Cal",
     sourceNames: ["David’s Apple Watch"],
+    round: 0,
+    sum: true,
   },
-  HKQuantityTypeIdentifierBasalEnergyBurned: {
-    shortType: "energyBurnedBase",
-    expectedUnit: "kcal",
+  BasalEnergyBurned: {
+    category: "activity",
+    name: "basalCalories",
+    unit: "kcal",
     sourceNames: ["David’s Apple Watch"],
+    round: 0,
+    sum: true,
   },
-  HKQuantityTypeIdentifierStepCount: {
-    shortType: "stepCount",
-    expectedUnit: "count",
+  StepCount: {
+    category: "activity",
+    name: "stepCount",
+    unit: "count",
     sourceNames: ["David’s Apple Watch"],
+    round: 0,
+    sum: true,
   },
-  HKQuantityTypeIdentifierDistanceWalkingRunning: {
-    shortType: "distanceWalking",
-    expectedUnit: "mi",
+  DistanceWalkingRunning: {
+    category: "activity",
+    name: "distanceWalking",
+    unit: "mi",
     sourceNames: ["David’s Apple Watch"],
+    round: 2,
+    sum: true,
   },
-  HKQuantityTypeIdentifierDistanceCycling: {
-    shortType: "distanceCycling",
-    expectedUnit: "mi",
+  DistanceCycling: {
+    category: "activity",
+    name: "distanceCycling",
+    unit: "mi",
     sourceNames: ["David’s Apple Watch"],
+    round: 2,
+    sum: true,
   },
-  HKQuantityTypeIdentifierFlightsClimbed: {
-    shortType: "flightsClimbed",
-    expectedUnit: "count",
+  FlightsClimbed: {
+    category: "activity",
+    name: "flightsClimbed",
+    unit: "count",
     sourceNames: ["David’s Apple Watch"],
+    round: 0,
+    sum: true,
   },
 }
 
-let recordTypeCounts: Record<string, number> = {}
-let lastRecordType: string | null = null
-
-const parsedRecords: Array<{type: string; date: string; value: number}> = []
-
 xmlStream.on("tag:record", (record: any) => {
-  const recordType: string = record.$attrs?.type ?? "NONE"
-  recordTypeCounts[recordType] = (recordTypeCounts[recordType] ?? 0) + 1
-  if (lastRecordType && lastRecordType !== recordType) {
-    console.log(
-      `Read ${recordTypeCounts[lastRecordType]} records of type "${lastRecordType}"`
-    )
-  }
-  lastRecordType = recordType
+  const recordType: string =
+    record.$attrs?.type.replace(
+      /^(HKQuantityTypeIdentifier|HKCategoryTypeIdentifier|HKDataType)/,
+      ""
+    ) ?? "None"
 
-  const recordParser = recordParsers[recordType]
-  if (!recordParser) return
+  const parser = recordParsers[recordType]
+  if (!parser) return
 
-  const sourceName: string = record.$attrs.sourcename ?? "unknown"
-  if (!recordParser.sourceNames.includes(sourceName)) {
-    return
-  }
+  const sourceName: string = record.$attrs.sourcename ?? "Unknown"
+  if (!parser.sourceNames.includes(sourceName)) return
 
-  const date = record.$attrs.enddate?.split(" ")[0]
+  const date = record.$attrs.enddate?.split(" ")[0] as string
   const value = parseFloat(record.$attrs.value)
-  const unit = record.$attrs.unit
-  if (unit !== recordParser.expectedUnit) {
+  const unit = record.$attrs.unit as string
+
+  if (unit !== parser.unit) {
     throw new Error(
-      `Found unit type of "${unit}" but expected "${recordParser.expectedUnit}" when parsing ${recordParser.shortType} record`
+      `Found unit of "${unit}" but expected "${parser.unit}" when parsing ${recordType}`
     )
   }
-  parsedRecords.push({type: recordParser.shortType, date, value})
+
+  if (!data[parser.category][date]) data[parser.category][date] = {}
+
+  if (parser.sum) {
+    const existingValue = data[parser.category][date][parser.name] ?? 0
+    data[parser.category][date][parser.name] = existingValue + value
+  } else {
+    data[parser.category][date][parser.name] = value
+  }
 })
 
 // xmlStream.on("tag:workout", (workout: any) => {
@@ -177,38 +213,29 @@ xmlStream.on("tag:record", (record: any) => {
 // })
 
 xmlStream.on("end", () => {
-  const typesToSum: Record<string, boolean> = {
-    energyBurnedActive: true,
-    energyBurnedBase: true,
-    stepCount: true,
-    distanceWalking: true,
-    distanceCycling: true,
-    flightsClimbed: true,
+  for (const category of Object.keys(data) as Category[]) {
+    const categoryParsers = Object.values(recordParsers).filter(
+      (p) => p.category === category
+    )
+
+    const sortedDates = Object.keys(data[category])
+      .sort()
+      .filter((d) => d >= (ranges[category].minDate ?? "0000-00-00"))
+      .slice(0, ranges[category].omitLast ? -1 : undefined)
+
+    const columns = ["date", ...categoryParsers.map((p) => p.name)]
+    const roundedCategoryData = sortedDates.map((date) =>
+      Object.fromEntries([
+        ["date", date],
+        ...categoryParsers.map((p) => [
+          p.name,
+          data[category][date][p.name]?.toFixed(p.round) ?? "",
+        ]),
+      ])
+    )
+
+    const outputFile = diaryPath("data", `${category}.tsv`)
+    const tsvContents = formatTsv(columns, roundedCategoryData)
+    writeFileSync(outputFile, tsvContents)
   }
-
-  const data: Record<string, Record<string, number>> = {}
-
-  for (const record of parsedRecords) {
-    data[record.type] = data[record.type] ?? {}
-    if (typesToSum[record.type]) {
-      const existingValue = data[record.type][record.date] ?? 0
-      data[record.type][record.date] = existingValue + record.value
-    } else {
-      data[record.type][record.date] = record.value
-    }
-  }
-
-  function sortKeys(object: any): any {
-    const newObject: any = {}
-    for (const key of Object.keys(object).sort()) {
-      newObject[key] = object[key]
-    }
-    return newObject
-  }
-
-  for (const recordType of Object.keys(data)) {
-    data[recordType] = sortKeys(data[recordType])
-  }
-
-  writeFileSync(outputFile, JSON.stringify(data, null, 2))
 })
