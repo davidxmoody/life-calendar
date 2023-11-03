@@ -15,7 +15,6 @@ interface StrengthWorkout {
     name: string
     bestOneRepMax?: number
     sets: Array<{
-      warmup?: boolean
       weight: number
       reps: number
       durationSeconds?: number
@@ -115,7 +114,6 @@ for (const item of rawData) {
   const oneRepMax = getOneRepMax(weight, reps)
 
   last(exercises)!.sets.push({
-    // warmup: false, // TODO
     weight,
     reps,
     durationSeconds: parseFloat(item.Seconds) || undefined,
@@ -125,8 +123,6 @@ for (const item of rawData) {
   last(exercises)!.bestOneRepMax =
     Math.max(last(exercises)!.bestOneRepMax ?? 0, oneRepMax) || undefined
 }
-
-// console.log(JSON.stringify(workouts, null, 2))
 
 const dataToIgnore: Record<string, string[]> = {
   "Deadlift (Barbell)": ["2023-05-09"],
