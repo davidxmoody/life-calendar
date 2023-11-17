@@ -4,6 +4,7 @@ import {
   Box,
   Heading,
   Link,
+  ListItem,
   OrderedList,
   Text,
   UnorderedList,
@@ -58,7 +59,15 @@ function MarkdownImage(props: {src?: string; alt?: string}) {
 }
 
 function MarkdownOrderedList(props: {children: React.ReactNode}) {
-  return <OrderedList mb={paraMarginBottom}>{props.children}</OrderedList>
+  return (
+    <OrderedList
+      mb={paraMarginBottom}
+      listStylePosition="inside"
+      marginInlineStart={0}
+    >
+      {props.children}
+    </OrderedList>
+  )
 }
 
 function MarkdownUnorderedList(props: {children: React.ReactNode}) {
@@ -67,7 +76,7 @@ function MarkdownUnorderedList(props: {children: React.ReactNode}) {
 
 function MarkdownListItem(props: {children: React.ReactNode}) {
   return (
-    <HighlightedText addDateLinks as="li">
+    <HighlightedText addDateLinks as={ListItem}>
       {props.children}
     </HighlightedText>
   )
