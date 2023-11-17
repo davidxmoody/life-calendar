@@ -148,7 +148,7 @@ xmlStream.on("tag:record", (record: any) => {
   const recordType: string =
     record.$attrs?.type.replace(
       /^(HKQuantityTypeIdentifier|HKCategoryTypeIdentifier|HKDataType)/,
-      ""
+      "",
     ) ?? "None"
 
   const parser = recordParsers[recordType]
@@ -163,7 +163,7 @@ xmlStream.on("tag:record", (record: any) => {
 
   if (unit !== parser.unit) {
     throw new Error(
-      `Found unit of "${unit}" but expected "${parser.unit}" when parsing ${recordType}`
+      `Found unit of "${unit}" but expected "${parser.unit}" when parsing ${recordType}`,
     )
   }
 
@@ -213,15 +213,22 @@ xmlStream.on("tag:record", (record: any) => {
 // })
 
 xmlStream.on("end", () => {
+  const lastDate = Object.values(data)
+    .flatMap((categoryData) => Object.keys(categoryData))
+    .reduce((a, b) => (a > b ? a : b))
+
   for (const category of Object.keys(data) as Category[]) {
     const categoryParsers = Object.values(recordParsers).filter(
-      (p) => p.category === category
+      (p) => p.category === category,
     )
 
     const sortedDates = Object.keys(data[category])
       .sort()
-      .filter((d) => d >= (ranges[category].minDate ?? "0000-00-00"))
-      .slice(0, ranges[category].omitLast ? -1 : undefined)
+      .filter(
+        (d) =>
+          d >= (ranges[category].minDate ?? "0000-00-00") &&
+          d < (ranges[category].omitLast ? lastDate : "9999-99-99"),
+      )
 
     const columns = ["date", ...categoryParsers.map((p) => p.name)]
     const roundedCategoryData = sortedDates.map((date) =>
@@ -231,7 +238,7 @@ xmlStream.on("end", () => {
           p.name,
           data[category][date][p.name]?.toFixed(p.round) ?? "",
         ]),
-      ])
+      ]),
     )
 
     const outputFile = diaryPath("data", `${category}.tsv`)
