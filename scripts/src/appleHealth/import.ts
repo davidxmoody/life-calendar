@@ -39,19 +39,23 @@ interface RecordParser {
   duration?: boolean
 }
 
+const weightSources = ["Withings"]
+const dietSources = ["Calorie Counter", "YAZIO"]
+const activitySources = ["David’s Apple Watch"]
+
 const recordParsers: Record<string, RecordParser> = {
   BodyMass: {
     category: "weight",
     name: "weight",
     unit: "lb",
-    sourceNames: ["Withings"],
+    sourceNames: weightSources,
     round: 2,
   },
   BodyFatPercentage: {
     category: "weight",
     name: "fat",
     unit: "%",
-    sourceNames: ["Withings"],
+    sourceNames: weightSources,
     round: 3,
   },
 
@@ -59,50 +63,56 @@ const recordParsers: Record<string, RecordParser> = {
     category: "diet",
     name: "calories",
     unit: "Cal",
-    sourceNames: ["Calorie Counter"],
+    sourceNames: dietSources,
     round: 0,
+    sum: true,
   },
   DietaryProtein: {
     category: "diet",
     name: "protein",
     unit: "g",
-    sourceNames: ["Calorie Counter"],
+    sourceNames: dietSources,
     round: 1,
+    sum: true,
   },
   DietaryFatTotal: {
     category: "diet",
     name: "fat",
     unit: "g",
-    sourceNames: ["Calorie Counter"],
+    sourceNames: dietSources,
     round: 1,
+    sum: true,
   },
   DietaryCarbohydrates: {
     category: "diet",
     name: "carbs",
     unit: "g",
-    sourceNames: ["Calorie Counter"],
+    sourceNames: dietSources,
     round: 1,
+    sum: true,
   },
   DietarySugar: {
     category: "diet",
     name: "sugar",
     unit: "g",
-    sourceNames: ["Calorie Counter"],
+    sourceNames: dietSources,
     round: 1,
+    sum: true,
   },
   DietaryFiber: {
     category: "diet",
     name: "fiber",
     unit: "g",
-    sourceNames: ["Calorie Counter"],
+    sourceNames: dietSources,
     round: 1,
+    sum: true,
   },
 
   ActiveEnergyBurned: {
     category: "activity",
     name: "activeCalories",
     unit: "Cal",
-    sourceNames: ["David’s Apple Watch"],
+    sourceNames: activitySources,
     round: 0,
     sum: true,
   },
@@ -110,7 +120,7 @@ const recordParsers: Record<string, RecordParser> = {
     category: "activity",
     name: "basalCalories",
     unit: "kcal",
-    sourceNames: ["David’s Apple Watch"],
+    sourceNames: activitySources,
     round: 0,
     sum: true,
   },
@@ -118,7 +128,7 @@ const recordParsers: Record<string, RecordParser> = {
     category: "activity",
     name: "stepCount",
     unit: "count",
-    sourceNames: ["David’s Apple Watch"],
+    sourceNames: activitySources,
     round: 0,
     sum: true,
   },
@@ -126,7 +136,7 @@ const recordParsers: Record<string, RecordParser> = {
     category: "activity",
     name: "distanceWalking",
     unit: "mi",
-    sourceNames: ["David’s Apple Watch"],
+    sourceNames: activitySources,
     round: 2,
     sum: true,
   },
@@ -134,7 +144,7 @@ const recordParsers: Record<string, RecordParser> = {
     category: "activity",
     name: "distanceCycling",
     unit: "mi",
-    sourceNames: ["David’s Apple Watch"],
+    sourceNames: activitySources,
     round: 2,
     sum: true,
   },
@@ -142,7 +152,7 @@ const recordParsers: Record<string, RecordParser> = {
     category: "activity",
     name: "flightsClimbed",
     unit: "count",
-    sourceNames: ["David’s Apple Watch"],
+    sourceNames: activitySources,
     round: 0,
     sum: true,
   },
@@ -169,6 +179,10 @@ xmlStream.on("tag:record", (record: any) => {
 
   const sourceName: string = record.$attrs.sourcename ?? "Unknown"
   if (!parser.sourceNames.includes(sourceName)) return
+
+  // YAZIO started recording <Correlation> blocks which duplicate records. The
+  // level of nesting is the only easy way I can see to ignore them.
+  if (record?.$markup?.[0]?.length === 4) return
 
   const date = record.$attrs.enddate?.split(" ")[0] as string
   const value = parser.duration
