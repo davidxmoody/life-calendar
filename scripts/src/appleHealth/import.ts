@@ -3,6 +3,7 @@ import flow from "xml-flow"
 import homePath from "../helpers/homePath"
 import diaryPath from "../helpers/diaryPath"
 import formatTsv from "../helpers/formatTsv"
+import {parseDurationMinutes} from "../helpers/dates"
 
 const importFile = homePath("Downloads", "apple_health_export", "export.xml")
 
@@ -12,27 +13,30 @@ const xmlStream = flow(createReadStream(importFile), {
   simplifyNodes: false,
 })
 
-type Category = "weight" | "diet" | "activity"
+type Category = "weight" | "diet" | "activity" | "meditation"
 
 const data: Record<Category, Record<string, Record<string, number>>> = {
   weight: {},
   diet: {},
   activity: {},
+  meditation: {},
 }
 
-const ranges: Record<Category, {minDate?: string; omitLast?: boolean}> = {
+const options: Record<Category, {minDate?: string; omitLast?: boolean}> = {
   weight: {minDate: "2017-10-22"},
   diet: {omitLast: true},
   activity: {minDate: "2017-12-16", omitLast: true},
+  meditation: {},
 }
 
 interface RecordParser {
   category: Category
   name: string
-  unit: string
+  unit?: string
   sourceNames: string[]
   round: number
   sum?: boolean
+  duration?: boolean
 }
 
 const recordParsers: Record<string, RecordParser> = {
@@ -142,6 +146,15 @@ const recordParsers: Record<string, RecordParser> = {
     round: 0,
     sum: true,
   },
+
+  MindfulSession: {
+    category: "meditation",
+    name: "mindfulMinutes",
+    sourceNames: ["Headspace", "David’s Apple Watch"],
+    round: 0,
+    sum: true,
+    duration: true,
+  },
 }
 
 xmlStream.on("tag:record", (record: any) => {
@@ -158,10 +171,12 @@ xmlStream.on("tag:record", (record: any) => {
   if (!parser.sourceNames.includes(sourceName)) return
 
   const date = record.$attrs.enddate?.split(" ")[0] as string
-  const value = parseFloat(record.$attrs.value)
-  const unit = record.$attrs.unit as string
+  const value = parser.duration
+    ? parseDurationMinutes(record.$attrs.startdate, record.$attrs.enddate)
+    : parseFloat(record.$attrs.value)
+  const unit = record.$attrs.unit as string | undefined
 
-  if (unit !== parser.unit) {
+  if (parser.unit && parser.unit !== unit) {
     throw new Error(
       `Found unit of "${unit}" but expected "${parser.unit}" when parsing ${recordType}`,
     )
@@ -226,8 +241,8 @@ xmlStream.on("end", () => {
       .sort()
       .filter(
         (d) =>
-          d >= (ranges[category].minDate ?? "0000-00-00") &&
-          d < (ranges[category].omitLast ? lastDate : "9999-99-99"),
+          d >= (options[category].minDate ?? "0000-00-00") &&
+          d < (options[category].omitLast ? lastDate : "9999-99-99"),
       )
 
     const columns = ["date", ...categoryParsers.map((p) => p.name)]

@@ -19,3 +19,8 @@ export function dateRange(start: string, end: string) {
   }
   return result
 }
+
+export function parseDurationMinutes(start: string, end: string) {
+  const duration = moment.duration(moment(end).diff(start))
+  return duration.asMinutes()
+}
