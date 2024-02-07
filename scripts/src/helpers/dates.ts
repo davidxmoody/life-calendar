@@ -14,13 +14,8 @@ export function dateRange(start: string, end: string) {
     result.push(
       moment(result[result.length - 1])
         .add(1, "day")
-        .format("YYYY-MM-DD"),
+        .format("YYYY-MM-DD")
     )
   }
   return result
-}
-
-export function parseDurationMinutes(start: string, end: string) {
-  const duration = moment.duration(moment(end).diff(start))
-  return duration.asMinutes()
 }
