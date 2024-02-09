@@ -12,10 +12,6 @@ export function getNextWeekStart(date: string): string {
   return moment(date).isoWeekday(8).format("YYYY-MM-DD")
 }
 
-export function getPrevWeekStart(date: string): string {
-  return moment(date).isoWeekday(-6).format("YYYY-MM-DD")
-}
-
 export function parseYear(date: string) {
   return parseInt(date.slice(0, 4), 10)
 }

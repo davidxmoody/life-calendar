@@ -31,8 +31,6 @@ export interface AudioEntry {
 
 export type Entry = MarkdownEntry | ScannedEntry | AudioEntry
 
-export type EntryContentType = Entry["type"]
-
 export type LayerData = Record<string, number | undefined>
 
 export interface Layer {
