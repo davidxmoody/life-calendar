@@ -14,17 +14,17 @@ import HighlightedText from "./HighlightedText"
 const paraMarginBottom = 5
 const codeBackgroudColor = "rgba(120, 120, 120, 0.5)"
 
-function MarkdownHeading(props: {level: number; children: React.ReactNode}) {
-  const size = {"1": "xl", "2": "xl", "3": "lg"}[props.level] ?? "md"
-
-  return (
-    <Heading size={size} mb={4}>
-      <HighlightedText addDateLinks>{props.children}</HighlightedText>
-    </Heading>
-  )
+function makeMarkdownHeading(size: string) {
+  return function MarkdownHeading(props: {children?: React.ReactNode}) {
+    return (
+      <Heading size={size} mb={4}>
+        <HighlightedText addDateLinks>{props.children}</HighlightedText>
+      </Heading>
+    )
+  }
 }
 
-function MarkdownLink(props: {href?: string; children: React.ReactNode}) {
+function MarkdownLink(props: {href?: string; children?: React.ReactNode}) {
   return (
     <Link href={props.href} isExternal rel="noreferrer" color="teal.500">
       {props.children}
@@ -32,7 +32,7 @@ function MarkdownLink(props: {href?: string; children: React.ReactNode}) {
   )
 }
 
-function MarkdownParagraph(props: {children: React.ReactNode}) {
+function MarkdownParagraph(props: {children?: React.ReactNode}) {
   return (
     <Text mb={paraMarginBottom}>
       <HighlightedText addDateLinks>{props.children}</HighlightedText>
@@ -40,7 +40,7 @@ function MarkdownParagraph(props: {children: React.ReactNode}) {
   )
 }
 
-function MarkdownBlockquote(props: {children: React.ReactNode}) {
+function MarkdownBlockquote(props: {children?: React.ReactNode}) {
   return (
     <Box
       pl={4}
@@ -58,7 +58,7 @@ function MarkdownImage(props: {src?: string; alt?: string}) {
   return <img style={{maxWidth: "100%"}} src={props.src} alt={props.alt} />
 }
 
-function MarkdownOrderedList(props: {children: React.ReactNode}) {
+function MarkdownOrderedList(props: {children?: React.ReactNode}) {
   return (
     <OrderedList
       mb={paraMarginBottom}
@@ -70,11 +70,11 @@ function MarkdownOrderedList(props: {children: React.ReactNode}) {
   )
 }
 
-function MarkdownUnorderedList(props: {children: React.ReactNode}) {
+function MarkdownUnorderedList(props: {children?: React.ReactNode}) {
   return <UnorderedList mb={paraMarginBottom}>{props.children}</UnorderedList>
 }
 
-function MarkdownListItem(props: {children: React.ReactNode}) {
+function MarkdownListItem(props: {children?: React.ReactNode}) {
   return (
     <HighlightedText addDateLinks as={ListItem}>
       {props.children}
@@ -82,7 +82,7 @@ function MarkdownListItem(props: {children: React.ReactNode}) {
   )
 }
 
-function MarkdownCode(props: {inline?: boolean; children: React.ReactNode}) {
+function MarkdownCode(props: {inline?: boolean; children?: React.ReactNode}) {
   return props.inline ? (
     <Box
       as="code"
@@ -107,7 +107,7 @@ function MarkdownCode(props: {inline?: boolean; children: React.ReactNode}) {
   )
 }
 
-function MarkdownEmphasis(props: {children: React.ReactNode}) {
+function MarkdownEmphasis(props: {children?: React.ReactNode}) {
   return (
     <HighlightedText addDateLinks as="em">
       {props.children}
@@ -115,7 +115,7 @@ function MarkdownEmphasis(props: {children: React.ReactNode}) {
   )
 }
 
-function MarkdownStrong(props: {children: React.ReactNode}) {
+function MarkdownStrong(props: {children?: React.ReactNode}) {
   return (
     <HighlightedText addDateLinks as="strong">
       {props.children}
@@ -139,12 +139,12 @@ const components: Components = {
   blockquote: MarkdownBlockquote,
   code: MarkdownCode,
   em: MarkdownEmphasis,
-  h1: MarkdownHeading,
-  h2: MarkdownHeading,
-  h3: MarkdownHeading,
-  h4: MarkdownHeading,
-  h5: MarkdownHeading,
-  h6: MarkdownHeading,
+  h1: makeMarkdownHeading("xl"),
+  h2: makeMarkdownHeading("xl"),
+  h3: makeMarkdownHeading("lg"),
+  h4: makeMarkdownHeading("md"),
+  h5: makeMarkdownHeading("md"),
+  h6: makeMarkdownHeading("md"),
   hr: HorizontalRule,
   img: MarkdownImage,
   li: MarkdownListItem,
