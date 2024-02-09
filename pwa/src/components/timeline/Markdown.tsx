@@ -12,16 +12,19 @@ import {
 import HighlightedText from "./HighlightedText"
 
 const paraMarginBottom = 5
-const codeBackgroudColor = "rgba(120, 120, 120, 0.5)"
+const codeBackgroudColor = "gray.600"
 
-function makeMarkdownHeading(size: string) {
-  return function MarkdownHeading(props: {children?: React.ReactNode}) {
-    return (
-      <Heading size={size} mb={4}>
-        <HighlightedText addDateLinks>{props.children}</HighlightedText>
-      </Heading>
-    )
-  }
+function MarkdownHeading(props: {
+  node?: {tagName: string}
+  children?: React.ReactNode
+}) {
+  const size = {h1: "xl", h2: "xl", h3: "lg"}[props.node?.tagName ?? ""] ?? "md"
+
+  return (
+    <Heading size={size} mb={4}>
+      <HighlightedText addDateLinks>{props.children}</HighlightedText>
+    </Heading>
+  )
 }
 
 function MarkdownLink(props: {href?: string; children?: React.ReactNode}) {
@@ -82,26 +85,23 @@ function MarkdownListItem(props: {children?: React.ReactNode}) {
   )
 }
 
-function MarkdownCode(props: {inline?: boolean; children?: React.ReactNode}) {
-  return props.inline ? (
+function MarkdownPre(props: {children?: React.ReactNode}) {
+  return (
     <Box
-      as="code"
-      backgroundColor={codeBackgroudColor}
-      borderRadius="sm"
-      px={1}
-    >
-      <HighlightedText addDateLinks>{props.children}</HighlightedText>
-    </Box>
-  ) : (
-    <Box
-      display="block"
-      as="code"
       mb={paraMarginBottom}
       backgroundColor={codeBackgroudColor}
+      borderRadius={3}
       py={2}
       px={3}
-      borderRadius={3}
     >
+      {props.children}
+    </Box>
+  )
+}
+
+function MarkdownCode(props: {inline?: boolean; children?: React.ReactNode}) {
+  return (
+    <Box as="code" backgroundColor={codeBackgroudColor} borderRadius="sm">
       <HighlightedText addDateLinks>{props.children}</HighlightedText>
     </Box>
   )
@@ -139,17 +139,18 @@ const components: Components = {
   blockquote: MarkdownBlockquote,
   code: MarkdownCode,
   em: MarkdownEmphasis,
-  h1: makeMarkdownHeading("xl"),
-  h2: makeMarkdownHeading("xl"),
-  h3: makeMarkdownHeading("lg"),
-  h4: makeMarkdownHeading("md"),
-  h5: makeMarkdownHeading("md"),
-  h6: makeMarkdownHeading("md"),
+  h1: MarkdownHeading,
+  h2: MarkdownHeading,
+  h3: MarkdownHeading,
+  h4: MarkdownHeading,
+  h5: MarkdownHeading,
+  h6: MarkdownHeading,
   hr: HorizontalRule,
   img: MarkdownImage,
   li: MarkdownListItem,
   ol: MarkdownOrderedList,
   p: MarkdownParagraph,
+  pre: MarkdownPre,
   strong: MarkdownStrong,
   ul: MarkdownUnorderedList,
 }
