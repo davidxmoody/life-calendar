@@ -1,9 +1,9 @@
+import * as cors from "cors"
 import * as express from "express"
-import {getLayers} from "./db/layers"
-import {getEntries} from "./db/entries"
 import {readFileSync} from "fs"
 import * as https from "https"
-import * as cors from "cors"
+import {getEntries} from "./db/entries"
+import {getLayers} from "./db/layers"
 import {getLifeData} from "./db/lifeData"
 
 if (
@@ -67,7 +67,7 @@ app.get("/sync", async (req, res) => {
   const entries = await getEntries(sinceMs)
   const lifeData = await getLifeData(sinceMs)
 
-  res.send({timestamp, layers, entries, lifeData, events: []})
+  res.send({timestamp, layers, entries, lifeData})
 })
 
 https.createServer({key: SSL_KEY, cert: SSL_CERT}, app).listen(LISTEN_PORT)

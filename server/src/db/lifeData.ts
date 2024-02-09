@@ -1,10 +1,5 @@
-import {readFile as readFileCallback} from "fs"
-import {stat as statCallback} from "fs"
-import {LifeData} from "src/types"
-import {promisify} from "util"
-
-const stat = promisify(statCallback)
-const readFile = promisify(readFileCallback)
+import {readFile, stat} from "fs/promises"
+import {LifeData} from "../types"
 
 const FILE_PATH = "data/life-data.json"
 

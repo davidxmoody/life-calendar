@@ -1,10 +1,7 @@
-import {readFile as readFileCallback} from "fs"
-import {AudioEntry, Entry, MarkdownEntry, ScannedEntry} from "src/types"
-import {promisify} from "util"
-import globSince from "./globSince"
 import {map as promiseMap} from "bluebird"
-
-const readFile = promisify(readFileCallback)
+import {readFile} from "fs/promises"
+import {AudioEntry, Entry, MarkdownEntry, ScannedEntry} from "../types"
+import globSince from "./globSince"
 
 async function getMarkdownEntry(file: string): Promise<MarkdownEntry> {
   const content = await readFile(file, "utf8")
