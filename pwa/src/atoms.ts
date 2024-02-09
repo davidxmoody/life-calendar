@@ -3,7 +3,6 @@ import {atomWithStorage} from "jotai/utils"
 import {uniq} from "ramda"
 import {
   getEntriesForDay,
-  getEventsForDay,
   getHeadingsInRange,
   getLayerData,
   getLayerIds,
@@ -130,8 +129,7 @@ export function createDataForDayAtom(date: string) {
   return atom(async (get) => {
     get(updateTriggerAtom)
     const entries = await getEntriesForDay(date)
-    const events = await getEventsForDay(date)
-    return {entries, events}
+    return {entries}
   })
 }
 

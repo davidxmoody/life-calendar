@@ -1,26 +1,13 @@
 /* eslint-disable no-fallthrough */
 
 import {DBSchema, openDB} from "idb"
-import {
-  CalendarEvent,
-  Entry,
-  IndexableCalendarEvent,
-  Layer,
-  LifeData,
-  ScannedEntry,
-} from "../types"
+import {Entry, Layer, LifeData, ScannedEntry} from "../types"
 import {authedFetch} from "../helpers/auth"
 import recalculateEntriesLayers from "./recalculateEntriesLayers"
-import {
-  addDays,
-  dateRange,
-  getNextWeekStart,
-  getWeekStart,
-} from "../helpers/dates"
+import {addDays, getNextWeekStart, getWeekStart} from "../helpers/dates"
 import {uniq} from "ramda"
 import getHeadings from "../helpers/getHeadings"
 import search from "./search"
-import moment from "moment"
 
 interface DataDBSchema extends DBSchema {
   entries: {
@@ -48,14 +35,9 @@ interface DataDBSchema extends DBSchema {
     key: "lifeData"
     value: LifeData
   }
-  events: {
-    key: string
-    value: IndexableCalendarEvent
-    indexes: {date: string}
-  }
 }
 
-const dbPromise = openDB<DataDBSchema>("data", 7, {
+const dbPromise = openDB<DataDBSchema>("data", 8, {
   upgrade(db, oldVersion, _newVersion, transaction) {
     switch (oldVersion) {
       case 0:
@@ -72,11 +54,9 @@ const dbPromise = openDB<DataDBSchema>("data", 7, {
       case 5:
         db.createObjectStore("cachedHeadings", {keyPath: "date"})
       case 6:
-        db.createObjectStore("events", {keyPath: "id"}).createIndex(
-          "date",
-          "dates",
-          {multiEntry: true},
-        )
+        db.createObjectStore("events" as any)
+      case 7:
+        db.deleteObjectStore("events" as any)
     }
   },
   blocked() {
@@ -105,10 +85,6 @@ export async function getEntriesForDay(date: string) {
     "entries",
     IDBKeyRange.bound(date, addDays(date, 1)),
   )
-}
-
-export async function getEventsForDay(date: string): Promise<CalendarEvent[]> {
-  return (await dbPromise).getAllFromIndex("events", "date", date)
 }
 
 export async function getHeadingsInRange(
@@ -142,19 +118,17 @@ export async function sync({fullSync}: {fullSync: boolean}) {
     entries,
     layers,
     lifeData,
-    events,
   }: {
     timestamp: number
     entries: Entry[]
     layers: Layer[]
     lifeData: LifeData | null
-    events: CalendarEvent[]
   } = await authedFetch(
     `/sync${lastSyncTimestamp ? `?sinceMs=${lastSyncTimestamp}` : ""}`,
   ).then((res) => res.json())
 
   const tx = db.transaction(
-    ["lifeData", "entries", "layers", "config", "cachedHeadings", "events"],
+    ["lifeData", "entries", "layers", "config", "cachedHeadings"],
     "readwrite",
   )
 
@@ -164,7 +138,6 @@ export async function sync({fullSync}: {fullSync: boolean}) {
     await tx.objectStore("layers").clear()
     await tx.objectStore("config").clear()
     await tx.objectStore("cachedHeadings").clear()
-    await tx.objectStore("events").clear()
   }
 
   if (lifeData) {
@@ -188,14 +161,6 @@ export async function sync({fullSync}: {fullSync: boolean}) {
 
   for (const layer of layers) {
     await tx.objectStore("layers").put(layer)
-  }
-
-  for (const event of events) {
-    const startDate = moment(event.start * 1000).format("YYYY-MM-DD")
-    const endDate = moment(event.end * 1000).format("YYYY-MM-DD")
-    const dates = dateRange(startDate, addDays(endDate, 1))
-
-    await tx.objectStore("events").put({...event, dates})
   }
 
   await recalculateEntriesLayers({
@@ -275,7 +240,6 @@ export interface DBStats {
   audio: number
   layers: number
   images: number
-  events: number
 }
 
 export async function getStats(): Promise<DBStats> {
@@ -290,7 +254,6 @@ export async function getStats(): Promise<DBStats> {
   const scanned = await db.countFromIndex("entries", "type", "scanned")
   const audio = await db.countFromIndex("entries", "type", "audio")
   const images = await db.count("scanned")
-  const events = await db.count("events")
 
   return {
     lastSyncTimestamp,
@@ -299,7 +262,6 @@ export async function getStats(): Promise<DBStats> {
     audio,
     layers,
     images,
-    events,
   }
 }
 

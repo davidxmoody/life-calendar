@@ -51,15 +51,3 @@ export interface LifeData {
   deathDate: string
   eras: Era[]
 }
-
-export interface CalendarEvent {
-  id: string
-  start: number
-  end: number
-  category: string
-  color: string
-}
-
-export interface IndexableCalendarEvent extends CalendarEvent {
-  dates: string[]
-}

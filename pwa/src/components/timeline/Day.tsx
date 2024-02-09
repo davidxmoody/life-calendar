@@ -3,13 +3,12 @@ import {Atom, useAtomValue} from "jotai"
 import {memo, startTransition, useRef, useState} from "react"
 import {createDataForDayAtom, nullAtom} from "../../atoms"
 import {prettyFormatDateTime} from "../../helpers/dates"
-import {CalendarEvent, Entry, MarkdownEntry} from "../../types"
+import {Entry, MarkdownEntry} from "../../types"
 import HighlightedText from "./HighlightedText"
 import AudioPlayer from "./AudioPlayer"
 import Markdown from "./Markdown"
 import ScannedPage from "./ScannedPage"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
-import Events from "./Events"
 
 const borderColor = "gray.600"
 const borderRadius = "md"
@@ -27,9 +26,7 @@ export default memo(function Day(props: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const [dataAtom, setDataAtom] =
-    useState<Atom<Promise<{entries: Entry[]; events: CalendarEvent[]}> | null>>(
-      nullAtom,
-    )
+    useState<Atom<Promise<{entries: Entry[]}> | null>>(nullAtom)
   const data = useAtomValue(dataAtom)
 
   if (!props.headings?.length) {
@@ -75,7 +72,6 @@ export default memo(function Day(props: Props) {
           time={getTimeOfFirstEntry(data?.entries)}
           selected={props.selected}
           onClick={onToggle}
-          events={data?.events}
         />
 
         <Box
@@ -139,7 +135,6 @@ function DayHeader(props: {
   selected: boolean
   onClick: () => void
   headerRef: React.Ref<HTMLDivElement>
-  events?: CalendarEvent[]
 }) {
   return (
     <Box
@@ -159,16 +154,11 @@ function DayHeader(props: {
         transition="background 0.3s"
         onClick={props.onClick}
         cursor="pointer"
+        justifyContent="space-between"
       >
         <Heading size="md" color="white">
           {prettyFormatDateTime({date: props.date})}
         </Heading>
-
-        <Box flex={1} mx={4}>
-          {props.events?.length ? (
-            <Events date={props.date} events={props.events} />
-          ) : null}
-        </Box>
 
         <Box fontSize="sm" opacity={0.5}>
           {props.time}
