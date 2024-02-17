@@ -1,12 +1,18 @@
 import prompt from "prompt"
 import {sortBy} from "ramda"
-import {join} from "path"
+import {join} from "node:path"
 import moment from "moment"
-import {writeFileSync} from "fs"
-import diaryPath from "./helpers/diaryPath"
-import shell from "./helpers/shell"
+import {writeFileSync} from "node:fs"
+import {execSync} from "node:child_process"
 
 const DATE_REGEX = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/
+
+const DIARY_DIR = process.env.DIARY_DIR!
+if (!DIARY_DIR) throw new Error("DIARY_DIR not specified")
+
+function shell(command: string) {
+  return execSync(command, {encoding: "utf-8", maxBuffer: 100000000}).trim()
+}
 
 function makeDir(dir: string) {
   shell(`mkdir -pv "${dir}"`)
@@ -45,7 +51,7 @@ function getAverageColor(file: string) {
 }
 
 function importFile(inputFile: string, date: string, headings: string[]) {
-  const outputDir = diaryPath("scanned", date.replace(/-/g, "/"))
+  const outputDir = join(DIARY_DIR, "scanned", date.replace(/-/g, "/"))
 
   makeDir(outputDir)
 
