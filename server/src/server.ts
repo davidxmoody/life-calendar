@@ -45,7 +45,6 @@ app.use((req, res, next) => {
     console.log(`Invalid token: "${token}"`)
     res.sendStatus(403)
   } else {
-    console.log(`${VALID_TOKENS[token]}: ${req.path}`)
     next()
   }
 })
