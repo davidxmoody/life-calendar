@@ -13,6 +13,7 @@ import {downloadScanned, sync} from "../../db"
 import DatabaseStats from "./DatabaseStats"
 import {useAtom, useSetAtom} from "jotai"
 import {syncStateAtom, updateTriggerAtom} from "../../atoms"
+import {resetAuth} from "../../helpers/auth"
 
 const syncIntervalMs = 5 * 60 * 1000
 
@@ -109,6 +110,10 @@ export default function SyncModal(props: Props) {
               isLoading={bulkDownloadBusy}
             >
               Bulk download
+            </Button>
+
+            <Button colorScheme="blue" onClick={resetAuth}>
+              Reset auth
             </Button>
           </Stack>
         </ModalBody>

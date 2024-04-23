@@ -56,3 +56,8 @@ export function useRemoteUrl(): [string | null, (value: string) => void] {
 
   return [remoteUrl, setRemoteUrlWithStorage]
 }
+
+export function resetAuth() {
+  localStorage.removeItem("REMOTE_URL")
+  window.location.reload()
+}
