@@ -55,7 +55,7 @@ export default memo(function Calendar() {
 
   const windowSize = useWindowSize()
   const ratio = 1.46
-  let canvasHeight = windowSize.height - NAV_BAR_HEIGHT_PX
+  let canvasHeight = Math.min(1000, windowSize.height - NAV_BAR_HEIGHT_PX)
   let canvasWidth = Math.floor(canvasHeight / ratio)
 
   if (canvasWidth > windowSize.width) {
