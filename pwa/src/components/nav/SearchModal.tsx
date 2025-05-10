@@ -18,6 +18,15 @@ interface Props {
   onClose: () => void
 }
 
+function isValidRegex(pattern: string) {
+  try {
+    new RegExp(pattern)
+    return true
+  } catch (e) {
+    return false
+  }
+}
+
 export default function SearchModal(props: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [searchRegex, setSearchRegex] = useAtom(searchRegexAtom)
@@ -47,6 +56,8 @@ export default function SearchModal(props: Props) {
     })
   }
 
+  const isInvalid = !isValidRegex(inputValue)
+
   return (
     <Modal
       isOpen={props.isOpen}
@@ -71,6 +82,7 @@ export default function SearchModal(props: Props) {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onFocus={(e) => e.target.select()}
+              isInvalid={isInvalid}
             />
           </ModalBody>
 
@@ -78,7 +90,7 @@ export default function SearchModal(props: Props) {
             <Button colorScheme="blue" variant="outline" mr={4} onClick={clear}>
               Clear
             </Button>
-            <Button colorScheme="blue" type="submit">
+            <Button colorScheme="blue" type="submit" isDisabled={isInvalid}>
               Search
             </Button>
           </ModalFooter>
