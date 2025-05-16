@@ -268,7 +268,7 @@ export async function getStats(): Promise<DBStats> {
 const defaultLifeData: LifeData = {
   birthDate: "1990-01-01",
   deathDate: "2089-12-31",
-  eras: [{startDate: "1990-01-01", name: "", color: "rgb(150, 150, 150)"}],
+  eras: [{start: "1990-01-01", name: "", color: "rgb(150, 150, 150)"}],
 }
 
 export async function getLifeData() {

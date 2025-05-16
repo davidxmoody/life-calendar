@@ -31,7 +31,7 @@ function getEra(eras: Era[], weekStart: string): Era {
   let selectedEra = eras[0]
 
   for (const era of eras) {
-    if (era.startDate <= weekStart) {
+    if (era.start <= weekStart) {
       selectedEra = era
     }
   }

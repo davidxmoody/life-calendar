@@ -37,7 +37,7 @@ export interface Layer {
 }
 
 export interface Era {
-  startDate: string
+  start: string
   name: string
   color: string
 }
