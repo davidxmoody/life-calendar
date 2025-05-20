@@ -15,7 +15,6 @@ export default function drawCalendar({
   layerData: LayerData | null
   incremental: boolean
 }) {
-  console.time(`drawCalendar ${incremental ? "inc" : ""}`)
   ctx.save()
 
   if (!incremental) {
@@ -70,7 +69,6 @@ export default function drawCalendar({
   })
 
   ctx.restore()
-  console.timeEnd(`drawCalendar ${incremental ? "inc" : ""}`)
 }
 
 function getWeekColor(
