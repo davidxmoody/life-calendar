@@ -4,6 +4,7 @@ import LayerButton from "./LayerButton"
 import SyncButton from "./SyncButton"
 import MobileViewSwitcher from "./MobileViewSwitcher"
 import SearchButton from "./SearchButton"
+import TodayButton from "./TodayButton"
 
 export const NAV_BAR_HEIGHT_PX = 72
 
@@ -29,6 +30,10 @@ export default memo(function NavBar() {
       <Flex flex={1} justifyContent="flex-end" minWidth="100px">
         <SearchButton />
       </Flex>
+
+      <Box ml={4}>
+        <TodayButton />
+      </Box>
 
       <Box ml={4}>
         <SyncButton />
