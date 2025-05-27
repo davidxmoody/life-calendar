@@ -1,4 +1,4 @@
-import {Box, Flex, Heading} from "@chakra-ui/react"
+import {Box, Heading} from "@chakra-ui/react"
 import {Atom, useAtomValue} from "jotai"
 import {memo, startTransition, useRef, useState} from "react"
 import {createDataForDayAtom, nullAtom} from "../../atoms"
@@ -69,7 +69,6 @@ export default memo(function Day(props: Props) {
         <DayHeader
           headerRef={headerRef}
           date={props.date}
-          time={getTimeOfFirstEntry(data?.entries)}
           selected={props.selected}
           onClick={onToggle}
         />
@@ -131,7 +130,6 @@ function EmptyDayHeader(props: {date: string; selected: boolean}) {
 
 function DayHeader(props: {
   date: string
-  time?: string
   selected: boolean
   onClick: () => void
   headerRef: React.Ref<HTMLDivElement>
@@ -145,25 +143,19 @@ function DayHeader(props: {
       zIndex="sticky"
       pt={{base: 0, md: 2}}
     >
-      <Flex
+      <Box
         p={4}
         borderTopRadius={{base: 0, md: borderRadius}}
         borderWidth={{base: 0, md: borderWidth}}
         borderColor={borderColor}
         bg={props.selected ? headerColorSelected : headerColor}
-        transition="background 0.3s"
         onClick={props.onClick}
         cursor="pointer"
-        justifyContent="space-between"
       >
         <Heading size="md" color="white">
           {prettyFormatDateTime({date: props.date})}
         </Heading>
-
-        <Box fontSize="sm" opacity={0.5}>
-          {props.time}
-        </Box>
-      </Flex>
+      </Box>
     </Box>
   )
 }
@@ -187,6 +179,9 @@ function Full(props: {entries: Entry[]}) {
         <Box key={entry.id} mb={i === props.entries.length - 1 ? 0 : 2}>
           {entry.type === "markdown" ? (
             <Box mx={{base: 4, md: 8}} my={{base: 4, md: 6}}>
+              <Box float="right" fontSize="xs" opacity={0.3}>
+                {entry.time}
+              </Box>
               <Markdown source={getMarkdownContent(entry)} />
             </Box>
           ) : entry.type === "scanned" ? (
@@ -200,14 +195,6 @@ function Full(props: {entries: Entry[]}) {
       ))}
     </Box>
   )
-}
-
-function getTimeOfFirstEntry(entries: Entry[] = []) {
-  for (const entry of entries) {
-    if ("time" in entry) {
-      return entry.time
-    }
-  }
 }
 
 function getMarkdownContent(entry: MarkdownEntry) {
