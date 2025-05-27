@@ -38,7 +38,8 @@ export default function SyncModal(props: Props) {
             }
           })
         })
-        .catch(() => {
+        .catch((e) => {
+          console.error(e)
           setSyncState((oldSyncState) => ({...oldSyncState, type: "error"}))
         })
     },

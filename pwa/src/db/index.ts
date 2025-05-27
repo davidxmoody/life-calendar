@@ -128,7 +128,7 @@ export async function sync({fullSync}: {fullSync: boolean}) {
   ).then((res) => res.json())
 
   const tx = db.transaction(
-    ["lifeData", "entries", "layers", "config", "cachedHeadings"],
+    ["lifeData", "entries", "layers", "config", "cachedHeadings", "scanned"],
     "readwrite",
   )
 
@@ -174,6 +174,19 @@ export async function sync({fullSync}: {fullSync: boolean}) {
   })
 
   await tx.objectStore("config").put(timestamp, "lastSyncTimestamp")
+
+  if (fullSync) {
+    const allScannedIds = new Set(
+      entries.filter((e) => e.type === "scanned").map((e) => e.id),
+    )
+    let scannedCursor = await tx.objectStore("scanned").openCursor()
+    while (scannedCursor) {
+      if (!allScannedIds.has(scannedCursor.key)) {
+        await scannedCursor.delete()
+      }
+      scannedCursor = await scannedCursor.continue()
+    }
+  }
 
   await tx.done
 
