@@ -10,6 +10,7 @@ import {
   UnorderedList,
 } from "@chakra-ui/react"
 import HighlightedText from "./HighlightedText"
+import {createAuthedUrl} from "../../helpers/auth"
 
 const paraMarginBottom = 5
 const codeBackgroudColor = "gray.600"
@@ -57,8 +58,18 @@ function MarkdownBlockquote(props: {children?: React.ReactNode}) {
   )
 }
 
-function MarkdownImage(props: {src?: string; alt?: string}) {
-  return <img style={{maxWidth: "100%"}} src={props.src} alt={props.alt} />
+function MarkdownImage(props: {src?: string; alt?: string; title?: string}) {
+  const src = props.src?.startsWith("/images/")
+    ? createAuthedUrl(props.src)
+    : props.src
+  return (
+    <img
+      style={{maxWidth: "100%"}}
+      src={src}
+      alt={props.alt}
+      title={props.title}
+    />
+  )
 }
 
 function MarkdownOrderedList(props: {children?: React.ReactNode}) {
