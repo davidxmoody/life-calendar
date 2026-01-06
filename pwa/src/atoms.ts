@@ -11,7 +11,6 @@ import {
   searchDb,
 } from "./db"
 import {
-  addDays,
   dateRange,
   latest,
   getFirstWeekInYear,
@@ -130,13 +129,6 @@ export function createDataForDayAtom(date: string) {
     get(updateTriggerAtom)
     const entries = await getEntriesForDay(date)
     return {entries}
-  })
-}
-
-export function createHeadingsForDayAtom(date: string) {
-  return atom(async (get) => {
-    get(updateTriggerAtom)
-    return (await getHeadingsInRange(date, addDays(date, 1)))[date] || []
   })
 }
 
