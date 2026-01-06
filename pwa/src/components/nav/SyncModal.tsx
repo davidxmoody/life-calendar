@@ -8,8 +8,8 @@ import {
   ModalOverlay,
   Stack,
 } from "@chakra-ui/react"
-import {startTransition, useCallback, useEffect, useState} from "react"
-import {downloadScanned, sync} from "../../db"
+import {startTransition, useCallback, useEffect} from "react"
+import {sync} from "../../db"
 import DatabaseStats from "./DatabaseStats"
 import {useAtom, useSetAtom} from "jotai"
 import {syncStateAtom, updateTriggerAtom} from "../../atoms"
@@ -65,20 +65,6 @@ export default function SyncModal(props: Props) {
     return () => window.removeEventListener("focus", syncIfNotSyncedRecently)
   }, [syncIfNotSyncedRecently])
 
-  const [bulkDownloadBusy, setBulkDownloadBusy] = useState(false)
-
-  async function startBulkDownload() {
-    try {
-      setBulkDownloadBusy(true)
-      const date = prompt("Enter date", "2019-01-01")
-      if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
-        await downloadScanned(date)
-      }
-    } finally {
-      setBulkDownloadBusy(false)
-    }
-  }
-
   return (
     <Modal isOpen={props.isOpen} onClose={props.onClose} size="xs">
       <ModalOverlay />
@@ -103,14 +89,6 @@ export default function SyncModal(props: Props) {
               isLoading={syncState.type === "loading"}
             >
               Full sync
-            </Button>
-
-            <Button
-              colorScheme="blue"
-              onClick={startBulkDownload}
-              isLoading={bulkDownloadBusy}
-            >
-              Bulk download
             </Button>
 
             <Button colorScheme="blue" onClick={resetAuth}>

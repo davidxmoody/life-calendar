@@ -111,7 +111,7 @@ export async function sync({fullSync}: {fullSync: boolean}) {
 
   const lastSyncTimestamp = fullSync
     ? null
-    : (await db.get("config", "lastSyncTimestamp")) ?? null
+    : ((await db.get("config", "lastSyncTimestamp")) ?? null)
 
   const {
     timestamp,
@@ -213,22 +213,6 @@ async function downloadSingleScannedImage(entry: ScannedEntry) {
 export async function getScannedBlob(entry: ScannedEntry): Promise<Blob> {
   await downloadSingleScannedImage(entry)
   return (await (await dbPromise).get("scanned", entry.id))!
-}
-
-export async function downloadScanned(sinceDate: string) {
-  const db = await dbPromise
-
-  const allScannedEntries = (await db.getAllFromIndex(
-    "entries",
-    "type",
-    "scanned",
-  )) as ScannedEntry[]
-
-  for (const entry of allScannedEntries) {
-    if (entry.date >= sinceDate) {
-      await downloadSingleScannedImage(entry)
-    }
-  }
 }
 
 export async function searchDb(
