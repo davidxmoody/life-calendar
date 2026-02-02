@@ -21,8 +21,10 @@ createRoot(document.getElementById("root")!).render(
   </StrictMode>,
 )
 
-navigator.serviceWorker?.addEventListener("controllerchange", () => {
-  if (confirm("A new version is available. Reload now?")) {
-    window.location.reload()
-  }
-})
+if (navigator.serviceWorker?.controller) {
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (confirm("A new version is available. Reload now?")) {
+      window.location.reload()
+    }
+  })
+}
