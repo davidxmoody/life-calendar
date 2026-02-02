@@ -1,4 +1,5 @@
 import {repeat} from "ramda"
+import {vi} from "vitest"
 import recalculateEntriesLayers, {
   audioWordcountRatio,
   scannedWordcountRatio,
@@ -6,7 +7,7 @@ import recalculateEntriesLayers, {
 } from "./recalculateEntriesLayers"
 
 test("makes no changes when no entries have changed", async () => {
-  const saveLayer = jest.fn()
+  const saveLayer = vi.fn()
 
   await recalculateEntriesLayers({
     changedWeeks: [],
@@ -19,7 +20,7 @@ test("makes no changes when no entries have changed", async () => {
 })
 
 test("creates a new markdown layer when one new entry is added", async () => {
-  const saveLayer = jest.fn()
+  const saveLayer = vi.fn()
 
   await recalculateEntriesLayers({
     changedWeeks: ["2022-09-19"],
@@ -43,7 +44,7 @@ test("creates a new markdown layer when one new entry is added", async () => {
 })
 
 test("updates an existing markdown layer when one entry is modified", async () => {
-  const saveLayer = jest.fn()
+  const saveLayer = vi.fn()
 
   await recalculateEntriesLayers({
     changedWeeks: ["2022-09-19"],
@@ -84,7 +85,7 @@ test("updates an existing markdown layer when one entry is modified", async () =
 test("updates layers for all content types", async () => {
   const numMarkdownWords = 800
 
-  const saveLayer = jest.fn()
+  const saveLayer = vi.fn()
 
   await recalculateEntriesLayers({
     changedWeeks: ["2022-09-19"],

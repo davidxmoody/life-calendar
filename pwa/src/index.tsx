@@ -2,7 +2,6 @@ import {StrictMode} from "react"
 import {createRoot} from "react-dom/client"
 import "./index.css"
 import App from "./components/App"
-import * as serviceWorkerRegistration from "./serviceWorkerRegistration"
 import {ChakraProvider} from "@chakra-ui/react"
 import {extendTheme} from "@chakra-ui/react"
 import {Provider as JotaiProvider} from "jotai"
@@ -22,4 +21,8 @@ createRoot(document.getElementById("root")!).render(
   </StrictMode>,
 )
 
-serviceWorkerRegistration.register()
+navigator.serviceWorker?.addEventListener("controllerchange", () => {
+  if (confirm("A new version is available. Reload now?")) {
+    window.location.reload()
+  }
+})
