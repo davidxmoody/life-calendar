@@ -22,7 +22,7 @@ function MarkdownHeading(props: {
   const size = {h1: "xl", h2: "xl", h3: "lg"}[props.node?.tagName ?? ""] ?? "md"
 
   return (
-    <Heading size={size} mb={4}>
+    <Heading size={size} mb={4} sx={{textWrap: "pretty"}}>
       <HighlightedText addDateLinks>{props.children}</HighlightedText>
     </Heading>
   )
