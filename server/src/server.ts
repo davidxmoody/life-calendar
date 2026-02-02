@@ -30,7 +30,7 @@ const app = express()
 app.use(
   cors({
     origin: [
-      "https://localhost:3000",
+      "http://localhost:3142",
       "https://davidxmoody-life-calendar.netlify.app",
     ],
   }),
@@ -70,4 +70,6 @@ app.get("/sync", async (req, res) => {
   res.send({timestamp, layers, entries, lifeData})
 })
 
-https.createServer({key: SSL_KEY, cert: SSL_CERT}, app).listen(LISTEN_PORT)
+https.createServer({key: SSL_KEY, cert: SSL_CERT}, app).listen(LISTEN_PORT, () => {
+  console.log(`Server listening on https://localhost:${LISTEN_PORT}`)
+})

@@ -10,6 +10,9 @@ export default defineConfig({
       manifest: false,
     }),
   ],
+  server: {
+    port: 3142,
+  },
   test: {
     globals: true,
   },
