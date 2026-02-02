@@ -6,6 +6,8 @@ function getMarkdownHeadings(content: string) {
     .split("\n")
     .filter((line) => line.startsWith("#"))
     .map((line) => line.replace(/^#* */, ""))
+    .map((text) => text.replace(/^\d{1,2}:\d{2}\s*/, ""))
+    .filter((text) => text.length > 0)
 }
 
 const pluralTerms = {

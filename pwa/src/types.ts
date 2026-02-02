@@ -3,7 +3,6 @@ export interface MarkdownEntry {
   id: string
   date: string
 
-  time: string
   content: string
 }
 

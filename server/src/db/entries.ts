@@ -5,18 +5,15 @@ import globSince from "./globSince"
 
 async function getMarkdownEntry(file: string): Promise<MarkdownEntry> {
   const content = await readFile(file, "utf8")
-  const [date, time] = file
-    .replace(
-      /^.*\/(\d\d\d\d)\/(\d\d)\/(\d\d)\/diary-(\d\d)-(\d\d)\.md$/,
-      "$1-$2-$3___$4:$5",
-    )
-    .split("___")
+  const date = file.replace(
+    /^.*\/(\d\d\d\d)\/(\d\d)\/(\d\d)\/diary\.md$/,
+    "$1-$2-$3",
+  )
 
   return {
-    id: `${date}-markdown-${time}`,
+    id: `${date}-markdown`,
     type: "markdown",
     date,
-    time,
     content,
   }
 }
@@ -70,7 +67,7 @@ function getAudioEntry(file: string): AudioEntry {
 
 export async function getEntries(sinceMs: number | null): Promise<Entry[]> {
   const markdownEntries = await promiseMap(
-    globSince("entries/????/??/??/diary-??-??.md", sinceMs),
+    globSince("entries/????/??/??/diary.md", sinceMs),
     getMarkdownEntry,
     {concurrency: 100},
   )

@@ -3,7 +3,7 @@ import {Atom, useAtomValue} from "jotai"
 import {memo, startTransition, useRef, useState} from "react"
 import {createDataForDayAtom, nullAtom} from "../../atoms"
 import {prettyFormatDateTime} from "../../helpers/dates"
-import {Entry, MarkdownEntry} from "../../types"
+import {Entry} from "../../types"
 import HighlightedText from "./HighlightedText"
 import AudioPlayer from "./AudioPlayer"
 import Markdown from "./Markdown"
@@ -179,10 +179,7 @@ function Full(props: {entries: Entry[]}) {
         <Box key={entry.id} mb={i === props.entries.length - 1 ? 0 : 2}>
           {entry.type === "markdown" ? (
             <Box mx={{base: 4, md: 8}} my={{base: 4, md: 6}}>
-              <Box float="right" fontSize="xs" opacity={0.3}>
-                {entry.time}
-              </Box>
-              <Markdown source={getMarkdownContent(entry)} />
+              <Markdown source={entry.content} />
             </Box>
           ) : entry.type === "scanned" ? (
             <ScannedPage entry={entry} />
@@ -195,10 +192,4 @@ function Full(props: {entries: Entry[]}) {
       ))}
     </Box>
   )
-}
-
-function getMarkdownContent(entry: MarkdownEntry) {
-  return entry.content.startsWith("#")
-    ? entry.content
-    : "### " + entry.time + "\n\n" + entry.content
 }

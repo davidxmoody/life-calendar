@@ -10,7 +10,6 @@ function createMarkdownEntry(text: string): MarkdownEntry {
     type: "markdown",
     id: rand(),
     date: rand(),
-    time: rand(),
     content: `${rand()} ${text} ${rand()}`,
   }
 }
