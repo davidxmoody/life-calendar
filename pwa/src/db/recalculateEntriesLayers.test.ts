@@ -1,4 +1,3 @@
-import {repeat} from "ramda"
 import {vi} from "vitest"
 import recalculateEntriesLayers, {
   audioWordcountRatio,
@@ -96,7 +95,7 @@ test("updates layers for all content types", async () => {
             id: "2022-09-20-markdown",
             type: "markdown",
             date: "2022-09-20",
-            content: repeat("foo", numMarkdownWords).join(" "),
+            content: Array(numMarkdownWords).fill("foo").join(" "),
           },
           {
             id: "2022-09-20-scanned-01",

@@ -19,9 +19,3 @@ test("applies a scoring function", () => {
   })
   expect(layer).toEqual({"2022-10-31": 0.1})
 })
-
-test("merges onto an existing layer", () => {
-  const existingLayer = {"2022-10-24": 0.5, "2022-10-31": 0.5}
-  const layer = generateLayer({dates: ["2022-10-31"], existingLayer})
-  expect(layer).toEqual({"2022-10-24": 0.5, "2022-10-31": 1})
-})

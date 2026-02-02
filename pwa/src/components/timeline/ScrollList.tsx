@@ -5,7 +5,6 @@ import {Box} from "@chakra-ui/react"
 import debounce from "lodash.debounce"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
 import {memo} from "react"
-import {sortBy} from "ramda"
 
 const DEBOUNCE_DELAY_MS = 100
 const TOP_OFFSET_PX = 58
@@ -36,9 +35,8 @@ export default function ScrollList<T>(props: Props<T>) {
       const scrollTop =
         document.querySelector(`#${containerId}`)?.scrollTop ?? 0
 
-      const sortedHeights = sortBy(
-        ([scrollKey]) => scrollKey,
-        Object.entries(heights.current),
+      const sortedHeights = Object.entries(heights.current).toSorted(
+        ([a], [b]) => a.localeCompare(b),
       )
 
       let currentHeight = 0

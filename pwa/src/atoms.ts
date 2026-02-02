@@ -1,6 +1,5 @@
 import {atom} from "jotai"
 import {atomWithStorage} from "jotai/utils"
-import {uniq} from "ramda"
 import {
   getEntriesForDay,
   getHeadingsInRange,
@@ -111,7 +110,7 @@ export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
       startInclusive,
       endExclusive,
     })
-    const visibleDays = uniq(searchResults.map((e) => e.date)).sort()
+    const visibleDays = [...new Set(searchResults.map((e) => e.date))].sort()
     return visibleDays.map((date) => ({
       date,
       headings: headingsInYear[date] ?? null,

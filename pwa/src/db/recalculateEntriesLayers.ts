@@ -1,4 +1,3 @@
-import {sum} from "ramda"
 import getMarkdownWordcount from "../helpers/getMarkdownWordcount"
 import {Entry, Layer} from "../types"
 
@@ -35,11 +34,9 @@ export default async function recalculateEntriesLayers({
   for (const weekStart of changedWeeks) {
     const weekEntries = await getEntriesForWeek(weekStart)
 
-    const markdownWordcount = sum(
-      weekEntries.map((e) =>
-        e.type === "markdown" ? getMarkdownWordcount(e.content) : 0,
-      ),
-    )
+    const markdownWordcount = weekEntries
+      .filter((e) => e.type === "markdown")
+      .reduce((total, e) => total + getMarkdownWordcount(e.content), 0)
 
     const scannedWordcount =
       scannedWordcountRatio *

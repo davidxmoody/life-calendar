@@ -5,7 +5,6 @@ import {Entry, Layer, LifeData, ScannedEntry} from "../types"
 import {authedFetch} from "../helpers/auth"
 import recalculateEntriesLayers from "./recalculateEntriesLayers"
 import {addDays, getNextWeekStart, getWeekStart} from "../helpers/dates"
-import {uniq} from "ramda"
 import getHeadings from "../helpers/getHeadings"
 import search from "./search"
 
@@ -148,7 +147,7 @@ export async function sync({fullSync}: {fullSync: boolean}) {
     await tx.objectStore("entries").put(entry)
   }
 
-  for (const date of uniq(entries.map((e) => e.date))) {
+  for (const date of new Set(entries.map((e) => e.date))) {
     const entries = await tx
       .objectStore("entries")
       .getAll(IDBKeyRange.bound(date, addDays(date, 1)))
@@ -164,7 +163,7 @@ export async function sync({fullSync}: {fullSync: boolean}) {
   }
 
   await recalculateEntriesLayers({
-    changedWeeks: uniq(entries.map((e) => getWeekStart(e.date))),
+    changedWeeks: [...new Set(entries.map((e) => getWeekStart(e.date)))],
     getEntriesForWeek: (weekStart) =>
       tx
         .objectStore("entries")
