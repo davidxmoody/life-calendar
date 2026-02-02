@@ -1,10 +1,9 @@
 import {useCallback, useState} from "react"
-import {v4} from "uuid"
 
 function getAuthToken(): string {
   let authToken: string | undefined = localStorage.AUTH_TOKEN
   if (!authToken) {
-    authToken = localStorage.AUTH_TOKEN = v4()
+    authToken = localStorage.AUTH_TOKEN = crypto.randomUUID()
   }
   return authToken
 }
