@@ -1,23 +1,35 @@
-import moment from "moment"
+import {
+  format,
+  parseISO,
+  addDays as dateFnsAddDays,
+  addWeeks,
+  startOfISOWeek,
+  parse,
+  formatDistanceToNow,
+  differenceInDays,
+  getYear,
+} from "date-fns"
+
+const DATE_FORMAT = "yyyy-MM-dd"
 
 export function getToday() {
-  return moment().format("YYYY-MM-DD")
+  return format(new Date(), DATE_FORMAT)
 }
 
 export function getWeekStart(date: string): string {
-  return moment(date).isoWeekday(1).format("YYYY-MM-DD")
+  return format(startOfISOWeek(parseISO(date)), DATE_FORMAT)
 }
 
 export function getNextWeekStart(date: string): string {
-  return moment(date).isoWeekday(8).format("YYYY-MM-DD")
+  return format(addWeeks(startOfISOWeek(parseISO(date)), 1), DATE_FORMAT)
 }
 
 export function parseYear(date: string) {
-  return parseInt(date.slice(0, 4), 10)
+  return getYear(parseISO(date))
 }
 
 export function addDays(date: string, numDays: number) {
-  return moment(date).add(numDays, "days").format("YYYY-MM-DD")
+  return format(dateFnsAddDays(parseISO(date), numDays), DATE_FORMAT)
 }
 
 export function getFirstWeekInYear(year: number) {
@@ -61,9 +73,12 @@ export function prettyFormatDateTime({
   time?: string
 }): string {
   if (!time) {
-    return moment(date).format("ddd D MMM YYYY")
+    return format(parseISO(date), "EEE d MMM yyyy")
   }
-  return moment(`${date} ${time}`).format("ddd D MMM YYYY HH:mm")
+  return format(
+    parse(`${date} ${time}`, "yyyy-MM-dd HH:mm", new Date()),
+    "EEE d MMM yyyy HH:mm",
+  )
 }
 
 export function formatTimestampAgo(timestamp: number | null) {
@@ -71,5 +86,9 @@ export function formatTimestampAgo(timestamp: number | null) {
     return "never"
   }
 
-  return moment.utc(timestamp).fromNow()
+  return formatDistanceToNow(timestamp, {addSuffix: true})
+}
+
+export function differenceInYears(date: string, fromDate: string): number {
+  return differenceInDays(parseISO(date), parseISO(fromDate)) / 365.25
 }

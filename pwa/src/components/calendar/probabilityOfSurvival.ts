@@ -1,4 +1,4 @@
-import moment from "moment"
+import {differenceInYears} from "../../helpers/dates"
 
 // From: https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/datasets/deathregistrationssummarytablesenglandandwalesreferencetables/2015/syoacause2015.xls
 const totalSampleSize = 257207
@@ -31,7 +31,7 @@ export default function probabilityOfSurvival(
     return 1
   }
 
-  const currentAge = Math.max(0, moment(today).diff(birthDate, "years", true))
+  const currentAge = Math.max(0, differenceInYears(today, birthDate))
   const currentAgeIndex = Math.min(
     maleProbabilityOfDyingByAge.length,
     Math.floor(currentAge),
@@ -61,7 +61,7 @@ export default function probabilityOfSurvival(
     cumulativeProbs.push(currentCumulativeProb)
   }
 
-  const queryAge = Math.max(0, moment(date).diff(birthDate, "years", true))
+  const queryAge = Math.max(0, differenceInYears(date, birthDate))
   const queryAgeIndex = Math.floor(queryAge)
   const queryAgeCeil = Math.ceil(queryAge)
   const queryAgeRemainder = queryAge % 1
