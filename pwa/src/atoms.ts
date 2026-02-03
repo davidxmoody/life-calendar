@@ -1,5 +1,5 @@
 import {atom} from "jotai"
-import {atomWithStorage} from "jotai/utils"
+import {atomWithStorage, unwrap} from "jotai/utils"
 import {
   getEntriesForDay,
   getHeadingsInRange,
@@ -49,7 +49,7 @@ export const layerIdsAtom = atom(async (get) => {
   return getLayerIds()
 })
 
-export const selectedLayerDataAtom = atom(async (get) => {
+const selectedLayerDataAsyncAtom = atom(async (get) => {
   get(updateTriggerAtom)
   const selectedLayerIds = get(selectedLayerIdsAtom)
   const searchRegex = get(searchRegexAtom)
@@ -69,6 +69,11 @@ export const selectedLayerDataAtom = atom(async (get) => {
 
   return mergeLayers(await Promise.all(selectedLayerIds.map(getLayerData)))
 })
+
+export const selectedLayerDataAtom = unwrap(
+  selectedLayerDataAsyncAtom,
+  (prev) => prev ?? {},
+)
 
 export const selectedDayAtom = atomWithStorage("selectedDay", getToday())
 

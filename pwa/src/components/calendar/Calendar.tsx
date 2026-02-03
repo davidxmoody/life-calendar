@@ -74,7 +74,7 @@ export default memo(function Calendar() {
     [drawWidth, drawHeight],
   )
 
-  const lastDraw = useRef<typeof d | undefined>()
+  const lastDraw = useRef<typeof d | undefined>(undefined)
 
   useEffect(() => {
     if (ref.current) {
