@@ -727,19 +727,19 @@ npx shadcn@latest add accordion
 - [x] Batch 4: DateLink
 - [x] Batch 5: App, AppleTouchIconGenerator
 - [x] Batch 6: SearchButton, SyncButton, LayerButton
-- [ ] Batch 7: FirstTimeSetupModal
-- [ ] Batch 8: SearchModal
-- [ ] Batch 9: DatabaseStats
-- [ ] Batch 10: SyncModal
-- [ ] Batch 11: HighlightedText
-- [ ] Batch 12: ScannedPage
-- [ ] Batch 13: Day
-- [ ] Batch 14: ScrollList
-- [ ] Batch 15: Timeline
-- [ ] Batch 16: Calendar
-- [ ] Batch 17: Markdown
-- [ ] Batch 18: LayerModal
-- [ ] Batch 19: Remove Chakra
+- [x] Batch 7: FirstTimeSetupModal
+- [x] Batch 8: SearchModal
+- [x] Batch 9: DatabaseStats
+- [x] Batch 10: SyncModal
+- [x] Batch 11: HighlightedText
+- [x] Batch 12: ScannedPage
+- [x] Batch 13: Day
+- [x] Batch 14: ScrollList
+- [x] Batch 15: Timeline
+- [x] Batch 16: Calendar
+- [x] Batch 17: Markdown
+- [x] Batch 18: LayerModal
+- [x] Batch 19: Remove Chakra (Bundle: 780KB → 476KB, -39%)
 - [ ] React 19 Upgrade
 
 ## Notes from Migration

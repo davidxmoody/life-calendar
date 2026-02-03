@@ -1,17 +1,15 @@
-import {
-  Button,
-  Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-} from "@chakra-ui/react"
-import {startTransition, useEffect, useRef, useState} from "react"
+import {startTransition, useEffect, useState} from "react"
 import {useAtom} from "jotai"
 import {searchRegexAtom} from "../../atoms"
+import {Button} from "../ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog"
+import {Input} from "../ui/input"
 
 interface Props {
   isOpen: boolean
@@ -28,7 +26,6 @@ function isValidRegex(pattern: string) {
 }
 
 export default function SearchModal(props: Props) {
-  const inputRef = useRef<HTMLInputElement>(null)
   const [searchRegex, setSearchRegex] = useAtom(searchRegexAtom)
   const [inputValue, setInputValue] = useState(searchRegex)
 
@@ -59,43 +56,42 @@ export default function SearchModal(props: Props) {
   const isInvalid = !isValidRegex(inputValue)
 
   return (
-    <Modal
-      isOpen={props.isOpen}
-      onClose={cancel}
-      initialFocusRef={inputRef}
-      size="xs"
+    <Dialog
+      open={props.isOpen}
+      onOpenChange={(open) => {
+        if (!open) cancel()
+      }}
     >
-      <ModalOverlay />
-      <ModalContent>
+      <DialogContent className="max-w-xs">
         <form
           onSubmit={(e) => {
             e.preventDefault()
             submitSearch()
           }}
         >
-          <ModalHeader>Search</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
+          <DialogHeader>
+            <DialogTitle>Search</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
             <Input
-              ref={inputRef}
+              autoFocus
               placeholder="Regex"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onFocus={(e) => e.target.select()}
-              isInvalid={isInvalid}
+              aria-invalid={isInvalid}
             />
-          </ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme="blue" variant="outline" mr={4} onClick={clear}>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" className="mr-4" onClick={clear}>
               Clear
             </Button>
-            <Button colorScheme="blue" type="submit" isDisabled={isInvalid}>
+            <Button type="submit" disabled={isInvalid}>
               Search
             </Button>
-          </ModalFooter>
+          </DialogFooter>
         </form>
-      </ModalContent>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   )
 }

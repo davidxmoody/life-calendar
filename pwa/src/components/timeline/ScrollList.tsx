@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import {useCallback, useEffect, useRef} from "react"
-import {Box} from "@chakra-ui/react"
 import debounce from "lodash.debounce"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
 import {memo} from "react"
@@ -93,10 +92,9 @@ export default function ScrollList<T>(props: Props<T>) {
   }, [props.currentScrollKey])
 
   return (
-    <Box
+    <div
       id={containerId}
-      overflowY="scroll"
-      height="100%"
+      className="overflow-y-scroll h-full"
       onScroll={checkCurrentScrollKey}
     >
       {props.items.length === 0 ? (
@@ -123,7 +121,7 @@ export default function ScrollList<T>(props: Props<T>) {
           onHeightChange={onHeightChange}
         />
       ))}
-    </Box>
+    </div>
   )
 }
 
@@ -158,15 +156,15 @@ const ScrollBlock = genericMemo(
     }, [props.scrollKey, props.onHeightChange])
 
     return (
-      <Box
+      <div
         ref={ref}
         data-scroll-key={props.scrollKey}
-        minHeight={props.minHeight}
+        style={{minHeight: props.minHeight}}
       >
         {props.header}
         {props.renderItem({item: props.item, isSelected: props.isSelected})}
         {props.footer}
-      </Box>
+      </div>
     )
   },
 )

@@ -1,68 +1,60 @@
 import {memo} from "react"
 import ReactMarkdown, {Components} from "react-markdown"
 import remarkGfm from "remark-gfm"
-import {
-  Box,
-  Checkbox,
-  Heading,
-  Link,
-  ListItem,
-  OrderedList,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-  UnorderedList,
-} from "@chakra-ui/react"
 import HighlightedText from "./HighlightedText"
 import {createAuthedUrl} from "../../helpers/auth"
-
-const paraMarginBottom = 5
-const codeBackgroudColor = "gray.600"
+import {Checkbox} from "../ui/checkbox"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table"
 
 function MarkdownHeading(props: {
   node?: {tagName: string}
   children?: React.ReactNode
 }) {
-  const size = {h1: "xl", h2: "xl", h3: "lg"}[props.node?.tagName ?? ""] ?? "md"
+  const sizeClass =
+    {h1: "text-2xl", h2: "text-2xl", h3: "text-xl"}[
+      props.node?.tagName ?? ""
+    ] ?? "text-lg"
 
   return (
-    <Heading size={size} mb={4} sx={{textWrap: "pretty"}}>
+    <h3 className={`${sizeClass} font-bold mb-4 text-pretty`}>
       <HighlightedText addDateLinks>{props.children}</HighlightedText>
-    </Heading>
+    </h3>
   )
 }
 
 function MarkdownLink(props: {href?: string; children?: React.ReactNode}) {
   return (
-    <Link href={props.href} isExternal rel="noreferrer" color="teal.500">
+    <a
+      href={props.href}
+      target="_blank"
+      rel="noreferrer"
+      className="text-teal-500 hover:underline"
+    >
       {props.children}
-    </Link>
+    </a>
   )
 }
 
 function MarkdownParagraph(props: {children?: React.ReactNode}) {
   return (
-    <Text mb={paraMarginBottom}>
+    <p className="mb-5">
       <HighlightedText addDateLinks>{props.children}</HighlightedText>
-    </Text>
+    </p>
   )
 }
 
 function MarkdownBlockquote(props: {children?: React.ReactNode}) {
   return (
-    <Box
-      pl={4}
-      fontStyle="italic"
-      borderColor={codeBackgroudColor}
-      borderLeftWidth="8px"
-      opacity={0.75}
-    >
+    <blockquote className="pl-4 italic border-l-8 border-gray-600 opacity-75">
       {props.children}
-    </Box>
+    </blockquote>
   )
 }
 
@@ -71,24 +63,13 @@ function MarkdownImage(props: {src?: string; alt?: string; title?: string}) {
     ? createAuthedUrl(props.src)
     : props.src
   return (
-    <img
-      style={{maxWidth: "100%"}}
-      src={src}
-      alt={props.alt}
-      title={props.title}
-    />
+    <img className="max-w-full" src={src} alt={props.alt} title={props.title} />
   )
 }
 
 function MarkdownOrderedList(props: {children?: React.ReactNode}) {
   return (
-    <OrderedList
-      mb={paraMarginBottom}
-      listStylePosition="inside"
-      marginInlineStart={0}
-    >
-      {props.children}
-    </OrderedList>
+    <ol className="mb-5 list-decimal list-inside ms-0">{props.children}</ol>
   )
 }
 
@@ -98,19 +79,19 @@ function MarkdownUnorderedList(props: {
 }) {
   const isTaskList = props.className?.includes("contains-task-list")
   return (
-    <UnorderedList
-      mb={paraMarginBottom}
-      styleType={isTaskList ? "none" : undefined}
-      marginInlineStart={isTaskList ? 0 : undefined}
+    <ul
+      className={`mb-5 ${
+        isTaskList ? "list-none ms-0" : "list-disc list-inside"
+      }`}
     >
       {props.children}
-    </UnorderedList>
+    </ul>
   )
 }
 
 function MarkdownListItem(props: {children?: React.ReactNode}) {
   return (
-    <HighlightedText addDateLinks as={ListItem}>
+    <HighlightedText addDateLinks as="li">
       {props.children}
     </HighlightedText>
   )
@@ -118,23 +99,17 @@ function MarkdownListItem(props: {children?: React.ReactNode}) {
 
 function MarkdownPre(props: {children?: React.ReactNode}) {
   return (
-    <Box
-      mb={paraMarginBottom}
-      backgroundColor={codeBackgroudColor}
-      borderRadius={3}
-      py={2}
-      px={3}
-    >
+    <pre className="mb-5 bg-gray-600 rounded-sm py-2 px-3">
       {props.children}
-    </Box>
+    </pre>
   )
 }
 
 function MarkdownCode(props: {inline?: boolean; children?: React.ReactNode}) {
   return (
-    <Box as="code" backgroundColor={codeBackgroudColor} borderRadius="sm">
+    <code className="bg-gray-600 rounded-sm">
       <HighlightedText addDateLinks>{props.children}</HighlightedText>
-    </Box>
+    </code>
   )
 }
 
@@ -155,61 +130,45 @@ function MarkdownStrong(props: {children?: React.ReactNode}) {
 }
 
 function MarkdownStrikethrough(props: {children?: React.ReactNode}) {
-  return (
-    <Text as="del" opacity={0.6}>
-      {props.children}
-    </Text>
-  )
+  return <del className="opacity-60">{props.children}</del>
 }
 
 function MarkdownCheckbox(props: {checked?: boolean}) {
   return (
-    <Checkbox
-      isChecked={props.checked}
-      isReadOnly
-      mr={2}
-      verticalAlign="middle"
-    />
+    <Checkbox checked={props.checked} disabled className="mr-2 align-middle" />
   )
 }
 
 function HorizontalRule() {
-  return (
-    <Box
-      borderBottomWidth="thin"
-      borderColor="gray.600"
-      mb={paraMarginBottom}
-      borderStyle="dashed"
-    />
-  )
+  return <hr className="border-b border-gray-600 mb-5 border-dashed" />
 }
 
 function MarkdownTable(props: {children?: React.ReactNode}) {
   return (
-    <Box overflowX="auto" mb={paraMarginBottom}>
-      <Table size="sm">{props.children}</Table>
-    </Box>
+    <div className="overflow-x-auto mb-5">
+      <Table>{props.children}</Table>
+    </div>
   )
 }
 
 function MarkdownThead(props: {children?: React.ReactNode}) {
-  return <Thead>{props.children}</Thead>
+  return <TableHeader>{props.children}</TableHeader>
 }
 
 function MarkdownTbody(props: {children?: React.ReactNode}) {
-  return <Tbody>{props.children}</Tbody>
+  return <TableBody>{props.children}</TableBody>
 }
 
 function MarkdownTr(props: {children?: React.ReactNode}) {
-  return <Tr>{props.children}</Tr>
+  return <TableRow>{props.children}</TableRow>
 }
 
 function MarkdownTh(props: {children?: React.ReactNode}) {
-  return <Th>{props.children}</Th>
+  return <TableHead>{props.children}</TableHead>
 }
 
 function MarkdownTd(props: {children?: React.ReactNode}) {
-  return <Td>{props.children}</Td>
+  return <TableCell>{props.children}</TableCell>
 }
 
 const components: Components = {

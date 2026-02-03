@@ -21,9 +21,9 @@ import {
 } from "../../atoms"
 import {useAtom, useAtomValue, useSetAtom} from "jotai"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
-import {Box, useBreakpointValue} from "@chakra-ui/react"
 import useWindowSize from "../../helpers/useWindowSize"
 import {getWeekStart, parseYear} from "../../helpers/dates"
+import useMediaQuery from "../../helpers/useMediaQuery"
 
 const ZOOM_SCALE = 8
 
@@ -46,10 +46,8 @@ export default memo(function Calendar() {
   const layerData = useAtomValue(selectedLayerDataAtom)
 
   const [zoomedYearIndex, setZoomedYearIndex] = useState<number | null>(null)
-  const useZoomBehaviour = useBreakpointValue(
-    {base: true, md: false},
-    {ssr: false},
-  )
+  const isMdOrAbove = useMediaQuery("(min-width: 768px)")
+  const useZoomBehaviour = !isMdOrAbove
 
   const ref = useRef<HTMLCanvasElement>(null)
 
@@ -123,38 +121,37 @@ export default memo(function Calendar() {
     })
   }
 
+  const zoomTransform =
+    useZoomBehaviour && zoomedYearIndex !== null
+      ? `translate(${
+          ((d.canvas.w / 2 -
+            d.canvas.px -
+            d.year.w / 2 -
+            d.year.w * (zoomedYearIndex % d.layout.yearsPerRow)) /
+            pixelRatio) *
+          ZOOM_SCALE
+        }px, ${
+          ((d.canvas.h / 2 -
+            d.canvas.py -
+            d.year.h / 2 -
+            d.year.h * Math.floor(zoomedYearIndex / d.layout.yearsPerRow)) /
+            pixelRatio) *
+          ZOOM_SCALE
+        }px) scale(${ZOOM_SCALE})`
+      : undefined
+
   return (
-    <Box
-      width={canvasWidth}
-      height={canvasHeight}
-      cursor="pointer"
+    <div
+      className="cursor-pointer"
+      style={{width: canvasWidth, height: canvasHeight}}
       onClick={onClick}
     >
-      <Box
-        width="100%"
-        height="100%"
-        position="relative"
-        transition={useZoomBehaviour ? "transform 0.3s" : undefined}
-        transform={
-          useZoomBehaviour && zoomedYearIndex !== null
-            ? `translate(${
-                ((d.canvas.w / 2 -
-                  d.canvas.px -
-                  d.year.w / 2 -
-                  d.year.w * (zoomedYearIndex % d.layout.yearsPerRow)) /
-                  pixelRatio) *
-                ZOOM_SCALE
-              }px, ${
-                ((d.canvas.h / 2 -
-                  d.canvas.py -
-                  d.year.h / 2 -
-                  d.year.h *
-                    Math.floor(zoomedYearIndex / d.layout.yearsPerRow)) /
-                  pixelRatio) *
-                ZOOM_SCALE
-              }px) scale(${ZOOM_SCALE})`
-            : undefined
-        }
+      <div
+        className="w-full h-full relative"
+        style={{
+          transition: useZoomBehaviour ? "transform 0.3s" : undefined,
+          transform: zoomTransform,
+        }}
       >
         <canvas
           ref={ref}
@@ -170,8 +167,8 @@ export default memo(function Calendar() {
           pixelRatio={pixelRatio}
           animate={!useZoomBehaviour}
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   )
 })
 
@@ -210,30 +207,31 @@ const SelectedWeekHighlight = memo(
     }
 
     return (
-      <Box
-        width={`${d.week.w / pixelRatio}px`}
-        height={`${d.week.h / pixelRatio}px`}
-        boxSizing="border-box"
-        border={`2px solid ${selectedWeekPosition.color}`}
-        filter={"hue-rotate(180deg) saturate(1000%) contrast(1000%)"}
-        top={0}
-        left={0}
-        position="absolute"
-        transform={`translate(${
-          (d.canvas.px +
-            d.year.p +
-            d.year.w * selectedWeekPosition.yi +
-            d.week.w * (selectedWeekPosition.wi % d.layout.weeksPerYearRow)) /
-          pixelRatio
-        }px, ${
-          (d.canvas.py +
-            d.year.p +
-            d.year.h * selectedWeekPosition.di +
-            d.week.h *
-              Math.floor(selectedWeekPosition.wi / d.layout.weeksPerYearRow)) /
-          pixelRatio
-        }px)`}
-        transition={animate ? "all 0.3s" : undefined}
+      <div
+        className="box-border absolute top-0 left-0"
+        style={{
+          width: `${d.week.w / pixelRatio}px`,
+          height: `${d.week.h / pixelRatio}px`,
+          border: `2px solid ${selectedWeekPosition.color}`,
+          filter: "hue-rotate(180deg) saturate(1000%) contrast(1000%)",
+          transform: `translate(${
+            (d.canvas.px +
+              d.year.p +
+              d.year.w * selectedWeekPosition.yi +
+              d.week.w * (selectedWeekPosition.wi % d.layout.weeksPerYearRow)) /
+            pixelRatio
+          }px, ${
+            (d.canvas.py +
+              d.year.p +
+              d.year.h * selectedWeekPosition.di +
+              d.week.h *
+                Math.floor(
+                  selectedWeekPosition.wi / d.layout.weeksPerYearRow,
+                )) /
+            pixelRatio
+          }px)`,
+          transition: animate ? "all 0.3s" : undefined,
+        }}
       />
     )
   },

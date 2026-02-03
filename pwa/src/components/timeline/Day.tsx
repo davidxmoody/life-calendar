@@ -1,4 +1,3 @@
-import {Box, Heading} from "@chakra-ui/react"
 import {Atom, useAtomValue} from "jotai"
 import {memo, startTransition, useRef, useState} from "react"
 import {createDataForDayAtom, nullAtom} from "../../atoms"
@@ -9,12 +8,6 @@ import AudioPlayer from "./AudioPlayer"
 import Markdown from "./Markdown"
 import ScannedPage from "./ScannedPage"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
-
-const borderColor = "gray.600"
-const borderRadius = "md"
-const borderWidth = "thin"
-const headerColor = "blue.900"
-const headerColorSelected = "blue.700"
 
 interface Props {
   date: string
@@ -31,9 +24,9 @@ export default memo(function Day(props: Props) {
 
   if (!props.headings?.length) {
     return (
-      <Box maxW="800px" px={{base: 0, md: 2}} pb={{base: 4, md: 2}}>
+      <div className="max-w-[800px] md:px-2 pb-4 md:pb-2">
         <EmptyDayHeader date={props.date} selected={props.selected} />
-      </Box>
+      </div>
     )
   }
 
@@ -55,17 +48,8 @@ export default memo(function Day(props: Props) {
   }
 
   return (
-    <Box
-      maxW="800px"
-      px={{base: 0, md: 2}}
-      pb={{base: 4, md: 2}}
-      ref={containerRef}
-    >
-      <Box
-        style={{contain: "paint"}}
-        borderRadius={{base: 0, md: borderRadius}}
-        position="relative"
-      >
+    <div className="max-w-[800px] md:px-2 pb-4 md:pb-2" ref={containerRef}>
+      <div className="relative md:rounded-md" style={{contain: "paint"}}>
         <DayHeader
           headerRef={headerRef}
           date={props.date}
@@ -73,58 +57,41 @@ export default memo(function Day(props: Props) {
           onClick={onToggle}
         />
 
-        <Box
-          borderLeftWidth={{base: 0, md: borderWidth}}
-          borderRightWidth={{base: 0, md: borderWidth}}
-          borderBottomWidth={{base: 0, md: borderWidth}}
-          borderBottomRadius={{base: 0, md: borderRadius}}
-          borderColor={borderColor}
+        <div
+          className={`
+            md:border-l md:border-r md:border-b md:rounded-b-md border-gray-600
+            overflow-hidden
+            ${data ? "" : "cursor-pointer"}
+          `}
           onClick={data ? undefined : onToggle}
-          cursor={data ? undefined : "pointer"}
-          overflow="hidden"
         >
           {data ? (
             <Full entries={data.entries} />
           ) : (
             <Summary headings={props.headings} />
           )}
-        </Box>
+        </div>
 
-        <Box
-          position="absolute"
-          pointerEvents="none"
-          bottom={0}
-          left={0}
-          right={0}
-          zIndex="sticky"
-          height="20px"
-          borderLeftWidth={{base: 0, md: borderWidth}}
-          borderRightWidth={{base: 0, md: borderWidth}}
-          borderBottomWidth={{base: 0, md: borderWidth}}
-          borderBottomRadius={{base: 0, md: borderRadius}}
-          borderColor={borderColor}
-        />
-      </Box>
-    </Box>
+        <div className="absolute pointer-events-none bottom-0 left-0 right-0 z-40 h-5 md:border-l md:border-r md:border-b md:rounded-b-md border-gray-600" />
+      </div>
+    </div>
   )
 })
 
 function EmptyDayHeader(props: {date: string; selected: boolean}) {
   return (
-    <Box bg="gray.800" opacity={0.5} pt={{base: 0, md: 2}}>
-      <Box
-        p={4}
-        borderRadius={{base: 0, md: borderRadius}}
-        borderWidth={{base: 0, md: borderWidth}}
-        borderColor={borderColor}
-        bg={props.selected ? headerColorSelected : headerColor}
-        transition="background 0.3s"
+    <div className="bg-gray-800 opacity-50 md:pt-2">
+      <div
+        className={`
+          p-4 md:rounded-md md:border border-gray-600 transition-colors duration-300
+          ${props.selected ? "bg-blue-700" : "bg-blue-900"}
+        `}
       >
-        <Heading size="md" color="white">
+        <h3 className="text-lg font-bold text-white">
           {prettyFormatDateTime({date: props.date})}
-        </Heading>
-      </Box>
-    </Box>
+        </h3>
+      </div>
+    </div>
   )
 }
 
@@ -135,61 +102,58 @@ function DayHeader(props: {
   headerRef: React.Ref<HTMLDivElement>
 }) {
   return (
-    <Box
+    <div
       ref={props.headerRef}
-      bg="gray.800"
-      position="sticky"
-      top={0}
-      zIndex="sticky"
-      pt={{base: 0, md: 2}}
+      className="bg-gray-800 sticky top-0 z-40 md:pt-2"
     >
-      <Box
-        p={4}
-        borderTopRadius={{base: 0, md: borderRadius}}
-        borderWidth={{base: 0, md: borderWidth}}
-        borderColor={borderColor}
-        bg={props.selected ? headerColorSelected : headerColor}
+      <div
+        className={`
+          p-4 md:rounded-t-md md:border border-gray-600 cursor-pointer
+          ${props.selected ? "bg-blue-700" : "bg-blue-900"}
+        `}
         onClick={props.onClick}
-        cursor="pointer"
       >
-        <Heading size="md" color="white">
+        <h3 className="text-lg font-bold text-white">
           {prettyFormatDateTime({date: props.date})}
-        </Heading>
-      </Box>
-    </Box>
+        </h3>
+      </div>
+    </div>
   )
 }
 
 function Summary(props: {headings: NonNullable<Props["headings"]>}) {
   return (
-    <Box px={4} py={2}>
+    <div className="px-4 py-2">
       {props.headings.map((heading, index) => (
         <HighlightedText key={index} as="div">
           {heading}
         </HighlightedText>
       ))}
-    </Box>
+    </div>
   )
 }
 
 function Full(props: {entries: Entry[]}) {
   return (
-    <Box>
+    <div>
       {props.entries.map((entry, i) => (
-        <Box key={entry.id} mb={i === props.entries.length - 1 ? 0 : 2}>
+        <div
+          key={entry.id}
+          className={i === props.entries.length - 1 ? "" : "mb-2"}
+        >
           {entry.type === "markdown" ? (
-            <Box mx={{base: 4, md: 8}} my={{base: 4, md: 6}}>
+            <div className="mx-4 md:mx-8 my-4 md:my-6">
               <Markdown source={entry.content} />
-            </Box>
+            </div>
           ) : entry.type === "scanned" ? (
             <ScannedPage entry={entry} />
           ) : entry.type === "audio" ? (
-            <Box mx={{base: 4, md: 8}} my={{base: 4, md: 6}}>
+            <div className="mx-4 md:mx-8 my-4 md:my-6">
               <AudioPlayer sourceUrl={entry.fileUrl} />
-            </Box>
+            </div>
           ) : null}
-        </Box>
+        </div>
       ))}
-    </Box>
+    </div>
   )
 }

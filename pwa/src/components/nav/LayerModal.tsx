@@ -1,23 +1,14 @@
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Checkbox,
-  Flex,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  Stack,
-} from "@chakra-ui/react"
 import {useAtom, useAtomValue} from "jotai"
 import {startTransition} from "react"
 import {layerIdsAtom, searchRegexAtom, selectedLayerIdsAtom} from "../../atoms"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../ui/accordion"
+import {Checkbox} from "../ui/checkbox"
+import {Dialog, DialogContent, DialogHeader, DialogTitle} from "../ui/dialog"
 
 interface Props {
   isOpen: boolean
@@ -31,90 +22,92 @@ export default function LayerModal(props: Props) {
 
   const groups = groupLayers(layerIds, selectedLayerIds)
 
+  const defaultOpen = groups
+    .filter((group) => group.layers.some((l) => l.isSelected))
+    .map((group) => group.groupName)
+
   return (
-    <Modal isOpen={props.isOpen} onClose={props.onClose} size="xs">
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Layers</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody pb={8}>
-          <Accordion
-            allowMultiple={true}
-            defaultIndex={groups.flatMap((group, index) =>
-              group.layers.some((l) => l.isSelected) ? [index] : [],
-            )}
+    <Dialog
+      open={props.isOpen}
+      onOpenChange={(open) => !open && props.onClose()}
+    >
+      <DialogContent className="max-w-xs">
+        <DialogHeader>
+          <DialogTitle>Layers</DialogTitle>
+        </DialogHeader>
+        <div className="pb-4">
+          <div
+            className="overflow-hidden transition-all duration-400"
+            style={{
+              height: searchRegex ? 36 : 0,
+              opacity: searchRegex ? 1 : 0,
+            }}
           >
-            <AccordionItem
-              height={searchRegex ? 9 : 0}
-              opacity={searchRegex ? 1 : 0}
-              overflow="hidden"
-              transition="all 0.4s"
-            >
+            <label className="flex items-center gap-2 pl-4 h-9">
               <Checkbox
-                pl={4}
-                width="100%"
-                height={9}
-                isChecked={!!searchRegex}
-                onChange={() => startTransition(() => setSearchRegex(""))}
-              >
-                search
-              </Checkbox>
-            </AccordionItem>
+                checked={!!searchRegex}
+                onCheckedChange={() =>
+                  startTransition(() => setSearchRegex(""))
+                }
+              />
+              <span>search</span>
+            </label>
+          </div>
 
+          <Accordion type="multiple" defaultValue={defaultOpen}>
             {groups.map(({groupName, allSelected, someSelected, layers}) => (
-              <AccordionItem key={groupName}>
-                <Flex>
-                  <Checkbox
-                    pl={4}
-                    pr={2}
-                    disabled={!!searchRegex}
-                    isChecked={allSelected}
-                    isIndeterminate={someSelected && !allSelected}
-                    onChange={() =>
-                      startTransition(() =>
-                        setSelectedLayerIds((existingLayerIds) =>
-                          toggle(
-                            existingLayerIds,
-                            layers.map((x) => x.layerId),
+              <AccordionItem key={groupName} value={groupName}>
+                <div className="flex items-center">
+                  <label className="flex items-center gap-2 pl-4 pr-2">
+                    <Checkbox
+                      disabled={!!searchRegex}
+                      checked={
+                        someSelected && !allSelected
+                          ? "indeterminate"
+                          : allSelected
+                      }
+                      onCheckedChange={() =>
+                        startTransition(() =>
+                          setSelectedLayerIds((existingLayerIds) =>
+                            toggle(
+                              existingLayerIds,
+                              layers.map((x) => x.layerId),
+                            ),
                           ),
-                        ),
-                      )
-                    }
-                  >
-                    {groupName}
-                  </Checkbox>
-                  <AccordionButton justifyContent="flex-end">
-                    <AccordionIcon />
-                  </AccordionButton>
-                </Flex>
+                        )
+                      }
+                    />
+                    <span>{groupName}</span>
+                  </label>
+                  <AccordionTrigger className="flex-1 justify-end py-2" />
+                </div>
 
-                <AccordionPanel>
-                  <Stack spacing={1} ml={6}>
+                <AccordionContent>
+                  <div className="flex flex-col gap-1 ml-6">
                     {layers.map(({layerId, layerName, isSelected}) => (
-                      <Box key={layerId}>
+                      <label key={layerId} className="flex items-center gap-2">
                         <Checkbox
                           disabled={!!searchRegex}
-                          isChecked={isSelected}
-                          onChange={() =>
+                          checked={isSelected}
+                          onCheckedChange={() =>
                             startTransition(() =>
                               setSelectedLayerIds((existingLayerIds) =>
                                 toggle(existingLayerIds, [layerId]),
                               ),
                             )
                           }
-                        >
-                          {layerName}
-                        </Checkbox>
-                      </Box>
+                        />
+                        <span>{layerName}</span>
+                      </label>
                     ))}
-                  </Stack>
-                </AccordionPanel>
+                  </div>
+                </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }
 

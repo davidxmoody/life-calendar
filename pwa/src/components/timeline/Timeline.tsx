@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import {memo, startTransition, useCallback, useMemo} from "react"
-import {Box, Button, Flex} from "@chakra-ui/react"
 import {useAtom, useAtomValue, useSetAtom} from "jotai"
+import {Button} from "../ui/button"
 import {lifeDataAtom, selectedDayAtom, timelineDataAtom} from "../../atoms"
 import Day from "./Day"
 import useToday from "../../helpers/useToday"
@@ -40,11 +40,11 @@ export default memo(function Timeline() {
 
   const footer = useMemo(
     () => (
-      <Box pb={10}>
+      <div className="pb-10">
         {nextYearWeekStart <= todayWeekStart ? (
           <YearJumpButton weekStart={nextYearWeekStart} direction="next" />
         ) : null}
-      </Box>
+      </div>
     ),
     [todayWeekStart, nextYearWeekStart],
   )
@@ -91,18 +91,20 @@ function YearJumpButton({
   const setSelectedDay = useSetAtom(selectedDayAtom)
 
   return (
-    <Flex
-      maxWidth="800px"
-      justifyContent="center"
-      pt={direction === "next" ? 8 : 10}
-      pb={direction === "next" ? 10 : 8}
+    <div
+      className={`
+        max-w-[800px] flex justify-center
+        ${direction === "next" ? "pt-8 pb-10" : "pt-10 pb-8"}
+      `}
     >
-      <Button
-        leftIcon={direction === "next" ? <BsArrowDown /> : <BsArrowUp />}
-        onClick={() => startTransition(() => setSelectedDay(weekStart))}
-      >
+      <Button onClick={() => startTransition(() => setSelectedDay(weekStart))}>
+        {direction === "next" ? (
+          <BsArrowDown className="mr-2" />
+        ) : (
+          <BsArrowUp className="mr-2" />
+        )}
         Go to {parseYear(weekStart)}
       </Button>
-    </Flex>
+    </div>
   )
 }

@@ -1,4 +1,3 @@
-import {Box} from "@chakra-ui/react"
 import {useAtomValue} from "jotai"
 import {Children, Fragment} from "react"
 import {searchRegexAtom} from "../../atoms"
@@ -70,13 +69,8 @@ function surroundMatches(
 
 function HighlightMatch(props: {children: React.ReactNode}) {
   return (
-    <Box
-      as="span"
-      borderRadius="sm"
-      bg="orange.500"
-      sx={{"::selection": {background: "orange.300"}}}
-    >
+    <span className="rounded-sm bg-orange-500 selection:bg-orange-300">
       {props.children}
-    </Box>
+    </span>
   )
 }

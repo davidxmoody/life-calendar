@@ -1,19 +1,11 @@
-import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  Stack,
-} from "@chakra-ui/react"
 import {startTransition, useCallback, useEffect} from "react"
 import {sync} from "../../db"
 import DatabaseStats from "./DatabaseStats"
 import {useAtom, useSetAtom} from "jotai"
 import {syncStateAtom, updateTriggerAtom} from "../../atoms"
 import {resetAuth} from "../../helpers/auth"
+import {Button} from "../ui/button"
+import {Dialog, DialogContent, DialogHeader, DialogTitle} from "../ui/dialog"
 
 const syncIntervalMs = 5 * 60 * 1000
 
@@ -65,38 +57,37 @@ export default function SyncModal(props: Props) {
     return () => window.removeEventListener("focus", syncIfNotSyncedRecently)
   }, [syncIfNotSyncedRecently])
 
+  const isLoading = syncState.type === "loading"
+
   return (
-    <Modal isOpen={props.isOpen} onClose={props.onClose} size="xs">
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Database stats</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <Stack spacing={4} mb={2}>
-            <DatabaseStats />
+    <Dialog
+      open={props.isOpen}
+      onOpenChange={(open) => !open && props.onClose()}
+    >
+      <DialogContent className="max-w-xs">
+        <DialogHeader>
+          <DialogTitle>Database stats</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-4 mb-2">
+          <DatabaseStats />
 
-            <Button
-              colorScheme="blue"
-              onClick={() => startSync({fullSync: false})}
-              isLoading={syncState.type === "loading"}
-            >
-              Sync
-            </Button>
+          <Button
+            onClick={() => startSync({fullSync: false})}
+            disabled={isLoading}
+          >
+            {isLoading ? "Syncing..." : "Sync"}
+          </Button>
 
-            <Button
-              colorScheme="blue"
-              onClick={() => startSync({fullSync: true})}
-              isLoading={syncState.type === "loading"}
-            >
-              Full sync
-            </Button>
+          <Button
+            onClick={() => startSync({fullSync: true})}
+            disabled={isLoading}
+          >
+            {isLoading ? "Syncing..." : "Full sync"}
+          </Button>
 
-            <Button colorScheme="blue" onClick={resetAuth}>
-              Reset auth
-            </Button>
-          </Stack>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
+          <Button onClick={resetAuth}>Reset auth</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }
