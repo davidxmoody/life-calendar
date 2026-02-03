@@ -1,12 +1,20 @@
 import {memo} from "react"
 import ReactMarkdown, {Components} from "react-markdown"
+import remarkGfm from "remark-gfm"
 import {
   Box,
+  Checkbox,
   Heading,
   Link,
   ListItem,
   OrderedList,
+  Table,
+  Tbody,
+  Td,
   Text,
+  Th,
+  Thead,
+  Tr,
   UnorderedList,
 } from "@chakra-ui/react"
 import HighlightedText from "./HighlightedText"
@@ -84,8 +92,20 @@ function MarkdownOrderedList(props: {children?: React.ReactNode}) {
   )
 }
 
-function MarkdownUnorderedList(props: {children?: React.ReactNode}) {
-  return <UnorderedList mb={paraMarginBottom}>{props.children}</UnorderedList>
+function MarkdownUnorderedList(props: {
+  className?: string
+  children?: React.ReactNode
+}) {
+  const isTaskList = props.className?.includes("contains-task-list")
+  return (
+    <UnorderedList
+      mb={paraMarginBottom}
+      styleType={isTaskList ? "none" : undefined}
+      marginInlineStart={isTaskList ? 0 : undefined}
+    >
+      {props.children}
+    </UnorderedList>
+  )
 }
 
 function MarkdownListItem(props: {children?: React.ReactNode}) {
@@ -134,6 +154,25 @@ function MarkdownStrong(props: {children?: React.ReactNode}) {
   )
 }
 
+function MarkdownStrikethrough(props: {children?: React.ReactNode}) {
+  return (
+    <Text as="del" opacity={0.6}>
+      {props.children}
+    </Text>
+  )
+}
+
+function MarkdownCheckbox(props: {checked?: boolean}) {
+  return (
+    <Checkbox
+      isChecked={props.checked}
+      isReadOnly
+      mr={2}
+      verticalAlign="middle"
+    />
+  )
+}
+
 function HorizontalRule() {
   return (
     <Box
@@ -145,10 +184,39 @@ function HorizontalRule() {
   )
 }
 
+function MarkdownTable(props: {children?: React.ReactNode}) {
+  return (
+    <Box overflowX="auto" mb={paraMarginBottom}>
+      <Table size="sm">{props.children}</Table>
+    </Box>
+  )
+}
+
+function MarkdownThead(props: {children?: React.ReactNode}) {
+  return <Thead>{props.children}</Thead>
+}
+
+function MarkdownTbody(props: {children?: React.ReactNode}) {
+  return <Tbody>{props.children}</Tbody>
+}
+
+function MarkdownTr(props: {children?: React.ReactNode}) {
+  return <Tr>{props.children}</Tr>
+}
+
+function MarkdownTh(props: {children?: React.ReactNode}) {
+  return <Th>{props.children}</Th>
+}
+
+function MarkdownTd(props: {children?: React.ReactNode}) {
+  return <Td>{props.children}</Td>
+}
+
 const components: Components = {
   a: MarkdownLink,
   blockquote: MarkdownBlockquote,
   code: MarkdownCode,
+  del: MarkdownStrikethrough,
   em: MarkdownEmphasis,
   h1: MarkdownHeading,
   h2: MarkdownHeading,
@@ -158,14 +226,25 @@ const components: Components = {
   h6: MarkdownHeading,
   hr: HorizontalRule,
   img: MarkdownImage,
+  input: MarkdownCheckbox,
   li: MarkdownListItem,
   ol: MarkdownOrderedList,
   p: MarkdownParagraph,
   pre: MarkdownPre,
   strong: MarkdownStrong,
+  table: MarkdownTable,
+  tbody: MarkdownTbody,
+  td: MarkdownTd,
+  th: MarkdownTh,
+  thead: MarkdownThead,
+  tr: MarkdownTr,
   ul: MarkdownUnorderedList,
 }
 
 export default memo(function Markdown(props: {source: string}) {
-  return <ReactMarkdown components={components}>{props.source}</ReactMarkdown>
+  return (
+    <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+      {props.source}
+    </ReactMarkdown>
+  )
 })
