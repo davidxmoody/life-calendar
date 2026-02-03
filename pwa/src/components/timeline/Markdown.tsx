@@ -18,9 +18,9 @@ function MarkdownHeading(props: {
   children?: React.ReactNode
 }) {
   const sizeClass =
-    {h1: "text-2xl", h2: "text-2xl", h3: "text-xl"}[
+    {h1: "text-4xl", h2: "text-4xl", h3: "text-2xl"}[
       props.node?.tagName ?? ""
-    ] ?? "text-lg"
+    ] ?? "text-xl"
 
   return (
     <h3 className={`${sizeClass} font-bold mb-4 text-pretty`}>

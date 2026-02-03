@@ -27,7 +27,7 @@ export default function ScannedPage(props: Props) {
         ) : null}
         {error ? (
           <div className="absolute inset-0 flex items-center justify-center">
-            <BsExclamationTriangleFill className="text-blue-700 size-12" />
+            <BsExclamationTriangleFill className="text-sky-700 size-12" />
           </div>
         ) : null}
       </div>

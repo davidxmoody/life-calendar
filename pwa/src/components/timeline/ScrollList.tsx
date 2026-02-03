@@ -94,7 +94,7 @@ export default function ScrollList<T>(props: Props<T>) {
   return (
     <div
       id={containerId}
-      className="overflow-y-scroll h-full"
+      className="overflow-y-auto h-full"
       onScroll={checkCurrentScrollKey}
     >
       {props.items.length === 0 ? (

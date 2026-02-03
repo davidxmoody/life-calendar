@@ -84,7 +84,7 @@ function EmptyDayHeader(props: {date: string; selected: boolean}) {
       <div
         className={`
           p-4 md:rounded-md md:border border-gray-600 transition-colors duration-300
-          ${props.selected ? "bg-blue-700" : "bg-blue-900"}
+          ${props.selected ? "bg-sky-700" : "bg-sky-900"}
         `}
       >
         <h3 className="text-lg font-bold text-white">
@@ -109,7 +109,7 @@ function DayHeader(props: {
       <div
         className={`
           p-4 md:rounded-t-md md:border border-gray-600 cursor-pointer
-          ${props.selected ? "bg-blue-700" : "bg-blue-900"}
+          ${props.selected ? "bg-sky-700" : "bg-sky-900"}
         `}
         onClick={props.onClick}
       >
