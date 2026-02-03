@@ -1,40 +1,45 @@
-import {Box, Button, Icon, IconButton, useDisclosure} from "@chakra-ui/react"
 import {useAtomValue} from "jotai"
 import {BsSearch} from "react-icons/bs"
 import {searchRegexAtom} from "../../atoms"
 import SearchModal from "./SearchModal"
-import {memo} from "react"
+import {memo, useState} from "react"
+import {Button} from "@/components/ui/button"
 
 export default memo(function SearchButton() {
-  const {isOpen, onOpen, onClose} = useDisclosure()
+  const [isOpen, setIsOpen] = useState(false)
   const searchRegex = useAtomValue(searchRegexAtom)
-
-  const icon = <Icon as={BsSearch} fontSize="20px" />
 
   return (
     <>
       {searchRegex ? (
         <Button
-          colorScheme="blue"
-          onClick={onOpen}
-          rightIcon={icon}
-          fontSize="sm"
+          variant="nav"
+          size="lg"
+          onClick={() => setIsOpen(true)}
+          className="!text-sm"
         >
-          "
-          <Box overflow="hidden" textOverflow="ellipsis">
-            {searchRegex}
-          </Box>
-          "
+          <span>{formatSearchRegex(searchRegex)}</span>
+          <BsSearch className="size-5" />
         </Button>
       ) : (
-        <IconButton
+        <Button
+          variant="nav"
+          size="icon-lg"
           aria-label="Search"
-          colorScheme="blue"
-          icon={icon}
-          onClick={onOpen}
-        />
+          onClick={() => setIsOpen(true)}
+        >
+          <BsSearch />
+        </Button>
       )}
-      <SearchModal isOpen={isOpen} onClose={onClose} />
+      <SearchModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
   )
 })
+
+function formatSearchRegex(searchRegex: string, maxLength = 15) {
+  const truncated =
+    searchRegex.length > maxLength
+      ? searchRegex.slice(0, maxLength) + "…"
+      : searchRegex
+  return `"${truncated}"`
+}

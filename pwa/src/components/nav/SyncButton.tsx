@@ -1,5 +1,4 @@
-import {memo} from "react"
-import {IconButton, useDisclosure} from "@chakra-ui/react"
+import {memo, useState} from "react"
 import {useAtomValue} from "jotai"
 import {syncStateAtom} from "../../atoms"
 import SyncModal from "./SyncModal"
@@ -9,9 +8,10 @@ import {
   BsCloudFill,
   BsCloudSlashFill,
 } from "react-icons/bs"
+import {Button} from "@/components/ui/button"
 
 export default memo(function SyncButton() {
-  const {isOpen, onOpen, onClose} = useDisclosure()
+  const [isOpen, setIsOpen] = useState(false)
   const syncState = useAtomValue(syncStateAtom)
 
   const icon =
@@ -27,14 +27,15 @@ export default memo(function SyncButton() {
 
   return (
     <>
-      <IconButton
+      <Button
+        variant="nav"
+        size="icon-lg"
         aria-label="Sync"
-        colorScheme="blue"
-        fontSize="20px"
-        icon={icon}
-        onClick={onOpen}
-      />
-      <SyncModal isOpen={isOpen} onClose={onClose} />
+        onClick={() => setIsOpen(true)}
+      >
+        {icon}
+      </Button>
+      <SyncModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
   )
 })

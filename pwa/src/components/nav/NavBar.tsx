@@ -1,5 +1,4 @@
 import {memo} from "react"
-import {Box, Flex} from "@chakra-ui/react"
 import LayerButton from "./LayerButton"
 import SyncButton from "./SyncButton"
 import MobileViewSwitcher from "./MobileViewSwitcher"
@@ -10,34 +9,20 @@ export const NAV_BAR_HEIGHT_PX = 72
 
 export default memo(function NavBar() {
   return (
-    <Box
-      minHeight={`${NAV_BAR_HEIGHT_PX}px`}
-      display="flex"
-      alignItems="center"
-      p={4}
-      backgroundColor="blue.400"
-      zIndex="banner"
-      flex={0}
+    <div
+      className="flex items-center gap-4 p-4 !bg-blue-400 z-10"
+      style={{height: NAV_BAR_HEIGHT_PX}}
     >
-      <Box display={{base: "flex", md: "none"}} mr={4}>
+      <div className="md:hidden">
         <MobileViewSwitcher />
-      </Box>
+      </div>
+      <LayerButton />
 
-      <Box mr={4}>
-        <LayerButton />
-      </Box>
+      <div className="flex-1" />
 
-      <Flex flex={1} justifyContent="flex-end" minWidth="100px">
-        <SearchButton />
-      </Flex>
-
-      <Box ml={4}>
-        <TodayButton />
-      </Box>
-
-      <Box ml={4}>
-        <SyncButton />
-      </Box>
-    </Box>
+      <SearchButton />
+      <TodayButton />
+      <SyncButton />
+    </div>
   )
 })

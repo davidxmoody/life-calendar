@@ -7,7 +7,7 @@ interface Props {
 export default function AudioPlayer(props: Props) {
   return (
     <audio
-      style={{maxWidth: "100%"}}
+      className="max-w-full"
       src={createAuthedUrl(props.sourceUrl)}
       controls
     />

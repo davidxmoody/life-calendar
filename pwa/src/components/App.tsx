@@ -1,8 +1,7 @@
 import Timeline from "./timeline/Timeline"
 import NavBar from "./nav/NavBar"
-import {Box, Flex} from "@chakra-ui/react"
 import Calendar from "./calendar/Calendar"
-import {ComponentProps, Suspense} from "react"
+import {Suspense} from "react"
 import {useAtomValue} from "jotai"
 import {mobileViewAtom} from "../atoms"
 import FirstTimeSetupModal from "./FirstTimeSetupModal"
@@ -13,36 +12,40 @@ export default function App() {
   return (
     <>
       <Suspense>
-        <Flex height="100vh" flexDirection="column">
+        <div className="flex h-screen flex-col">
           <NavBar />
 
-          <Flex flex={1} overflow="hidden" position="relative">
-            <Box flex={0} {...mobileVisibility(mobileView === "calendar")}>
+          <div className="flex flex-1 overflow-hidden relative">
+            <div
+              className={`flex-none ${mobileVisibility(
+                mobileView === "calendar",
+              )}`}
+            >
               <Calendar />
-            </Box>
+            </div>
 
-            <Box flex={1} {...mobileVisibility(mobileView === "timeline")}>
+            <div
+              className={`flex-1 ${mobileVisibility(
+                mobileView === "timeline",
+              )}`}
+            >
               <Timeline />
-            </Box>
-          </Flex>
-        </Flex>
+            </div>
+          </div>
+        </div>
       </Suspense>
       <FirstTimeSetupModal />
     </>
   )
 }
 
-function mobileVisibility(
-  visible: boolean,
-): Partial<ComponentProps<typeof Box>> {
-  return {
-    position: {base: "absolute", md: "static"},
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    opacity: {base: visible ? 1 : 0, md: 1},
-    pointerEvents: {base: visible ? "all" : "none", md: "all"},
-    transition: "opacity 0.3s",
-  }
+function mobileVisibility(visible: boolean): string {
+  // On mobile: absolute positioned, fade in/out based on visibility
+  // On md+: static positioned, always visible
+  return `
+    absolute md:static inset-0
+    transition-opacity duration-300
+    ${visible ? "opacity-100" : "opacity-0 pointer-events-none"}
+    md:opacity-100 md:pointer-events-auto
+  `
 }

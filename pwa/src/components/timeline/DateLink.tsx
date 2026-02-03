@@ -1,4 +1,3 @@
-import {Link} from "@chakra-ui/react"
 import {useSetAtom} from "jotai"
 import {startTransition} from "react"
 import {selectedDayAtom} from "../../atoms"
@@ -12,11 +11,11 @@ export default function DateLink(props: Props) {
   const setSelectedDay = useSetAtom(selectedDayAtom)
 
   return (
-    <Link
-      color="teal.500"
+    <button
+      className="!text-teal-500 hover:underline cursor-pointer"
       onClick={() => startTransition(() => setSelectedDay(date))}
     >
       {date}
-    </Link>
+    </button>
   )
 }

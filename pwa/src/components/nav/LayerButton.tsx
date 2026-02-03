@@ -1,12 +1,12 @@
-import {Button, Icon, IconButton, useDisclosure} from "@chakra-ui/react"
 import {useAtomValue} from "jotai"
-import {memo} from "react"
+import {memo, useState} from "react"
 import {BsLayersFill} from "react-icons/bs"
 import {searchRegexAtom, selectedLayerIdsAtom} from "../../atoms"
 import LayerModal from "./LayerModal"
+import {Button} from "@/components/ui/button"
 
 export default memo(function LayerButton() {
-  const {isOpen, onOpen, onClose} = useDisclosure()
+  const [isOpen, setIsOpen] = useState(false)
 
   const hasSearchRegex = !!useAtomValue(searchRegexAtom)
   const selectedLayerIds = useAtomValue(selectedLayerIdsAtom)
@@ -18,29 +18,31 @@ export default memo(function LayerButton() {
     : selectedLayerIds[0] +
       (selectedLayerIds.length > 1 ? ` +${selectedLayerIds.length - 1}` : "")
 
-  const icon = <Icon as={BsLayersFill} fontSize="20px" />
+  const handleOpen = () => setIsOpen(true)
 
   return (
     <>
       <Button
-        display={{base: "none", md: "inline-flex"}}
-        colorScheme="blue"
-        leftIcon={icon}
-        fontSize="sm"
-        onClick={onOpen}
+        variant="nav"
+        size="lg"
+        onClick={handleOpen}
+        className="hidden md:inline-flex !text-sm"
       >
+        <BsLayersFill className="size-5" />
         {buttonLabel}
       </Button>
 
-      <IconButton
-        display={{base: "inline-flex", md: "none"}}
-        colorScheme="blue"
-        icon={icon}
+      <Button
+        variant="nav"
+        size="icon-lg"
         aria-label="Change layer"
-        onClick={onOpen}
-      />
+        onClick={handleOpen}
+        className="md:hidden"
+      >
+        <BsLayersFill />
+      </Button>
 
-      <LayerModal isOpen={isOpen} onClose={onClose} />
+      <LayerModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
   )
 })
