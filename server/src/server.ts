@@ -2,6 +2,7 @@ import * as cors from "cors"
 import * as express from "express"
 import {readFileSync} from "fs"
 import * as https from "https"
+import {networkInterfaces} from "os"
 import {getEntries} from "./db/entries"
 import {getLayers} from "./db/layers"
 import {getLifeData} from "./db/lifeData"
@@ -70,6 +71,20 @@ app.get("/sync", async (req, res) => {
   res.send({timestamp, layers, entries, lifeData})
 })
 
-https.createServer({key: SSL_KEY, cert: SSL_CERT}, app).listen(LISTEN_PORT, () => {
-  console.log(`Server listening on https://localhost:${LISTEN_PORT}`)
-})
+https
+  .createServer({key: SSL_KEY, cert: SSL_CERT}, app)
+  .listen(LISTEN_PORT, () => {
+    console.log(`\nServer listening on:`)
+    console.log(`  Local:   https://localhost:${LISTEN_PORT}`)
+
+    const nets = networkInterfaces()
+    for (const name of Object.keys(nets)) {
+      for (const net of nets[name] ?? []) {
+        if (net.family === "IPv4" && !net.internal) {
+          console.log(`  Network: https://${net.address}:${LISTEN_PORT}`)
+        }
+      }
+    }
+
+    console.log()
+  })
