@@ -1,8 +1,7 @@
-import {Atom, useAtomValue} from "jotai"
 import {memo, startTransition, useRef, useState} from "react"
-import {createDataForDayAtom, nullAtom} from "../../atoms"
 import {prettyFormatDateTime} from "../../helpers/dates"
 import {Entry} from "../../types"
+import {useEntriesForDay} from "../../db"
 import HighlightedText from "./HighlightedText"
 import AudioPlayer from "./AudioPlayer"
 import Markdown from "./Markdown"
@@ -18,9 +17,8 @@ interface Props {
 export default memo(function Day(props: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
-  const [dataAtom, setDataAtom] =
-    useState<Atom<Promise<{entries: Entry[]}> | null>>(nullAtom)
-  const data = useAtomValue(dataAtom)
+  const [isExpanded, setIsExpanded] = useState(false)
+  const entries = useEntriesForDay(isExpanded ? props.date : null)
 
   if (!props.headings?.length) {
     return (
@@ -32,11 +30,7 @@ export default memo(function Day(props: Props) {
 
   function onToggle() {
     startTransition(() => {
-      if (dataAtom === nullAtom) {
-        setDataAtom(createDataForDayAtom(props.date))
-      } else {
-        setDataAtom(nullAtom)
-      }
+      setIsExpanded((prev) => !prev)
 
       const isHeaderSticky =
         headerRef.current?.getBoundingClientRect().top === NAV_BAR_HEIGHT_PX
@@ -46,6 +40,8 @@ export default memo(function Day(props: Props) {
       }
     })
   }
+
+  const hasData = isExpanded && entries && entries.length > 0
 
   return (
     <div className="max-w-[800px] md:px-2 pb-4 md:pb-2" ref={containerRef}>
@@ -61,12 +57,12 @@ export default memo(function Day(props: Props) {
           className={`
             md:border-l md:border-r md:border-b md:rounded-b-md border-gray-600
             overflow-hidden
-            ${data ? "" : "cursor-pointer"}
+            ${hasData ? "" : "cursor-pointer"}
           `}
-          onClick={data ? undefined : onToggle}
+          onClick={hasData ? undefined : onToggle}
         >
-          {data ? (
-            <Full entries={data.entries} />
+          {hasData ? (
+            <Full entries={entries} />
           ) : (
             <Summary headings={props.headings} />
           )}

@@ -1,8 +1,8 @@
 import {startTransition, useCallback, useEffect} from "react"
 import {sync} from "../../db"
 import DatabaseStats from "./DatabaseStats"
-import {useAtom, useSetAtom} from "jotai"
-import {syncStateAtom, updateTriggerAtom} from "../../atoms"
+import {useAtom} from "jotai"
+import {syncStateAtom} from "../../atoms"
 import {resetAuth} from "../../helpers/auth"
 import {Button} from "../ui/button"
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "../ui/dialog"
@@ -16,18 +16,14 @@ interface Props {
 
 export default function SyncModal(props: Props) {
   const [syncState, setSyncState] = useAtom(syncStateAtom)
-  const triggerUpdate = useSetAtom(updateTriggerAtom)
 
   const startSync = useCallback(
     (args: {fullSync: boolean}) => {
       setSyncState((oldSyncState) => ({...oldSyncState, type: "loading"}))
       sync(args)
-        .then(({receievedNewData, timestamp}) => {
+        .then(({timestamp}) => {
           startTransition(() => {
             setSyncState({type: "success", lastSyncTimestamp: timestamp})
-            if (receievedNewData) {
-              triggerUpdate(timestamp)
-            }
           })
         })
         .catch((e) => {
@@ -35,7 +31,7 @@ export default function SyncModal(props: Props) {
           setSyncState((oldSyncState) => ({...oldSyncState, type: "error"}))
         })
     },
-    [triggerUpdate, setSyncState],
+    [setSyncState],
   )
 
   useEffect(() => {

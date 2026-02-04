@@ -1,6 +1,7 @@
-import {useAtom, useAtomValue} from "jotai"
+import {useAtom} from "jotai"
 import {startTransition} from "react"
-import {layerIdsAtom, searchRegexAtom, selectedLayerIdsAtom} from "../../atoms"
+import {searchRegexAtom, selectedLayerIdsAtom} from "../../atoms"
+import {useLayerIds} from "../../db"
 import {
   Accordion,
   AccordionContent,
@@ -17,10 +18,10 @@ interface Props {
 
 export default function LayerModal(props: Props) {
   const [searchRegex, setSearchRegex] = useAtom(searchRegexAtom)
-  const layerIds = useAtomValue(layerIdsAtom)
+  const layerIds = useLayerIds()
   const [selectedLayerIds, setSelectedLayerIds] = useAtom(selectedLayerIdsAtom)
 
-  const groups = groupLayers(layerIds, selectedLayerIds)
+  const groups = groupLayers(layerIds ?? [], selectedLayerIds)
 
   const defaultOpen = groups
     .filter((group) => group.layers.some((l) => l.isSelected))

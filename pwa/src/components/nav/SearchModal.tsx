@@ -83,7 +83,12 @@ export default function SearchModal(props: Props) {
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" className="mr-4" onClick={clear}>
+            <Button
+              type="button"
+              variant="outline"
+              className="mr-4"
+              onClick={clear}
+            >
               Clear
             </Button>
             <Button type="submit" disabled={isInvalid}>

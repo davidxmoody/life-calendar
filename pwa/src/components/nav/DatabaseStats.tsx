@@ -1,7 +1,6 @@
 import {useAtomValue} from "jotai"
-import {Suspense} from "react"
-import {databaseStatsAtom, SyncState, syncStateAtom} from "../../atoms"
-import {DBStats} from "../../db"
+import {SyncState, syncStateAtom} from "../../atoms"
+import {DBStats, useDatabaseStats} from "../../db"
 import {formatTimestampAgo} from "../../helpers/dates"
 import {
   Table,
@@ -14,15 +13,7 @@ import {
 } from "../ui/table"
 
 export default function DatabaseStats() {
-  return (
-    <Suspense fallback={<StatsTable />}>
-      <StatsTableWithData />
-    </Suspense>
-  )
-}
-
-function StatsTableWithData() {
-  const stats = useAtomValue(databaseStatsAtom)
+  const stats = useDatabaseStats()
   const syncState = useAtomValue(syncStateAtom)
   return <StatsTable stats={stats} syncState={syncState} />
 }

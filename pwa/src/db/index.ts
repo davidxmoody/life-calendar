@@ -1,116 +1,151 @@
-/* eslint-disable no-fallthrough */
-
-import {DBSchema, openDB} from "idb"
-import {Entry, Layer, LifeData, ScannedEntry} from "../types"
+import Dexie, {type EntityTable, type Table} from "dexie"
+import {useLiveQuery} from "dexie-react-hooks"
+import {Entry, Layer, LayerData, LifeData, ScannedEntry} from "../types"
 import {authedFetch} from "../helpers/auth"
 import recalculateEntriesLayers from "./recalculateEntriesLayers"
 import {addDays, getNextWeekStart, getWeekStart} from "../helpers/dates"
 import getHeadings from "../helpers/getHeadings"
-import search from "./search"
 
-interface DataDBSchema extends DBSchema {
-  entries: {
-    key: string
-    value: Entry
-    indexes: {type: string}
-  }
-  layers: {
-    key: string
-    value: Layer
-  }
-  config: {
-    key: "lastSyncTimestamp"
-    value: number | null
-  }
-  scanned: {
-    key: string
-    value: Blob
-  }
-  cachedHeadings: {
-    key: string
-    value: {date: string; headings: string[]}
-  }
-  lifeData: {
-    key: "lifeData"
-    value: LifeData
-  }
+const db = new Dexie("data") as Dexie & {
+  entries: EntityTable<Entry, "id">
+  layers: EntityTable<Layer, "id">
+  config: Table<number | null, string>
+  scanned: Table<Blob, string>
+  cachedHeadings: EntityTable<{date: string; headings: string[]}, "date">
+  lifeData: Table<LifeData, string>
 }
 
-const dbPromise = openDB<DataDBSchema>("data", 8, {
-  upgrade(db, oldVersion, _newVersion, transaction) {
-    switch (oldVersion) {
-      case 0:
-        db.createObjectStore("entries", {keyPath: "id"})
-        db.createObjectStore("layers", {keyPath: "id"})
-        db.createObjectStore("config")
-      case 1:
-        transaction.objectStore("entries").createIndex("type", "type")
-      case 2:
-        db.createObjectStore("scanned")
-      case 3:
-      case 4:
-        db.createObjectStore("lifeData")
-      case 5:
-        db.createObjectStore("cachedHeadings", {keyPath: "date"})
-      case 6:
-        db.createObjectStore("events" as any)
-      case 7:
-        db.deleteObjectStore("events" as any)
-    }
-  },
-  blocked() {
-    alert("IDB blocked")
-  },
-  blocking() {
-    alert("IDB blocking")
-  },
-  terminated() {
-    alert("IDB terminated")
-  },
+db.version(8).stores({
+  entries: "id, type",
+  layers: "id",
+  config: "",
+  scanned: "",
+  cachedHeadings: "date",
+  lifeData: "",
 })
 
-export async function getLayerIds() {
-  return (await dbPromise).getAllKeys("layers")
+// =============================================================================
+// Reactive Hooks (using useLiveQuery)
+// =============================================================================
+
+export function useLayerIds(): string[] | undefined {
+  return useLiveQuery(() => db.layers.toCollection().primaryKeys())
 }
 
-export async function getLayerData(layerId: string) {
-  return (await dbPromise)
-    .get("layers", layerId)
-    .then((layer) => layer?.data ?? null)
+const defaultLifeData: LifeData = {
+  birthDate: "1990-01-01",
+  deathDate: "2089-12-31",
+  eras: [{start: "1990-01-01", name: "", color: "rgb(150, 150, 150)"}],
 }
 
-export async function getEntriesForDay(date: string) {
-  return (await dbPromise).getAll(
-    "entries",
-    IDBKeyRange.bound(date, addDays(date, 1)),
-  )
+export function useLifeData(): LifeData {
+  const data = useLiveQuery(() => db.lifeData.get("lifeData"))
+  return data ?? defaultLifeData
 }
 
-export async function getHeadingsInRange(
+export interface DBStats {
+  lastSyncTimestamp: number | null
+  markdown: number
+  scanned: number
+  audio: number
+  layers: number
+  images: number
+}
+
+export function useDatabaseStats(): DBStats | undefined {
+  return useLiveQuery(async () => {
+    const lastSyncTimestamp = (await db.config.get("lastSyncTimestamp")) ?? null
+
+    const layers = await db.layers.count()
+    const markdown = await db.entries.where("type").equals("markdown").count()
+    const scanned = await db.entries.where("type").equals("scanned").count()
+    const audio = await db.entries.where("type").equals("audio").count()
+    const images = await db.scanned.count()
+
+    return {
+      lastSyncTimestamp,
+      markdown,
+      scanned,
+      audio,
+      layers,
+      images,
+    }
+  })
+}
+
+export function useHeadingsInRange(
   startInclusive: string,
   endExclusive: string,
-) {
-  const headingsList = await (
-    await dbPromise
-  ).getAll(
-    "cachedHeadings",
-    IDBKeyRange.bound(startInclusive, endExclusive, false, true),
-  )
+): Record<string, string[] | undefined> | undefined {
+  return useLiveQuery(async () => {
+    const headingsList = await db.cachedHeadings
+      .where("date")
+      .between(startInclusive, endExclusive, true, false)
+      .toArray()
 
-  return headingsList.reduce<Record<string, string[] | undefined>>(
-    (acc, {date, headings}) => ({...acc, [date]: headings}),
-    {},
-  )
+    return headingsList.reduce<Record<string, string[] | undefined>>(
+      (acc, {date, headings}) => ({...acc, [date]: headings}),
+      {},
+    )
+  }, [startInclusive, endExclusive])
+}
+
+export function useEntriesForDay(date: string | null): Entry[] | undefined {
+  return useLiveQuery(async () => {
+    if (!date) {
+      return []
+    }
+    return db.entries.where("id").between(date, addDays(date, 1)).toArray()
+  }, [date])
+}
+
+export function useSearchResults(
+  regex: string,
+  range: {startInclusive: string; endExclusive: string},
+): Entry[] | undefined {
+  const results = useLiveQuery(async () => {
+    if (!regex) {
+      return []
+    }
+
+    const regexObject = new RegExp(regex, "i")
+
+    const entries = await db.entries
+      .where("id")
+      .between(range.startInclusive, range.endExclusive, true, false)
+      .filter((entry) => {
+        if (entry.type === "markdown") {
+          return regexObject.test(entry.content)
+        }
+        if (entry.type === "scanned") {
+          return entry.headings?.some((h) => regexObject.test(h)) ?? false
+        }
+        return false
+      })
+      .reverse()
+      .toArray()
+
+    return entries
+  }, [regex, range.startInclusive, range.endExclusive])
+
+  return results
+}
+
+// =============================================================================
+// Async Functions (non-reactive, for imperative operations)
+// =============================================================================
+
+export async function getLayerData(layerId: string): Promise<LayerData | null> {
+  const layer = await db.layers.get(layerId)
+  return layer?.data ?? null
 }
 
 export async function sync({fullSync}: {fullSync: boolean}) {
-  const db = await dbPromise
-
   await authedFetch("/ping", {timeoutMs: 1000})
 
   const lastSyncTimestamp = fullSync
     ? null
-    : ((await db.get("config", "lastSyncTimestamp")) ?? null)
+    : (await db.config.get("lastSyncTimestamp")) ?? null
 
   const {
     timestamp,
@@ -126,68 +161,75 @@ export async function sync({fullSync}: {fullSync: boolean}) {
     `/sync${lastSyncTimestamp ? `?sinceMs=${lastSyncTimestamp}` : ""}`,
   ).then((res) => res.json())
 
-  const tx = db.transaction(
-    ["lifeData", "entries", "layers", "config", "cachedHeadings", "scanned"],
-    "readwrite",
-  )
-
-  if (fullSync) {
-    await tx.objectStore("lifeData").clear()
-    await tx.objectStore("entries").clear()
-    await tx.objectStore("layers").clear()
-    await tx.objectStore("config").clear()
-    await tx.objectStore("cachedHeadings").clear()
-  }
-
-  if (lifeData) {
-    await tx.objectStore("lifeData").put(lifeData, "lifeData")
-  }
-
-  for (const entry of entries) {
-    await tx.objectStore("entries").put(entry)
-  }
-
-  for (const date of new Set(entries.map((e) => e.date))) {
-    const entries = await tx
-      .objectStore("entries")
-      .getAll(IDBKeyRange.bound(date, addDays(date, 1)))
-
-    await tx.objectStore("cachedHeadings").put({
-      date,
-      headings: getHeadings(entries),
-    })
-  }
-
-  for (const layer of layers) {
-    await tx.objectStore("layers").put(layer)
-  }
-
-  await recalculateEntriesLayers({
-    changedWeeks: [...new Set(entries.map((e) => getWeekStart(e.date)))],
-    getEntriesForWeek: (weekStart) =>
-      tx
-        .objectStore("entries")
-        .getAll(IDBKeyRange.bound(weekStart, getNextWeekStart(weekStart))),
-    getLayer: (id) => tx.objectStore("layers").get(id),
-    saveLayer: (layer) => tx.objectStore("layers").put(layer),
-  })
-
-  await tx.objectStore("config").put(timestamp, "lastSyncTimestamp")
-
-  if (fullSync) {
-    const allScannedIds = new Set(
-      entries.filter((e) => e.type === "scanned").map((e) => e.id),
-    )
-    let scannedCursor = await tx.objectStore("scanned").openCursor()
-    while (scannedCursor) {
-      if (!allScannedIds.has(scannedCursor.key)) {
-        await scannedCursor.delete()
+  await db.transaction(
+    "rw",
+    [
+      db.lifeData,
+      db.entries,
+      db.layers,
+      db.config,
+      db.cachedHeadings,
+      db.scanned,
+    ],
+    async () => {
+      if (fullSync) {
+        await db.lifeData.clear()
+        await db.entries.clear()
+        await db.layers.clear()
+        await db.config.clear()
+        await db.cachedHeadings.clear()
       }
-      scannedCursor = await scannedCursor.continue()
-    }
-  }
 
-  await tx.done
+      if (lifeData) {
+        await db.lifeData.put(lifeData, "lifeData")
+      }
+
+      for (const entry of entries) {
+        await db.entries.put(entry)
+      }
+
+      for (const date of new Set(entries.map((e) => e.date))) {
+        const dayEntries = await db.entries
+          .where("id")
+          .between(date, addDays(date, 1))
+          .toArray()
+
+        await db.cachedHeadings.put({
+          date,
+          headings: getHeadings(dayEntries),
+        })
+      }
+
+      for (const layer of layers) {
+        await db.layers.put(layer)
+      }
+
+      await recalculateEntriesLayers({
+        changedWeeks: [...new Set(entries.map((e) => getWeekStart(e.date)))],
+        getEntriesForWeek: (weekStart) =>
+          db.entries
+            .where("id")
+            .between(weekStart, getNextWeekStart(weekStart))
+            .toArray(),
+        getLayer: (id) => db.layers.get(id),
+        saveLayer: (layer) => db.layers.put(layer),
+      })
+
+      await db.config.put(timestamp, "lastSyncTimestamp")
+
+      if (fullSync) {
+        const allScannedIds = new Set(
+          entries.filter((e) => e.type === "scanned").map((e) => e.id),
+        )
+        const allScannedKeys = await db.scanned.toCollection().primaryKeys()
+        for (const key of allScannedKeys) {
+          if (!allScannedIds.has(key)) {
+            await db.scanned.delete(key)
+          }
+        }
+      }
+    },
+  )
 
   const receievedNewData = layers.length > 0 || entries.length > 0 || !!lifeData
 
@@ -195,9 +237,7 @@ export async function sync({fullSync}: {fullSync: boolean}) {
 }
 
 async function downloadSingleScannedImage(entry: ScannedEntry) {
-  const db = await dbPromise
-
-  const exists = !!(await db.getKey("scanned", entry.id))
+  const exists = !!(await db.scanned.get(entry.id))
   if (exists) {
     return
   }
@@ -206,69 +246,10 @@ async function downloadSingleScannedImage(entry: ScannedEntry) {
   if (!blob.type.startsWith("image")) {
     throw new Error("Received non-image response")
   }
-  await db.put("scanned", blob, entry.id)
+  await db.scanned.put(blob, entry.id)
 }
 
 export async function getScannedBlob(entry: ScannedEntry): Promise<Blob> {
   await downloadSingleScannedImage(entry)
-  return (await (await dbPromise).get("scanned", entry.id))!
-}
-
-export async function searchDb(
-  regex: string,
-  range?: {startInclusive: string; endExclusive: string},
-) {
-  const key = range
-    ? IDBKeyRange.bound(range.startInclusive, range.endExclusive)
-    : null
-
-  const cursor = await (await dbPromise)
-    .transaction("entries")
-    .store.openCursor(key, "prev")
-
-  return search({regex, cursor})
-}
-
-export interface DBStats {
-  lastSyncTimestamp: number | null
-  markdown: number
-  scanned: number
-  audio: number
-  layers: number
-  images: number
-}
-
-export async function getStats(): Promise<DBStats> {
-  const db = await dbPromise
-
-  const lastSyncTimestamp =
-    (await db.get("config", "lastSyncTimestamp")) ?? null
-
-  const layers = await db.count("layers")
-
-  const markdown = await db.countFromIndex("entries", "type", "markdown")
-  const scanned = await db.countFromIndex("entries", "type", "scanned")
-  const audio = await db.countFromIndex("entries", "type", "audio")
-  const images = await db.count("scanned")
-
-  return {
-    lastSyncTimestamp,
-    markdown,
-    scanned,
-    audio,
-    layers,
-    images,
-  }
-}
-
-const defaultLifeData: LifeData = {
-  birthDate: "1990-01-01",
-  deathDate: "2089-12-31",
-  eras: [{start: "1990-01-01", name: "", color: "rgb(150, 150, 150)"}],
-}
-
-export async function getLifeData() {
-  return (
-    (await (await dbPromise).get("lifeData", "lifeData")) ?? defaultLifeData
-  )
+  return (await db.scanned.get(entry.id))!
 }

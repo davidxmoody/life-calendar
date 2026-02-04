@@ -1,9 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import {memo, startTransition, useCallback, useMemo} from "react"
-import {useAtom, useAtomValue, useSetAtom} from "jotai"
+import {useAtom, useSetAtom} from "jotai"
 import {Button} from "../ui/button"
-import {lifeDataAtom, selectedDayAtom, timelineDataAtom} from "../../atoms"
+import {selectedDayAtom} from "../../atoms"
+import {useLifeData} from "../../db"
+import {useTimelineData} from "../../db/hooks"
 import Day from "./Day"
 import useToday from "../../helpers/useToday"
 import {
@@ -16,9 +18,9 @@ import {BsArrowDown, BsArrowUp} from "react-icons/bs"
 import ScrollList from "./ScrollList"
 
 export default memo(function Timeline() {
-  const lifeData = useAtomValue(lifeDataAtom)
+  const lifeData = useLifeData()
   const today = useToday()
-  const data = useAtomValue(timelineDataAtom)
+  const data = useTimelineData()
   const [selectedDay, setSelectedDay] = useAtom(selectedDayAtom)
 
   const birthWeekStart = getWeekStart(lifeData.birthDate)
@@ -28,7 +30,10 @@ export default memo(function Timeline() {
   const prevYearWeekStart = getLastWeekOfPrevYear(selectedYear)
   const nextYearWeekStart = getFirstWeekOfNextYear(selectedYear)
 
-  const visibleTimeline = data.filter((day) => day.date <= today)
+  const visibleTimeline = useMemo(
+    () => (data ?? []).filter((day) => day.date <= today),
+    [data, today],
+  )
 
   const header = useMemo(
     () =>
@@ -67,6 +72,10 @@ export default memo(function Timeline() {
     ),
     [],
   )
+
+  if (!data) {
+    return null
+  }
 
   return (
     <ScrollList

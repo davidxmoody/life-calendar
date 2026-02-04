@@ -1,26 +1,6 @@
 import {atom} from "jotai"
-import {atomWithStorage, unwrap} from "jotai/utils"
-import {
-  getEntriesForDay,
-  getHeadingsInRange,
-  getLayerData,
-  getLayerIds,
-  getLifeData,
-  getStats,
-  searchDb,
-} from "./db"
-import {
-  dateRange,
-  latest,
-  getFirstWeekInYear,
-  getToday,
-  getWeekStart,
-  parseYear,
-} from "./helpers/dates"
-import generateLayer from "./helpers/generateLayer"
-import mergeLayers from "./helpers/mergeLayers"
-
-export const nullAtom = atom(null)
+import {atomWithStorage} from "jotai/utils"
+import {getToday, getWeekStart, parseYear} from "./helpers/dates"
 
 export const mobileViewAtom = atomWithStorage<"calendar" | "timeline">(
   "mobileView",
@@ -42,39 +22,6 @@ export const syncStateAtom = atom<SyncState>({
   lastSyncTimestamp: null,
 })
 
-export const updateTriggerAtom = atom(0)
-
-export const layerIdsAtom = atom(async (get) => {
-  get(updateTriggerAtom)
-  return getLayerIds()
-})
-
-const selectedLayerDataAsyncAtom = atom(async (get) => {
-  get(updateTriggerAtom)
-  const selectedLayerIds = get(selectedLayerIdsAtom)
-  const searchRegex = get(searchRegexAtom)
-  const lifeData = await get(lifeDataAtom)
-
-  if (searchRegex) {
-    const searchResults = await searchDb(searchRegex, {
-      startInclusive: lifeData.birthDate,
-      endExclusive: lifeData.deathDate,
-    })
-
-    return generateLayer({
-      dates: searchResults.map((e) => e.date),
-      scoringFn: (count) => Math.min(1, Math.pow(count / 7, 0.5)),
-    })
-  }
-
-  return mergeLayers(await Promise.all(selectedLayerIds.map(getLayerData)))
-})
-
-export const selectedLayerDataAtom = unwrap(
-  selectedLayerDataAsyncAtom,
-  (prev) => prev ?? {},
-)
-
 export const selectedDayAtom = atomWithStorage("selectedDay", getToday())
 
 export const selectedWeekStartAtom = atom(
@@ -82,61 +29,8 @@ export const selectedWeekStartAtom = atom(
   (_get, set, value: string) => set(selectedDayAtom, value),
 )
 
-const selectedYearAtom = atom((get) => parseYear(get(selectedWeekStartAtom)))
-
-export const databaseStatsAtom = atom(async (get) => {
-  get(updateTriggerAtom)
-  return getStats()
-})
+export const selectedYearAtom = atom((get) =>
+  parseYear(get(selectedWeekStartAtom)),
+)
 
 export const searchRegexAtom = atomWithStorage<string>("searchRegex", "")
-
-type TimelineData = Array<{
-  date: string
-  headings: string[] | null
-}>
-
-export const timelineDataAtom = atom(async (get): Promise<TimelineData> => {
-  get(updateTriggerAtom)
-  const lifeData = await get(lifeDataAtom)
-  const selectedYear = get(selectedYearAtom)
-  const searchRegex = get(searchRegexAtom)
-
-  const startInclusive = latest(
-    getFirstWeekInYear(selectedYear),
-    getWeekStart(lifeData.birthDate),
-  )
-  const endExclusive = getFirstWeekInYear(selectedYear + 1)
-
-  let headingsInYear = await getHeadingsInRange(startInclusive, endExclusive)
-
-  if (searchRegex) {
-    const searchResults = await searchDb(searchRegex, {
-      startInclusive,
-      endExclusive,
-    })
-    const visibleDays = [...new Set(searchResults.map((e) => e.date))].sort()
-    return visibleDays.map((date) => ({
-      date,
-      headings: headingsInYear[date] ?? null,
-    }))
-  }
-
-  return dateRange(startInclusive, endExclusive).map((date) => ({
-    date,
-    headings: headingsInYear[date] ?? null,
-  }))
-})
-
-export function createDataForDayAtom(date: string) {
-  return atom(async (get) => {
-    get(updateTriggerAtom)
-    const entries = await getEntriesForDay(date)
-    return {entries}
-  })
-}
-
-export const lifeDataAtom = atom(async (get) => {
-  get(updateTriggerAtom)
-  return getLifeData()
-})

@@ -1,11 +1,4 @@
-import {
-  memo,
-  startTransition,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react"
+import {memo, startTransition, useEffect, useMemo, useRef} from "react"
 import generateCalendarData from "./generateCalendarData"
 import useToday from "../../helpers/useToday"
 import drawCalendar from "./drawCalendar"
@@ -13,23 +6,21 @@ import calculateCalendarDimensions, {
   CalendarDimensions,
 } from "./calculateCalendarDimensions"
 import getWeekUnderCursor from "./getWeekUnderCursor"
-import {
-  lifeDataAtom,
-  mobileViewAtom,
-  selectedLayerDataAtom,
-  selectedWeekStartAtom,
-} from "../../atoms"
-import {useAtom, useAtomValue, useSetAtom} from "jotai"
+import {mobileViewAtom, selectedWeekStartAtom} from "../../atoms"
+import {useLifeData} from "../../db"
+import {useSelectedLayerData} from "../../db/hooks"
+import {useAtom, useSetAtom} from "jotai"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
 import useWindowSize from "../../helpers/useWindowSize"
 import {getWeekStart, parseYear} from "../../helpers/dates"
 import useMediaQuery from "../../helpers/useMediaQuery"
+import {useState} from "react"
 
 const ZOOM_SCALE = 8
 
 function useCalendarData() {
   const today = useToday()
-  const lifeData = useAtomValue(lifeDataAtom)
+  const lifeData = useLifeData()
 
   return useMemo(
     () => generateCalendarData({today, ...lifeData}),
@@ -43,7 +34,7 @@ export default memo(function Calendar() {
     selectedWeekStartAtom,
   )
   const setMobileView = useSetAtom(mobileViewAtom)
-  const layerData = useAtomValue(selectedLayerDataAtom)
+  const layerData = useSelectedLayerData()
 
   const [zoomedYearIndex, setZoomedYearIndex] = useState<number | null>(null)
   const isMdOrAbove = useMediaQuery("(min-width: 768px)")
