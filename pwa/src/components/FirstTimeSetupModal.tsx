@@ -37,6 +37,11 @@ export default memo(function FirstTimeSetupModal() {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               aria-invalid={!inputValueIsValid}
+              autoCapitalize="off"
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck={false}
+              inputMode="url"
             />
           </div>
           <DialogFooter>
