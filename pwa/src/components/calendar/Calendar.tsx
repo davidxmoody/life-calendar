@@ -13,7 +13,6 @@ import {useAtom, useSetAtom} from "jotai"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
 import useWindowSize from "../../helpers/useWindowSize"
 import {getWeekStart, parseYear} from "../../helpers/dates"
-import useMediaQuery from "../../helpers/useMediaQuery"
 import {useState} from "react"
 
 const ZOOM_SCALE = 8
@@ -39,12 +38,11 @@ export default memo(function Calendar() {
   const layerData = useSelectedLayerData()
 
   const [zoomedYearIndex, setZoomedYearIndex] = useState<number | null>(null)
-  const isMdOrAbove = useMediaQuery("(min-width: 768px)")
-  const useZoomBehaviour = !isMdOrAbove
 
   const ref = useRef<HTMLCanvasElement>(null)
 
   const windowSize = useWindowSize()
+  const useZoomBehaviour = windowSize.width < 768
   const ratio = 1.46
   let canvasHeight = Math.min(1000, windowSize.height - NAV_BAR_HEIGHT_PX)
   let canvasWidth = Math.floor(canvasHeight / ratio)
@@ -54,7 +52,7 @@ export default memo(function Calendar() {
     canvasHeight = canvasWidth * ratio
   }
 
-  const pixelRatio = window.devicePixelRatio || 1
+  const pixelRatio = window.devicePixelRatio
   const drawWidth = pixelRatio * canvasWidth
   const drawHeight = pixelRatio * canvasHeight
 
