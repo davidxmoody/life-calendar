@@ -12,7 +12,7 @@ export default function drawCalendar({
   d: CalendarDimensions
   ctx: CanvasRenderingContext2D
   data: CalendarData
-  layerData: LayerData | null
+  layerData: LayerData | undefined
   incremental: boolean
 }) {
   ctx.save()
@@ -72,7 +72,7 @@ export default function drawCalendar({
 }
 
 function getWeekColor(
-  layerData: LayerData | null,
+  layerData: LayerData | undefined,
   week: Week,
   decadeIndex: number,
   yearIndex: number,

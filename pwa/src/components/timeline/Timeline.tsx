@@ -23,8 +23,8 @@ export default memo(function Timeline() {
   const data = useTimelineData()
   const [selectedDay, setSelectedDay] = useAtom(selectedDayAtom)
 
-  const birthWeekStart = getWeekStart(lifeData.birthDate)
   const todayWeekStart = getWeekStart(today)
+  const birthWeekStart = lifeData ? getWeekStart(lifeData.birthDate) : ""
 
   const selectedYear = parseYear(getWeekStart(selectedDay))
   const prevYearWeekStart = getLastWeekOfPrevYear(selectedYear)
@@ -73,7 +73,7 @@ export default memo(function Timeline() {
     [],
   )
 
-  if (!data) {
+  if (!lifeData || !data) {
     return null
   }
 

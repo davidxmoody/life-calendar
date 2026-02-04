@@ -1,18 +1,8 @@
 import {useAtomValue} from "jotai"
 import {useState, useEffect, useMemo} from "react"
-import {
-  getLayerData,
-  useHeadingsInRange,
-  useLifeData,
-  useSearchResults,
-} from "./index"
+import {getLayerData, useHeadingsInRange, useSearchResults} from "./index"
 import {searchRegexAtom, selectedLayerIdsAtom, selectedYearAtom} from "../atoms"
-import {
-  dateRange,
-  getFirstWeekInYear,
-  getWeekStart,
-  latest,
-} from "../helpers/dates"
+import {dateRange, getFirstWeekInYear} from "../helpers/dates"
 import generateLayer from "../helpers/generateLayer"
 import mergeLayers from "../helpers/mergeLayers"
 import {LayerData} from "../types"
@@ -23,71 +13,94 @@ type TimelineData = Array<{
 }>
 
 export function useTimelineData(): TimelineData | undefined {
-  const lifeData = useLifeData()
   const selectedYear = useAtomValue(selectedYearAtom)
   const searchRegex = useAtomValue(searchRegexAtom)
 
-  const startInclusive = latest(
-    getFirstWeekInYear(selectedYear),
-    getWeekStart(lifeData.birthDate),
-  )
+  const startInclusive = getFirstWeekInYear(selectedYear)
   const endExclusive = getFirstWeekInYear(selectedYear + 1)
 
-  const headingsInYear = useHeadingsInRange(startInclusive, endExclusive)
-  const searchResults = useSearchResults(searchRegex, {
-    startInclusive,
-    endExclusive,
-  })
+  const headingsResult = useHeadingsInRange(startInclusive, endExclusive)
+  const allSearchResults = useSearchResults()
 
-  return useMemo(() => {
-    if (headingsInYear === undefined) {
-      return undefined
+  // Filter search results to current year
+  const searchResultsInRange = useMemo(() => {
+    if (allSearchResults === undefined) return undefined
+    return allSearchResults.filter(
+      (id) => id >= startInclusive && id < endExclusive,
+    )
+  }, [allSearchResults, startInclusive, endExclusive])
+
+  const [stableData, setStableData] = useState<TimelineData | undefined>(
+    undefined,
+  )
+
+  useEffect(() => {
+    // Wait until we have headings for the correct range
+    if (
+      headingsResult === undefined ||
+      headingsResult.startInclusive !== startInclusive ||
+      headingsResult.endExclusive !== endExclusive
+    ) {
+      return
     }
 
     // When searching, show filtered results (or loading state)
     if (searchRegex) {
-      if (searchResults === undefined) {
-        return undefined
+      if (searchResultsInRange === undefined) {
+        return
       }
-      const visibleDays = [...new Set(searchResults.map((e) => e.date))].sort()
-      return visibleDays.map((date) => ({
-        date,
-        headings: headingsInYear[date] ?? null,
-      }))
+      // IDs are entry IDs (date + time), extract unique dates
+      const visibleDays = [
+        ...new Set(searchResultsInRange.map((id) => id.slice(0, 10))),
+      ].sort()
+      setStableData(
+        visibleDays.map((date) => ({
+          date,
+          headings: headingsResult.headings[date] ?? null,
+        })),
+      )
+      return
     }
 
     // No search active - show all days
-    return dateRange(startInclusive, endExclusive).map((date) => ({
-      date,
-      headings: headingsInYear[date] ?? null,
-    }))
-  }, [headingsInYear, searchRegex, searchResults, startInclusive, endExclusive])
+    setStableData(
+      dateRange(startInclusive, endExclusive).map((date) => ({
+        date,
+        headings: headingsResult.headings[date] ?? null,
+      })),
+    )
+  }, [
+    headingsResult,
+    searchRegex,
+    searchResultsInRange,
+    startInclusive,
+    endExclusive,
+  ])
+
+  return stableData
 }
 
-export function useSelectedLayerData(): LayerData | null {
+export function useSelectedLayerData(): LayerData | undefined {
   const selectedLayerIds = useAtomValue(selectedLayerIdsAtom)
   const searchRegex = useAtomValue(searchRegexAtom)
-  const lifeData = useLifeData()
 
-  const searchResults = useSearchResults(searchRegex, {
-    startInclusive: lifeData.birthDate,
-    endExclusive: lifeData.deathDate,
-  })
+  const allSearchResults = useSearchResults()
 
   // State for async layer data fetching (non-search mode)
-  const [layerData, setLayerData] = useState<LayerData | null>(null)
+  const [layerData, setLayerData] = useState<LayerData | undefined>(undefined)
 
   // When search is active, generate layer from search results
   const searchLayerData = useMemo(() => {
-    if (!searchRegex || searchResults === undefined) {
-      return null
+    if (!searchRegex || allSearchResults === undefined) {
+      return undefined
     }
 
+    // Extract dates from entry IDs (first 10 chars are the date)
     return generateLayer({
-      dates: searchResults.map((e) => e.date),
+      dates: allSearchResults.map((id) => id.slice(0, 10)),
       scoringFn: (count) => Math.min(1, Math.pow(count / 7, 0.5)),
     })
-  }, [searchRegex, searchResults])
+  }, [searchRegex, allSearchResults])
 
   // Fetch layer data when not searching
   useEffect(() => {

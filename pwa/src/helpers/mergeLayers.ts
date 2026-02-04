@@ -2,7 +2,7 @@ import {LayerData} from "../types"
 
 export default function mergeLayers(
   layers: Array<LayerData | null>,
-): LayerData | null {
+): LayerData | undefined {
   const result: LayerData = {}
 
   for (const layer of layers) {
@@ -16,7 +16,7 @@ export default function mergeLayers(
   }
 
   if (Object.keys(result).length === 0) {
-    return null
+    return undefined
   }
 
   return result

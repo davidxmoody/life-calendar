@@ -1,5 +1,5 @@
 import {memo, startTransition, useEffect, useMemo, useRef} from "react"
-import generateCalendarData from "./generateCalendarData"
+import generateCalendarData, {CalendarData} from "./generateCalendarData"
 import useToday from "../../helpers/useToday"
 import drawCalendar from "./drawCalendar"
 import calculateCalendarDimensions, {
@@ -22,10 +22,12 @@ function useCalendarData() {
   const today = useToday()
   const lifeData = useLifeData()
 
-  return useMemo(
-    () => generateCalendarData({today, ...lifeData}),
-    [today, lifeData],
-  )
+  return useMemo(() => {
+    if (!lifeData) {
+      return undefined
+    }
+    return generateCalendarData({today, ...lifeData})
+  }, [today, lifeData])
 }
 
 export default memo(function Calendar() {
@@ -68,7 +70,7 @@ export default memo(function Calendar() {
   const lastDraw = useRef<typeof d | undefined>(undefined)
 
   useEffect(() => {
-    if (ref.current) {
+    if (ref.current && data) {
       const ctx = ref.current.getContext("2d")
       if (ctx) {
         const incremental = lastDraw.current === d
@@ -77,6 +79,10 @@ export default memo(function Calendar() {
       }
     }
   }, [data, layerData, d])
+
+  if (!data) {
+    return <div />
+  }
 
   function onClick(e: React.MouseEvent) {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -87,7 +93,7 @@ export default memo(function Calendar() {
       x,
       y,
       d,
-      data,
+      data: data!,
       zoomScale: ZOOM_SCALE,
       zoomedYearIndex: useZoomBehaviour ? zoomedYearIndex : null,
     })
@@ -100,7 +106,7 @@ export default memo(function Calendar() {
     if (useZoomBehaviour && zoomedYearIndex === null) {
       setZoomedYearIndex(
         parseYear(week.startDate) -
-          parseYear(getWeekStart(data.decades[0].years[0].weeks[0].startDate)),
+          parseYear(getWeekStart(data!.decades[0].years[0].weeks[0].startDate)),
       )
       return
     }
@@ -171,7 +177,7 @@ const SelectedWeekHighlight = memo(
     pixelRatio,
     animate,
   }: {
-    data: ReturnType<typeof useCalendarData>
+    data: CalendarData
     d: CalendarDimensions
     selectedWeekStart: string
     pixelRatio: number

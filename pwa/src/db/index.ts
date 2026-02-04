@@ -1,10 +1,13 @@
-import Dexie, {type EntityTable, type Table} from "dexie"
+import Dexie, {liveQuery, type EntityTable, type Table} from "dexie"
 import {useLiveQuery} from "dexie-react-hooks"
+import {atomWithObservable} from "jotai/utils"
+import {useAtomValue} from "jotai"
 import {Entry, Layer, LayerData, LifeData, ScannedEntry} from "../types"
 import {authedFetch} from "../helpers/auth"
 import recalculateEntriesLayers from "./recalculateEntriesLayers"
 import {addDays, getNextWeekStart, getWeekStart} from "../helpers/dates"
 import getHeadings from "../helpers/getHeadings"
+import {searchRegexAtom} from "../atoms"
 
 const db = new Dexie("data") as Dexie & {
   entries: EntityTable<Entry, "id">
@@ -28,19 +31,43 @@ db.version(8).stores({
 // Reactive Hooks (using useLiveQuery)
 // =============================================================================
 
+// Shared search results atom - searches all entries matching regex (no bounds)
+const searchResultsAtom = atomWithObservable((get) => {
+  const regex = get(searchRegexAtom)
+
+  return liveQuery(async () => {
+    if (!regex) {
+      return [] as string[]
+    }
+
+    const regexObject = new RegExp(regex, "i")
+
+    const ids = await db.entries
+      .filter((entry) => {
+        if (entry.type === "markdown") {
+          return regexObject.test(entry.content)
+        }
+        if (entry.type === "scanned") {
+          return entry.headings?.some((h) => regexObject.test(h)) ?? false
+        }
+        return false
+      })
+      .primaryKeys()
+
+    return ids
+  })
+})
+
+export function useSearchResults(): string[] | undefined {
+  return useAtomValue(searchResultsAtom)
+}
+
 export function useLayerIds(): string[] | undefined {
   return useLiveQuery(() => db.layers.toCollection().primaryKeys())
 }
 
-const defaultLifeData: LifeData = {
-  birthDate: "1990-01-01",
-  deathDate: "2089-12-31",
-  eras: [{start: "1990-01-01", name: "", color: "rgb(150, 150, 150)"}],
-}
-
-export function useLifeData(): LifeData {
-  const data = useLiveQuery(() => db.lifeData.get("lifeData"))
-  return data ?? defaultLifeData
+export function useLifeData(): LifeData | undefined {
+  return useLiveQuery(() => db.lifeData.get("lifeData"))
 }
 
 export interface DBStats {
@@ -73,21 +100,34 @@ export function useDatabaseStats(): DBStats | undefined {
   })
 }
 
+type HeadingsResult = {
+  startInclusive: string
+  endExclusive: string
+  headings: Record<string, string[] | undefined>
+}
+
 export function useHeadingsInRange(
-  startInclusive: string,
-  endExclusive: string,
-): Record<string, string[] | undefined> | undefined {
+  startInclusive: string | null,
+  endExclusive: string | null,
+): HeadingsResult | undefined {
+  const effectiveStart = startInclusive ?? ""
+  const effectiveEnd = endExclusive ?? "\uffff"
+
   return useLiveQuery(async () => {
     const headingsList = await db.cachedHeadings
       .where("date")
-      .between(startInclusive, endExclusive, true, false)
+      .between(effectiveStart, effectiveEnd, true, false)
       .toArray()
 
-    return headingsList.reduce<Record<string, string[] | undefined>>(
-      (acc, {date, headings}) => ({...acc, [date]: headings}),
-      {},
-    )
-  }, [startInclusive, endExclusive])
+    return {
+      startInclusive: effectiveStart,
+      endExclusive: effectiveEnd,
+      headings: headingsList.reduce<Record<string, string[] | undefined>>(
+        (acc, {date, headings}) => ({...acc, [date]: headings}),
+        {},
+      ),
+    }
+  }, [effectiveStart, effectiveEnd])
 }
 
 export function useEntriesForDay(date: string | null): Entry[] | undefined {
@@ -97,38 +137,6 @@ export function useEntriesForDay(date: string | null): Entry[] | undefined {
     }
     return db.entries.where("id").between(date, addDays(date, 1)).toArray()
   }, [date])
-}
-
-export function useSearchResults(
-  regex: string,
-  range: {startInclusive: string; endExclusive: string},
-): Entry[] | undefined {
-  const results = useLiveQuery(async () => {
-    if (!regex) {
-      return []
-    }
-
-    const regexObject = new RegExp(regex, "i")
-
-    const entries = await db.entries
-      .where("id")
-      .between(range.startInclusive, range.endExclusive, true, false)
-      .filter((entry) => {
-        if (entry.type === "markdown") {
-          return regexObject.test(entry.content)
-        }
-        if (entry.type === "scanned") {
-          return entry.headings?.some((h) => regexObject.test(h)) ?? false
-        }
-        return false
-      })
-      .reverse()
-      .toArray()
-
-    return entries
-  }, [regex, range.startInclusive, range.endExclusive])
-
-  return results
 }
 
 // =============================================================================
