@@ -1,5 +1,5 @@
 import {useAtomValue} from "jotai"
-import {BsSearch} from "react-icons/bs"
+import {Search} from "lucide-react"
 import {searchRegexAtom} from "../../atoms"
 import SearchModal from "./SearchModal"
 import {memo, useState} from "react"
@@ -19,7 +19,7 @@ export default memo(function SearchButton() {
           className="!text-sm"
         >
           <span>{formatSearchRegex(searchRegex)}</span>
-          <BsSearch className="size-5" />
+          <Search className="size-5" />
         </Button>
       ) : (
         <Button
@@ -28,7 +28,7 @@ export default memo(function SearchButton() {
           aria-label="Search"
           onClick={() => setIsOpen(true)}
         >
-          <BsSearch />
+          <Search className="size-5" />
         </Button>
       )}
       <SearchModal isOpen={isOpen} onClose={() => setIsOpen(false)} />

@@ -14,7 +14,7 @@ import {
   getWeekStart,
   parseYear,
 } from "../../helpers/dates"
-import {BsArrowDown, BsArrowUp} from "react-icons/bs"
+import {ArrowDown, ArrowUp} from "lucide-react"
 import ScrollList from "./ScrollList"
 
 export default memo(function Timeline() {
@@ -108,9 +108,9 @@ function YearJumpButton({
     >
       <Button onClick={() => startTransition(() => setSelectedDay(weekStart))}>
         {direction === "next" ? (
-          <BsArrowDown className="mr-2" />
+          <ArrowDown className="mr-2" />
         ) : (
-          <BsArrowUp className="mr-2" />
+          <ArrowUp className="mr-2" />
         )}
         Go to {parseYear(weekStart)}
       </Button>

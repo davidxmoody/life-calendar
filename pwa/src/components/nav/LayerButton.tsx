@@ -1,6 +1,6 @@
 import {useAtomValue} from "jotai"
 import {memo, useState} from "react"
-import {BsLayersFill} from "react-icons/bs"
+import {Layers} from "lucide-react"
 import {searchRegexAtom, selectedLayerIdsAtom} from "../../atoms"
 import LayerModal from "./LayerModal"
 import {Button} from "@/components/ui/button"
@@ -28,7 +28,7 @@ export default memo(function LayerButton() {
         onClick={handleOpen}
         className="hidden md:inline-flex !text-sm"
       >
-        <BsLayersFill className="size-5" />
+        <Layers className="size-5" />
         {buttonLabel}
       </Button>
 
@@ -39,7 +39,7 @@ export default memo(function LayerButton() {
         onClick={handleOpen}
         className="md:hidden"
       >
-        <BsLayersFill />
+        <Layers className="size-5" />
       </Button>
 
       <LayerModal isOpen={isOpen} onClose={() => setIsOpen(false)} />

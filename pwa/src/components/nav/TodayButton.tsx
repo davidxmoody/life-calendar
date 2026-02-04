@@ -1,7 +1,7 @@
 import {useSetAtom} from "jotai"
 import {memo, startTransition} from "react"
 import {mobileViewAtom, selectedDayAtom} from "../../atoms"
-import {BsFastForwardFill} from "react-icons/bs"
+import {FastForward} from "lucide-react"
 import {getToday} from "../../helpers/dates"
 import {Button} from "@/components/ui/button"
 
@@ -21,7 +21,7 @@ export default memo(function TodayButton() {
         })
       }
     >
-      <BsFastForwardFill />
+      <FastForward className="size-5" />
     </Button>
   )
 })

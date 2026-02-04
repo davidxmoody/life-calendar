@@ -2,12 +2,7 @@ import {memo, useState} from "react"
 import {useAtomValue} from "jotai"
 import {syncStateAtom} from "../../atoms"
 import SyncModal from "./SyncModal"
-import {
-  BsCloudArrowDownFill,
-  BsCloudCheckFill,
-  BsCloudFill,
-  BsCloudSlashFill,
-} from "react-icons/bs"
+import {Cloud, CloudOff, CloudDownload, CloudCheck} from "lucide-react"
 import {Button} from "@/components/ui/button"
 
 export default memo(function SyncButton() {
@@ -16,13 +11,13 @@ export default memo(function SyncButton() {
 
   const icon =
     syncState.type === "initial" ? (
-      <BsCloudFill />
+      <Cloud className="size-5" />
     ) : syncState.type === "error" ? (
-      <BsCloudSlashFill />
+      <CloudOff className="size-5" />
     ) : syncState.type === "loading" ? (
-      <BsCloudArrowDownFill />
+      <CloudDownload className="size-5" />
     ) : (
-      <BsCloudCheckFill />
+      <CloudCheck className="size-5" />
     )
 
   return (
