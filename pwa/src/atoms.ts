@@ -1,6 +1,6 @@
 import {atom} from "jotai"
 import {atomWithStorage} from "jotai/utils"
-import {getToday, getWeekStart, parseYear} from "./helpers/dates"
+import {getToday, getWeekStart} from "./helpers/dates"
 
 export const mobileViewAtom = atomWithStorage<"calendar" | "timeline">(
   "mobileView",
@@ -29,8 +29,9 @@ export const selectedWeekStartAtom = atom(
   (_get, set, value: string) => set(selectedDayAtom, value),
 )
 
-export const selectedYearAtom = atom((get) =>
-  parseYear(get(selectedWeekStartAtom)),
-)
-
 export const searchRegexAtom = atomWithStorage<string>("searchRegex", "")
+
+export const loadedRangeAtom = atom<{
+  startInclusive: string
+  endExclusive: string
+} | null>(null)

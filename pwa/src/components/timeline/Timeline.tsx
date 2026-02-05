@@ -1,119 +1,148 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import {memo, startTransition, useCallback, useMemo} from "react"
-import {useAtom, useSetAtom} from "jotai"
-import {Button} from "../ui/button"
-import {selectedDayAtom} from "../../atoms"
+import {
+  memo,
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react"
+import {useAtom, useAtomValue} from "jotai"
+import {Virtuoso, VirtuosoHandle, ListRange} from "react-virtuoso"
+import {loadedRangeAtom, selectedDayAtom} from "../../atoms"
 import {useLifeData} from "../../db"
-import {useTimelineData} from "../../db/hooks"
+import {TimelineData, useExpandRange, useTimelineData} from "../../db/hooks"
 import Day from "./Day"
 import useToday from "../../helpers/useToday"
-import {
-  getFirstWeekOfNextYear,
-  getLastWeekOfPrevYear,
-  getWeekStart,
-  parseYear,
-} from "../../helpers/dates"
-import {ArrowDown, ArrowUp} from "lucide-react"
-import ScrollList from "./ScrollList"
+
+// Large starting index for stable indices when prepending
+const START_INDEX = 100000
 
 export default memo(function Timeline() {
   const lifeData = useLifeData()
   const today = useToday()
-  const data = useTimelineData()
+  const birthDate = lifeData?.birthDate
+  const data = useTimelineData(birthDate, today)
   const [selectedDay, setSelectedDay] = useAtom(selectedDayAtom)
+  const loadedRange = useAtomValue(loadedRangeAtom)
+  const {expandPast, expandFuture, expandToInclude} = useExpandRange(
+    birthDate,
+    today,
+  )
 
-  const todayWeekStart = getWeekStart(today)
-  const birthWeekStart = lifeData ? getWeekStart(lifeData.birthDate) : ""
+  const virtuosoRef = useRef<VirtuosoHandle>(null)
+  // Track whether selectedDay change came from scrolling (vs calendar click)
+  const changeSourceRef = useRef<"scroll" | "calendar" | null>(null)
 
-  const selectedYear = parseYear(getWeekStart(selectedDay))
-  const prevYearWeekStart = getLastWeekOfPrevYear(selectedYear)
-  const nextYearWeekStart = getFirstWeekOfNextYear(selectedYear)
-
+  // Filter to days up to today
   const visibleTimeline = useMemo(
     () => (data ?? []).filter((day) => day.date <= today),
     [data, today],
   )
 
-  const header = useMemo(
-    () =>
-      prevYearWeekStart >= birthWeekStart ? (
-        <YearJumpButton weekStart={prevYearWeekStart} direction="prev" />
-      ) : null,
-    [birthWeekStart, prevYearWeekStart],
+  // Calculate first item index based on how many past items we've loaded
+  // When we prepend items, we decrement this to keep indices stable
+  const firstItemIndex = useMemo(() => {
+    if (!loadedRange || !birthDate) return START_INDEX
+    // Count days from birth to start of loaded range
+    const birthTime = new Date(birthDate).getTime()
+    const startTime = new Date(loadedRange.startInclusive).getTime()
+    const daysBetween = Math.round(
+      (startTime - birthTime) / (1000 * 60 * 60 * 24),
+    )
+    return START_INDEX - daysBetween
+  }, [loadedRange, birthDate])
+
+  // Find initial index for selected day
+  const initialIndex = useMemo(() => {
+    if (!visibleTimeline.length) return 0
+    const idx = visibleTimeline.findIndex((d) => d.date >= selectedDay)
+    return idx >= 0 ? idx : visibleTimeline.length - 1
+  }, []) // Only compute on mount
+
+  // Handle range changes to update selected day
+  const handleRangeChanged = useCallback(
+    (range: ListRange) => {
+      if (changeSourceRef.current === "calendar") return
+      if (!visibleTimeline.length) return
+
+      // Convert virtual index to array index
+      const arrayIndex = range.startIndex - firstItemIndex
+      const topItem = visibleTimeline[arrayIndex]
+      if (topItem && topItem.date !== selectedDay) {
+        changeSourceRef.current = "scroll"
+        startTransition(() => setSelectedDay(topItem.date))
+      }
+    },
+    [visibleTimeline, selectedDay, setSelectedDay, firstItemIndex],
   )
 
-  const footer = useMemo(
-    () => (
-      <div className="pb-10">
-        {nextYearWeekStart <= todayWeekStart ? (
-          <YearJumpButton weekStart={nextYearWeekStart} direction="next" />
-        ) : null}
-      </div>
-    ),
-    [todayWeekStart, nextYearWeekStart],
-  )
+  // When selectedDay changes from Calendar, scroll to that day
+  useEffect(() => {
+    // If change came from scrolling, don't scroll back - just clear the flag
+    if (changeSourceRef.current === "scroll") {
+      changeSourceRef.current = null
+      return
+    }
 
-  const setSelectedDayWithTransition = useCallback(
-    (date: string) => startTransition(() => setSelectedDay(date)),
-    [setSelectedDay],
-  )
+    if (!virtuosoRef.current) return
 
-  const renderItem = useCallback(
-    (args: {
-      item: {date: string; headings: string[] | null}
-      isSelected: boolean
-    }) => (
-      <Day
-        date={args.item.date}
-        headings={args.item.headings}
-        selected={args.isSelected}
-      />
+    // Check if selectedDay is in the loaded range
+    if (loadedRange && birthDate) {
+      if (
+        selectedDay < loadedRange.startInclusive ||
+        selectedDay >= loadedRange.endExclusive
+      ) {
+        // Expand range to include the selected day
+        expandToInclude(selectedDay)
+        return // Will scroll after data loads
+      }
+    }
+
+    if (!visibleTimeline.length) return
+
+    const idx = visibleTimeline.findIndex((d) => d.date === selectedDay)
+    if (idx >= 0) {
+      changeSourceRef.current = "calendar"
+      virtuosoRef.current.scrollToIndex({
+        index: idx,
+        align: "start",
+        behavior: "auto",
+      })
+      // Reset flag after scroll completes
+      setTimeout(() => {
+        changeSourceRef.current = null
+      }, 100)
+    }
+  }, [selectedDay, visibleTimeline, loadedRange, birthDate, expandToInclude])
+
+  const itemContent = useCallback(
+    (_index: number, day: TimelineData[number]) => (
+      <Day date={day.date} headings={day.headings} />
     ),
     [],
   )
 
-  if (!lifeData || !data) {
+  if (!lifeData || !data || !visibleTimeline.length) {
     return null
   }
 
   return (
-    <ScrollList
-      header={header}
-      footer={footer}
-      items={visibleTimeline}
-      renderItem={renderItem}
-      getScrollKey={(day) => day.date}
-      currentScrollKey={selectedDay}
-      onChangeScrollKey={setSelectedDayWithTransition}
+    <Virtuoso
+      ref={virtuosoRef}
+      data={visibleTimeline}
+      firstItemIndex={firstItemIndex}
+      initialTopMostItemIndex={initialIndex}
+      itemContent={itemContent}
+      startReached={expandPast}
+      endReached={expandFuture}
+      rangeChanged={handleRangeChanged}
+      overscan={200}
+      className="h-full"
+      components={{
+        Footer: () => <div className="pb-10" />,
+      }}
     />
   )
 })
-
-function YearJumpButton({
-  direction,
-  weekStart,
-}: {
-  weekStart: string
-  direction: "next" | "prev"
-}) {
-  const setSelectedDay = useSetAtom(selectedDayAtom)
-
-  return (
-    <div
-      className={`
-        max-w-[800px] flex justify-center
-        ${direction === "next" ? "pt-8 pb-10" : "pt-10 pb-8"}
-      `}
-    >
-      <Button onClick={() => startTransition(() => setSelectedDay(weekStart))}>
-        {direction === "next" ? (
-          <ArrowDown className="mr-2" />
-        ) : (
-          <ArrowUp className="mr-2" />
-        )}
-        Go to {parseYear(weekStart)}
-      </Button>
-    </div>
-  )
-}
