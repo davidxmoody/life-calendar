@@ -61,22 +61,23 @@ function MarkdownBlockquote(props: {children?: React.ReactNode}) {
 
 function MarkdownImage(props: {src?: string; alt?: string; title?: string}) {
   const entryDate = useEntryDate()
+
   let src = props.src
 
-  // Relative paths → resolve via /files/
-  if (src && !src.startsWith("/") && !src.startsWith("http") && entryDate) {
+  const isAudio = /\.(mp3|mp4|m4a|wav|ogg|webm)$/i.test(src || "")
+  const isRemote = src?.startsWith("http") || src?.startsWith("//")
+
+  // Relative paths → add /files/YYYY/MM/DD/ prefix
+  if (src && !src.startsWith("/") && !isRemote && entryDate) {
     const [year, month, day] = entryDate.split("-")
-    src = createAuthedUrl(`/files/${year}/${month}/${day}/${src}`)
+    src = `/files/${year}/${month}/${day}/${src}`
   }
-  // Legacy /images/ paths
-  // TODO migrate old images to new places
-  else if (src?.startsWith("/images/")) {
+
+  // Local paths → add auth token
+  if (src && !isRemote) {
     src = createAuthedUrl(src)
   }
 
-  // Check if audio file by extension
-  // TODO load from files
-  const isAudio = /\.(mp3|mp4|m4a|wav|ogg|webm)$/i.test(src || "")
   if (isAudio) {
     return <audio controls src={src} className="max-w-full" />
   }
