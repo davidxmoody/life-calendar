@@ -1,7 +1,5 @@
 import {vi} from "vitest"
 import recalculateEntriesLayers, {
-  audioWordcountRatio,
-  scannedWordcountRatio,
   wordcountToScore,
 } from "./recalculateEntriesLayers"
 
@@ -81,9 +79,7 @@ test("updates an existing markdown layer when one entry is modified", async () =
   })
 })
 
-test("updates layers for all content types", async () => {
-  const numMarkdownWords = 800
-
+test("combines wordcount from multiple entries in same week", async () => {
   const saveLayer = vi.fn()
 
   await recalculateEntriesLayers({
@@ -95,24 +91,13 @@ test("updates layers for all content types", async () => {
             id: "2022-09-20-markdown",
             type: "markdown",
             date: "2022-09-20",
-            content: Array(numMarkdownWords).fill("foo").join(" "),
+            content: "Hello world foo bar",
           },
           {
-            id: "2022-09-20-scanned-01",
-            type: "scanned",
-            date: "2022-09-20",
-            sequenceNumber: 1,
-            fileUrl: "foo",
-            averageColor: "foo",
-            width: 1,
-            height: 1,
-          },
-          {
-            id: "2022-09-20-audio-13:00",
-            type: "audio",
-            date: "2022-09-20",
-            time: "13:00",
-            fileUrl: "foo",
+            id: "2022-09-21-markdown",
+            type: "markdown",
+            date: "2022-09-21",
+            content: "Another entry here",
           },
         ])
       } else {
@@ -125,14 +110,6 @@ test("updates layers for all content types", async () => {
 
   expect(saveLayer).toHaveBeenCalledWith({
     id: "diary/markdown",
-    data: {"2022-09-19": wordcountToScore(numMarkdownWords)},
-  })
-  expect(saveLayer).toHaveBeenCalledWith({
-    id: "diary/scanned",
-    data: {"2022-09-19": wordcountToScore(scannedWordcountRatio)},
-  })
-  expect(saveLayer).toHaveBeenCalledWith({
-    id: "diary/audio",
-    data: {"2022-09-19": wordcountToScore(audioWordcountRatio)},
+    data: {"2022-09-19": wordcountToScore(7)},
   })
 })

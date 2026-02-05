@@ -3,10 +3,9 @@ import {prettyFormatDateTime} from "../../helpers/dates"
 import {Entry} from "../../types"
 import {useEntriesForDay} from "../../db"
 import HighlightedText from "./HighlightedText"
-import AudioPlayer from "./AudioPlayer"
 import Markdown from "./Markdown"
-import ScannedPage from "./ScannedPage"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
+import {EntryDateProvider} from "./EntryDateContext"
 
 interface Props {
   date: string
@@ -135,13 +134,9 @@ function Full(props: {entries: Entry[]}) {
         >
           {entry.type === "markdown" ? (
             <div className="mx-4 md:mx-8 my-4 md:my-6">
-              <Markdown source={entry.content} />
-            </div>
-          ) : entry.type === "scanned" ? (
-            <ScannedPage entry={entry} />
-          ) : entry.type === "audio" ? (
-            <div className="mx-4 md:mx-8 my-4 md:my-6">
-              <AudioPlayer sourceUrl={entry.fileUrl} />
+              <EntryDateProvider value={entry.date}>
+                <Markdown source={entry.content} />
+              </EntryDateProvider>
             </div>
           ) : null}
         </div>

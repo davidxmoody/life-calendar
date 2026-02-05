@@ -1,4 +1,4 @@
-import {AudioEntry, MarkdownEntry, ScannedEntry} from "../types"
+import {MarkdownEntry} from "../types"
 import getHeadings from "./getHeadings"
 
 function rand() {
@@ -11,30 +11,6 @@ function createMarkdownEntry(content: string): MarkdownEntry {
     id: rand(),
     date: rand(),
     content,
-  }
-}
-
-function createScannedEntry(headings?: string[]): ScannedEntry {
-  return {
-    type: "scanned",
-    id: rand(),
-    date: rand(),
-    averageColor: rand(),
-    fileUrl: rand(),
-    height: 1,
-    width: 1,
-    sequenceNumber: 1,
-    headings,
-  }
-}
-
-function createAudioEntry(): AudioEntry {
-  return {
-    type: "audio",
-    id: rand(),
-    date: rand(),
-    time: rand(),
-    fileUrl: rand(),
   }
 }
 
@@ -63,55 +39,12 @@ describe("markdown entries", () => {
     ])
     expect(headings).toEqual(["1 word", "Heading", "3 words"])
   })
-})
 
-describe("scanned entries", () => {
-  test("returns headings", () => {
+  test("strips time prefixes from headings", () => {
     const headings = getHeadings([
-      createScannedEntry(["Hello", "World"]),
-      createScannedEntry(["Foo", "Bar"]),
+      createMarkdownEntry("## 09:30 Morning thoughts\n\nContent"),
+      createMarkdownEntry("## 14:00 Afternoon notes\n\nContent"),
     ])
-    expect(headings).toEqual(["Hello", "World", "Foo", "Bar"])
-  })
-
-  test("returns page counts when no headings are present in scanned entries", () => {
-    const headings = getHeadings([createScannedEntry(), createScannedEntry()])
-    expect(headings).toEqual(["2 pages"])
-  })
-
-  test("combines headings and page counts", () => {
-    const headings = getHeadings([
-      createScannedEntry(),
-      createScannedEntry(["Hello"]),
-      createScannedEntry(),
-    ])
-    expect(headings).toEqual(["1 page", "Hello"])
-  })
-})
-
-describe("audio entries", () => {
-  test("counts audio entries", () => {
-    const headings = getHeadings([createAudioEntry(), createAudioEntry()])
-    expect(headings).toEqual(["2 audio entries"])
-  })
-})
-
-describe("combined types", () => {
-  test("handles this complex example", () => {
-    const headings = getHeadings([
-      createMarkdownEntry("## Test"),
-      createAudioEntry(),
-      createMarkdownEntry("hello"),
-      createMarkdownEntry("world"),
-      createScannedEntry(),
-      createScannedEntry(["Scanned"]),
-    ])
-    expect(headings).toEqual([
-      "Test",
-      "1 audio entry",
-      "2 words",
-      "1 page",
-      "Scanned",
-    ])
+    expect(headings).toEqual(["Morning thoughts", "Afternoon notes"])
   })
 })

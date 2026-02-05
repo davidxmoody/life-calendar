@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table"
+import {useEntryDate} from "./EntryDateContext"
 
 function MarkdownHeading(props: {
   node?: {tagName: string}
@@ -59,9 +60,27 @@ function MarkdownBlockquote(props: {children?: React.ReactNode}) {
 }
 
 function MarkdownImage(props: {src?: string; alt?: string; title?: string}) {
-  const src = props.src?.startsWith("/images/")
-    ? createAuthedUrl(props.src)
-    : props.src
+  const entryDate = useEntryDate()
+  let src = props.src
+
+  // Relative paths → resolve via /files/
+  if (src && !src.startsWith("/") && !src.startsWith("http") && entryDate) {
+    const [year, month, day] = entryDate.split("-")
+    src = createAuthedUrl(`/files/${year}/${month}/${day}/${src}`)
+  }
+  // Legacy /images/ paths
+  // TODO migrate old images to new places
+  else if (src?.startsWith("/images/")) {
+    src = createAuthedUrl(src)
+  }
+
+  // Check if audio file by extension
+  // TODO load from files
+  const isAudio = /\.(mp3|mp4|m4a|wav|ogg|webm)$/i.test(src || "")
+  if (isAudio) {
+    return <audio controls src={src} className="max-w-full" />
+  }
+
   return (
     <img className="max-w-full" src={src} alt={props.alt} title={props.title} />
   )

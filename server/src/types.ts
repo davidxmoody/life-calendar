@@ -6,29 +6,7 @@ export interface MarkdownEntry {
   content: string
 }
 
-export interface ScannedEntry {
-  id: string
-  type: "scanned"
-  date: string
-
-  sequenceNumber: number
-  fileUrl: string
-  averageColor: string
-  width: number
-  height: number
-  headings?: string[]
-}
-
-export interface AudioEntry {
-  id: string
-  type: "audio"
-  date: string
-
-  time: string
-  fileUrl: string
-}
-
-export type Entry = MarkdownEntry | ScannedEntry | AudioEntry
+export type Entry = MarkdownEntry
 
 export interface Layer {
   id: string

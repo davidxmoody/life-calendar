@@ -39,27 +39,9 @@ function StatsTable({
         </TableHeader>
         <TableBody>
           <TableRow>
-            <TableCell>Markdown</TableCell>
+            <TableCell>Entries</TableCell>
             <TableCell className="text-right">
-              {stats?.markdown.toLocaleString()}
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Scanned</TableCell>
-            <TableCell className="text-right">
-              {stats?.scanned.toLocaleString()}
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Scanned (cached)</TableCell>
-            <TableCell className="text-right">
-              {stats?.images.toLocaleString()}
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Audio</TableCell>
-            <TableCell className="text-right">
-              {stats?.audio.toLocaleString()}
+              {stats?.entries.toLocaleString()}
             </TableCell>
           </TableRow>
           <TableRow>

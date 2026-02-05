@@ -2,7 +2,7 @@ import Dexie, {liveQuery, type EntityTable, type Table} from "dexie"
 import {useLiveQuery} from "dexie-react-hooks"
 import {atomWithObservable} from "jotai/utils"
 import {useAtomValue} from "jotai"
-import {Entry, Layer, LayerData, LifeData, ScannedEntry} from "../types"
+import {Entry, Layer, LayerData, LifeData} from "../types"
 import {authedFetch} from "../helpers/auth"
 import recalculateEntriesLayers from "./recalculateEntriesLayers"
 import {addDays, getNextWeekStart, getWeekStart} from "../helpers/dates"
@@ -13,16 +13,15 @@ const db = new Dexie("data") as Dexie & {
   entries: EntityTable<Entry, "id">
   layers: EntityTable<Layer, "id">
   config: Table<number | null, string>
-  scanned: Table<Blob, string>
   cachedHeadings: EntityTable<{date: string; headings: string[]}, "date">
   lifeData: Table<LifeData, string>
 }
 
-db.version(8).stores({
+db.version(9).stores({
   entries: "id, type",
   layers: "id",
   config: "",
-  scanned: "",
+  scanned: null,
   cachedHeadings: "date",
   lifeData: "",
 })
@@ -44,13 +43,7 @@ const searchResultsAtom = atomWithObservable((get) => {
 
     const ids = await db.entries
       .filter((entry) => {
-        if (entry.type === "markdown") {
-          return regexObject.test(entry.content)
-        }
-        if (entry.type === "scanned") {
-          return entry.headings?.some((h) => regexObject.test(h)) ?? false
-        }
-        return false
+        return regexObject.test(entry.content)
       })
       .primaryKeys()
 
@@ -72,11 +65,8 @@ export function useLifeData(): LifeData | undefined {
 
 export interface DBStats {
   lastSyncTimestamp: number | null
-  markdown: number
-  scanned: number
-  audio: number
+  entries: number
   layers: number
-  images: number
 }
 
 export function useDatabaseStats(): DBStats | undefined {
@@ -84,18 +74,12 @@ export function useDatabaseStats(): DBStats | undefined {
     const lastSyncTimestamp = (await db.config.get("lastSyncTimestamp")) ?? null
 
     const layers = await db.layers.count()
-    const markdown = await db.entries.where("type").equals("markdown").count()
-    const scanned = await db.entries.where("type").equals("scanned").count()
-    const audio = await db.entries.where("type").equals("audio").count()
-    const images = await db.scanned.count()
+    const entries = await db.entries.count()
 
     return {
       lastSyncTimestamp,
-      markdown,
-      scanned,
-      audio,
+      entries,
       layers,
-      images,
     }
   })
 }
@@ -171,14 +155,7 @@ export async function sync({fullSync}: {fullSync: boolean}) {
 
   await db.transaction(
     "rw",
-    [
-      db.lifeData,
-      db.entries,
-      db.layers,
-      db.config,
-      db.cachedHeadings,
-      db.scanned,
-    ],
+    [db.lifeData, db.entries, db.layers, db.config, db.cachedHeadings],
     async () => {
       if (fullSync) {
         await db.lifeData.clear()
@@ -196,7 +173,7 @@ export async function sync({fullSync}: {fullSync: boolean}) {
         await db.entries.put(entry)
       }
 
-      for (const date of new Set(entries.map((e) => e.date))) {
+      for (const date of Array.from(new Set(entries.map((e) => e.date)))) {
         const dayEntries = await db.entries
           .where("id")
           .between(date, addDays(date, 1))
@@ -213,7 +190,9 @@ export async function sync({fullSync}: {fullSync: boolean}) {
       }
 
       await recalculateEntriesLayers({
-        changedWeeks: [...new Set(entries.map((e) => getWeekStart(e.date)))],
+        changedWeeks: Array.from(
+          new Set(entries.map((e) => getWeekStart(e.date))),
+        ),
         getEntriesForWeek: (weekStart) =>
           db.entries
             .where("id")
@@ -224,40 +203,10 @@ export async function sync({fullSync}: {fullSync: boolean}) {
       })
 
       await db.config.put(timestamp, "lastSyncTimestamp")
-
-      if (fullSync) {
-        const allScannedIds = new Set(
-          entries.filter((e) => e.type === "scanned").map((e) => e.id),
-        )
-        const allScannedKeys = await db.scanned.toCollection().primaryKeys()
-        for (const key of allScannedKeys) {
-          if (!allScannedIds.has(key)) {
-            await db.scanned.delete(key)
-          }
-        }
-      }
     },
   )
 
   const receievedNewData = layers.length > 0 || entries.length > 0 || !!lifeData
 
   return {receievedNewData, timestamp}
-}
-
-async function downloadSingleScannedImage(entry: ScannedEntry) {
-  const exists = !!(await db.scanned.get(entry.id))
-  if (exists) {
-    return
-  }
-
-  const blob = await authedFetch(entry.fileUrl).then((r) => r.blob())
-  if (!blob.type.startsWith("image")) {
-    throw new Error("Received non-image response")
-  }
-  await db.scanned.put(blob, entry.id)
-}
-
-export async function getScannedBlob(entry: ScannedEntry): Promise<Blob> {
-  await downloadSingleScannedImage(entry)
-  return (await db.scanned.get(entry.id))!
 }
