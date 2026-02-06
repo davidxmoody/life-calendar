@@ -9,7 +9,6 @@ import {
 import {useEntry} from "../../db"
 import {prettyFormatDateTime} from "../../helpers/dates"
 import Markdown from "../timeline/Markdown"
-import {EntryDateProvider} from "../timeline/EntryDateContext"
 import {Button} from "@/components/ui/button"
 
 export default memo(function ContentPane() {
@@ -57,9 +56,7 @@ export default memo(function ContentPane() {
             </h3>
           </div>
           <div className="mx-4 md:mx-8 my-4 md:my-6">
-            <EntryDateProvider value={entry.date}>
-              <Markdown source={entry.content} />
-            </EntryDateProvider>
+            <Markdown source={entry.content} date={entry.date} />
           </div>
         </>
       ) : (

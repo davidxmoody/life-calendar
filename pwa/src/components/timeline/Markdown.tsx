@@ -2,7 +2,6 @@ import {memo, createContext, useContext, useRef} from "react"
 import ReactMarkdown, {Components} from "react-markdown"
 import remarkGfm from "remark-gfm"
 import HighlightedText from "./HighlightedText"
-import {createAuthedUrl} from "../../helpers/auth"
 import {Checkbox} from "../ui/checkbox"
 import {
   Table,
@@ -12,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table"
-import {useEntryDate} from "./EntryDateContext"
+import {remarkMedia} from "../../helpers/remarkMedia"
 
 const HeadingCounterContext = createContext<React.RefObject<number> | null>(
   null,
@@ -70,31 +69,22 @@ function MarkdownBlockquote(props: {children?: React.ReactNode}) {
 }
 
 function MarkdownImage(props: {src?: string; alt?: string; title?: string}) {
-  const entryDate = useEntryDate()
-
-  let src = props.src
-
-  const isAudio = /\.(mp3|mp4|m4a|wav|ogg|webm)$/i.test(src || "")
-  const isRemote = src?.startsWith("http") || src?.startsWith("//")
-
-  // Relative paths → add /files/YYYY/MM/DD/ prefix
-  if (src && !src.startsWith("/") && !isRemote && entryDate) {
-    const [year, month, day] = entryDate.split("-")
-    src = `/files/${year}/${month}/${day}/${src}`
-  }
-
-  // Local paths → add auth token
-  if (src && !isRemote) {
-    src = createAuthedUrl(src)
-  }
-
-  if (isAudio) {
-    return <audio controls src={src} className="max-w-full" />
-  }
-
   return (
-    <img className="max-w-full" src={src} alt={props.alt} title={props.title} />
+    <img
+      className="max-w-full"
+      src={props.src}
+      alt={props.alt}
+      title={props.title}
+    />
   )
+}
+
+function MarkdownVideo(props: {src?: string}) {
+  return <video className="max-w-full" src={props.src} controls={true} />
+}
+
+function MarkdownAudio(props: {src?: string}) {
+  return <audio className="max-w-full" src={props.src} controls={true} />
 }
 
 function MarkdownOrderedList(props: {children?: React.ReactNode}) {
@@ -203,6 +193,7 @@ function MarkdownTd(props: {children?: React.ReactNode}) {
 
 const components: Components = {
   a: MarkdownLink,
+  audio: MarkdownAudio,
   blockquote: MarkdownBlockquote,
   code: MarkdownCode,
   del: MarkdownStrikethrough,
@@ -228,15 +219,19 @@ const components: Components = {
   thead: MarkdownThead,
   tr: MarkdownTr,
   ul: MarkdownUnorderedList,
+  video: MarkdownVideo,
 }
 
-export default memo(function Markdown(props: {source: string}) {
+export default memo(function Markdown(props: {source: string; date: string}) {
   const counterRef = useRef(0)
   counterRef.current = 0
 
   return (
     <HeadingCounterContext.Provider value={counterRef}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm, remarkMedia(props.date)]}
+        components={components}
+      >
         {props.source}
       </ReactMarkdown>
     </HeadingCounterContext.Provider>
