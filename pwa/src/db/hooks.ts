@@ -1,18 +1,13 @@
-import {useAtomValue, useAtom} from "jotai"
-import {useState, useEffect, useMemo, useCallback} from "react"
+import {useAtomValue} from "jotai"
+import {useState, useEffect, useMemo} from "react"
 import {
   getLayerData,
-  useHeadingsInRange,
+  useAllHeadings,
   useSearchResults,
   useEntriesByDates,
 } from "./index"
-import {
-  searchRegexAtom,
-  selectedLayerIdsAtom,
-  selectedDayAtom,
-  loadedRangeAtom,
-} from "../atoms"
-import {dateRange, addMonths, subtractMonths, clampDate} from "../helpers/dates"
+import {searchRegexAtom, selectedLayerIdsAtom} from "../atoms"
+import {dateRange} from "../helpers/dates"
 import generateLayer from "../helpers/generateLayer"
 import mergeLayers from "../helpers/mergeLayers"
 import splitEntryBySections from "../helpers/splitEntryBySections"
@@ -29,116 +24,18 @@ export function useTimelineData(
   birthDate: string | undefined,
   today: string,
 ): TimelineData | undefined {
-  const selectedDay = useAtomValue(selectedDayAtom)
-  const [loadedRange, setLoadedRange] = useAtom(loadedRangeAtom)
+  const headings = useAllHeadings()
 
-  // Initialize loaded range centered on selected day (6 months total)
-  useEffect(() => {
-    if (loadedRange === null && birthDate) {
-      const startInclusive = clampDate(
-        subtractMonths(selectedDay, 3),
-        birthDate,
-        today,
-      )
-      const endExclusive = clampDate(
-        addMonths(selectedDay, 3),
-        birthDate,
-        today,
-      )
-      setLoadedRange({startInclusive, endExclusive})
-    }
-  }, [loadedRange, selectedDay, birthDate, today, setLoadedRange])
-
-  const startInclusive = loadedRange?.startInclusive ?? null
-  const endExclusive = loadedRange?.endExclusive ?? null
-
-  const headingsResult = useHeadingsInRange(startInclusive, endExclusive)
-
-  const [stableData, setStableData] = useState<TimelineData | undefined>(
-    undefined,
-  )
-
-  useEffect(() => {
-    // Wait until we have headings for the correct range
-    if (
-      headingsResult === undefined ||
-      startInclusive === null ||
-      endExclusive === null ||
-      headingsResult.startInclusive !== startInclusive ||
-      headingsResult.endExclusive !== endExclusive
-    ) {
-      return
+  return useMemo(() => {
+    if (!birthDate || headings === undefined) {
+      return undefined
     }
 
-    setStableData(
-      dateRange(startInclusive, endExclusive).map((date) => ({
-        date,
-        headings: headingsResult.headings[date] ?? null,
-      })),
-    )
-  }, [headingsResult, startInclusive, endExclusive])
-
-  return stableData
-}
-
-export function useExpandRange(
-  birthDate: string | undefined,
-  today: string,
-): {
-  expandPast: () => void
-  expandFuture: () => void
-  expandToInclude: (date: string) => void
-} {
-  const [loadedRange, setLoadedRange] = useAtom(loadedRangeAtom)
-
-  const expandPast = useCallback(() => {
-    if (!loadedRange || !birthDate) return
-    if (loadedRange.startInclusive <= birthDate) return
-
-    const newStart = clampDate(
-      subtractMonths(loadedRange.startInclusive, 3),
-      birthDate,
-      today,
-    )
-    setLoadedRange({...loadedRange, startInclusive: newStart})
-  }, [loadedRange, birthDate, today, setLoadedRange])
-
-  const expandFuture = useCallback(() => {
-    if (!loadedRange) return
-    if (loadedRange.endExclusive >= today) return
-
-    const newEnd = clampDate(
-      addMonths(loadedRange.endExclusive, 3),
-      birthDate ?? today,
-      today,
-    )
-    setLoadedRange({...loadedRange, endExclusive: newEnd})
-  }, [loadedRange, birthDate, today, setLoadedRange])
-
-  const expandToInclude = useCallback(
-    (date: string) => {
-      if (!loadedRange || !birthDate) return
-
-      let newStart = loadedRange.startInclusive
-      let newEnd = loadedRange.endExclusive
-
-      if (date < loadedRange.startInclusive) {
-        // Expand past to include the date (with 3 months buffer)
-        newStart = clampDate(subtractMonths(date, 3), birthDate, today)
-      } else if (date >= loadedRange.endExclusive) {
-        // Expand future to include the date (with 3 months buffer)
-        newEnd = clampDate(addMonths(date, 3), birthDate, today)
-      } else {
-        // Date is already in range
-        return
-      }
-
-      setLoadedRange({startInclusive: newStart, endExclusive: newEnd})
-    },
-    [loadedRange, birthDate, today, setLoadedRange],
-  )
-
-  return {expandPast, expandFuture, expandToInclude}
+    return dateRange(birthDate, today).map((date) => ({
+      date,
+      headings: headings[date] ?? null,
+    }))
+  }, [birthDate, today, headings])
 }
 
 export function useSelectedLayerData(): LayerData | undefined {

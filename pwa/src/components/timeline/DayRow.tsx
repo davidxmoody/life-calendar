@@ -25,10 +25,6 @@ export default memo(function DayRow({day, searchMatchSet}: DayRowProps) {
     setMobileView("content")
   }
 
-  if (day.headings === null) {
-    return null
-  }
-
   const dayLabel = format(parseISO(day.date), "EEE")
 
   return (
@@ -36,7 +32,7 @@ export default memo(function DayRow({day, searchMatchSet}: DayRowProps) {
       <div className="text-xs text-gray-400 font-mono px-1 pt-1">
         {dayLabel} {day.date}
       </div>
-      {day.headings.map((heading, headingIndex) => {
+      {(day.headings ?? []).map((heading, headingIndex) => {
         const isMatch = searchMatchSet?.has(`${day.date}:${headingIndex}`)
 
         return (

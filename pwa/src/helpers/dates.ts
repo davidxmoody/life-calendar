@@ -2,8 +2,6 @@ import {
   format,
   parseISO,
   addDays as dateFnsAddDays,
-  addMonths as dateFnsAddMonths,
-  subMonths as dateFnsSubMonths,
   addWeeks,
   startOfISOWeek,
   parse,
@@ -93,18 +91,4 @@ export function formatTimestampAgo(timestamp: number | null) {
 
 export function differenceInYears(date: string, fromDate: string): number {
   return differenceInDays(parseISO(date), parseISO(fromDate)) / 365.25
-}
-
-export function addMonths(date: string, months: number): string {
-  return format(dateFnsAddMonths(parseISO(date), months), DATE_FORMAT)
-}
-
-export function subtractMonths(date: string, months: number): string {
-  return format(dateFnsSubMonths(parseISO(date), months), DATE_FORMAT)
-}
-
-export function clampDate(date: string, min: string, max: string): string {
-  if (date < min) return min
-  if (date > max) return max
-  return date
 }

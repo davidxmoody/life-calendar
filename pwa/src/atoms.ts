@@ -33,8 +33,3 @@ export const searchRegexAtom = atomWithStorage<string>("searchRegex", "")
 export const contentScrollTargetAtom = atom<number | null>(null)
 
 export const searchMatchCursorAtom = atom<number | null>(null)
-
-export const loadedRangeAtom = atom<{
-  startInclusive: string
-  endExclusive: string
-} | null>(null)

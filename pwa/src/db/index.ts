@@ -75,34 +75,15 @@ export function useDatabaseStats(): DBStats | undefined {
   })
 }
 
-type HeadingsResult = {
-  startInclusive: string
-  endExclusive: string
-  headings: Record<string, string[] | undefined>
-}
-
-export function useHeadingsInRange(
-  startInclusive: string | null,
-  endExclusive: string | null,
-): HeadingsResult | undefined {
-  const effectiveStart = startInclusive ?? ""
-  const effectiveEnd = endExclusive ?? "\uffff"
-
+export function useAllHeadings(): Record<string, string[]> | undefined {
   return useLiveQuery(async () => {
-    const headingsList = await db.cachedHeadings
-      .where("date")
-      .between(effectiveStart, effectiveEnd, true, false)
-      .toArray()
-
-    return {
-      startInclusive: effectiveStart,
-      endExclusive: effectiveEnd,
-      headings: headingsList.reduce<Record<string, string[] | undefined>>(
-        (acc, {date, headings}) => ({...acc, [date]: headings}),
-        {},
-      ),
+    const headingsList = await db.cachedHeadings.toArray()
+    const result: Record<string, string[]> = {}
+    for (const {date, headings} of headingsList) {
+      result[date] = headings
     }
-  }, [effectiveStart, effectiveEnd])
+    return result
+  })
 }
 
 export function useEntry(date: string | null): Entry | undefined {
