@@ -1,19 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import {
-  memo,
-  startTransition,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react"
-import {useAtom, useAtomValue} from "jotai"
-import {Virtuoso, VirtuosoHandle, ListRange} from "react-virtuoso"
+import {memo, useCallback, useEffect, useMemo, useRef} from "react"
+import {useAtomValue} from "jotai"
+import {Virtuoso, VirtuosoHandle} from "react-virtuoso"
 import {loadedRangeAtom, selectedDayAtom} from "../../atoms"
 import {useLifeData} from "../../db"
-import {TimelineData, useExpandRange, useTimelineData} from "../../db/hooks"
-import Day from "./Day"
+import {
+  DayTimelineData,
+  useExpandRange,
+  useTimelineData,
+  useSearchMatchData,
+} from "../../db/hooks"
+import DayRow from "./DayRow"
 import useToday from "../../helpers/useToday"
 
 // Large starting index for stable indices when prepending
@@ -24,16 +22,15 @@ export default memo(function Timeline() {
   const today = useToday()
   const birthDate = lifeData?.birthDate
   const data = useTimelineData(birthDate, today)
-  const [selectedDay, setSelectedDay] = useAtom(selectedDayAtom)
+  const selectedDay = useAtomValue(selectedDayAtom)
   const loadedRange = useAtomValue(loadedRangeAtom)
   const {expandPast, expandFuture, expandToInclude} = useExpandRange(
     birthDate,
     today,
   )
+  const searchMatchData = useSearchMatchData()
 
   const virtuosoRef = useRef<VirtuosoHandle>(null)
-  // Track whether selectedDay change came from scrolling (vs calendar click)
-  const changeSourceRef = useRef<"scroll" | "calendar" | null>(null)
 
   // Filter to days up to today
   const visibleTimeline = useMemo(
@@ -41,11 +38,9 @@ export default memo(function Timeline() {
     [data, today],
   )
 
-  // Calculate first item index based on how many past items we've loaded
-  // When we prepend items, we decrement this to keep indices stable
+  // Calculate first item index based on days from birth date
   const firstItemIndex = useMemo(() => {
     if (!loadedRange || !birthDate) return START_INDEX
-    // Count days from birth to start of loaded range
     const birthTime = new Date(birthDate).getTime()
     const startTime = new Date(loadedRange.startInclusive).getTime()
     const daysBetween = Math.round(
@@ -61,31 +56,8 @@ export default memo(function Timeline() {
     return idx >= 0 ? idx : visibleTimeline.length - 1
   }, []) // Only compute on mount
 
-  // Handle range changes to update selected day
-  const handleRangeChanged = useCallback(
-    (range: ListRange) => {
-      if (changeSourceRef.current === "calendar") return
-      if (!visibleTimeline.length) return
-
-      // Convert virtual index to array index
-      const arrayIndex = range.startIndex - firstItemIndex
-      const topItem = visibleTimeline[arrayIndex]
-      if (topItem && topItem.date !== selectedDay) {
-        changeSourceRef.current = "scroll"
-        startTransition(() => setSelectedDay(topItem.date))
-      }
-    },
-    [visibleTimeline, selectedDay, setSelectedDay, firstItemIndex],
-  )
-
-  // When selectedDay changes from Calendar, scroll to that day
+  // When selectedDay changes (from calendar), scroll to that day
   useEffect(() => {
-    // If change came from scrolling, don't scroll back - just clear the flag
-    if (changeSourceRef.current === "scroll") {
-      changeSourceRef.current = null
-      return
-    }
-
     if (!virtuosoRef.current) return
 
     // Check if selectedDay is in the loaded range
@@ -94,9 +66,8 @@ export default memo(function Timeline() {
         selectedDay < loadedRange.startInclusive ||
         selectedDay >= loadedRange.endExclusive
       ) {
-        // Expand range to include the selected day
         expandToInclude(selectedDay)
-        return // Will scroll after data loads
+        return
       }
     }
 
@@ -104,32 +75,24 @@ export default memo(function Timeline() {
 
     const idx = visibleTimeline.findIndex((d) => d.date === selectedDay)
     if (idx >= 0) {
-      changeSourceRef.current = "calendar"
       virtuosoRef.current.scrollToIndex({
         index: idx,
         align: "start",
         behavior: "auto",
       })
-      // Reset flag after scroll completes
-      setTimeout(() => {
-        changeSourceRef.current = null
-      }, 100)
     }
   }, [selectedDay, visibleTimeline, loadedRange, birthDate, expandToInclude])
 
   const itemContent = useCallback(
-    (_index: number, day: TimelineData[number]) => (
-      <Day date={day.date} headings={day.headings} />
+    (_index: number, day: DayTimelineData) => (
+      <DayRow day={day} searchMatchSet={searchMatchData?.matchSet} />
     ),
-    [],
+    [searchMatchData],
   )
 
   if (!lifeData || !data || !visibleTimeline.length) {
     return null
   }
-
-  // TODO add isScrolling
-  // TODO add footer for padding?
 
   return (
     <Virtuoso
@@ -140,7 +103,6 @@ export default memo(function Timeline() {
       itemContent={itemContent}
       startReached={expandPast}
       endReached={expandFuture}
-      rangeChanged={handleRangeChanged}
       overscan={200}
       className="h-full"
     />

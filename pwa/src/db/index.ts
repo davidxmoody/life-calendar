@@ -114,6 +114,18 @@ export function useEntry(date: string | null): Entry | undefined {
   }, [date])
 }
 
+export function useEntriesByDates(
+  dates: string[] | undefined,
+): Entry[] | undefined {
+  const key = dates?.join(",") ?? ""
+  return useLiveQuery(() => {
+    if (!dates || dates.length === 0) {
+      return []
+    }
+    return db.entries.where("date").anyOf(dates).toArray()
+  }, [key])
+}
+
 // =============================================================================
 // Async Functions (non-reactive, for imperative operations)
 // =============================================================================

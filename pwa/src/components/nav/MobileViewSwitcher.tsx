@@ -1,11 +1,24 @@
 import {useAtom} from "jotai"
 import {memo} from "react"
 import {mobileViewAtom} from "../../atoms"
-import {Calendar, CalendarOff} from "lucide-react"
+import {Calendar, CalendarOff, ArrowLeft} from "lucide-react"
 import {Button} from "@/components/ui/button"
 
 export default memo(function MobileViewSwitcher() {
   const [mobileView, setMobileView] = useAtom(mobileViewAtom)
+
+  if (mobileView === "content") {
+    return (
+      <Button
+        variant="nav"
+        size="icon-lg"
+        aria-label="Back to timeline"
+        onClick={() => setMobileView("timeline")}
+      >
+        <ArrowLeft className="size-5" />
+      </Button>
+    )
+  }
 
   return (
     <Button

@@ -2,10 +2,9 @@ import {atom} from "jotai"
 import {atomWithStorage} from "jotai/utils"
 import {getToday, getWeekStart} from "./helpers/dates"
 
-export const mobileViewAtom = atomWithStorage<"calendar" | "timeline">(
-  "mobileView",
-  "calendar",
-)
+export const mobileViewAtom = atomWithStorage<
+  "calendar" | "timeline" | "content"
+>("mobileView", "calendar")
 
 export const selectedLayerIdsAtom = atomWithStorage<string[]>(
   "selectedLayerIds",
@@ -30,6 +29,10 @@ export const selectedWeekStartAtom = atom(
 )
 
 export const searchRegexAtom = atomWithStorage<string>("searchRegex", "")
+
+export const contentScrollTargetAtom = atom<number | null>(null)
+
+export const searchMatchCursorAtom = atom<number | null>(null)
 
 export const loadedRangeAtom = atom<{
   startInclusive: string

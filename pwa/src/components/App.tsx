@@ -1,6 +1,7 @@
 import Timeline from "./timeline/Timeline"
 import NavBar from "./nav/NavBar"
 import Calendar from "./calendar/Calendar"
+import ContentPane from "./content/ContentPane"
 import {Suspense} from "react"
 import {useAtomValue} from "jotai"
 import {mobileViewAtom} from "../atoms"
@@ -25,11 +26,17 @@ export default function App() {
             </div>
 
             <div
-              className={`flex-1 ${mobileVisibility(
+              className={`flex-1 max-w-sm border-r border-gray-700 ${mobileVisibility(
                 mobileView === "timeline",
               )}`}
             >
               <Timeline />
+            </div>
+
+            <div
+              className={`flex-1 ${mobileVisibility(mobileView === "content")}`}
+            >
+              <ContentPane />
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import {memo} from "react"
+import {memo, createContext, useContext, useRef} from "react"
 import ReactMarkdown, {Components} from "react-markdown"
 import remarkGfm from "remark-gfm"
 import HighlightedText from "./HighlightedText"
@@ -14,17 +14,27 @@ import {
 } from "../ui/table"
 import {useEntryDate} from "./EntryDateContext"
 
+const HeadingCounterContext = createContext<React.RefObject<number> | null>(
+  null,
+)
+
 function MarkdownHeading(props: {
   node?: {tagName: string}
   children?: React.ReactNode
 }) {
+  const counterRef = useContext(HeadingCounterContext)
+  const index = counterRef ? counterRef.current++ : 0
+
   const sizeClass =
     {h1: "text-4xl", h2: "text-4xl", h3: "text-2xl"}[
       props.node?.tagName ?? ""
     ] ?? "text-xl"
 
   return (
-    <h3 className={`${sizeClass} font-bold mb-4 text-pretty`}>
+    <h3
+      id={`heading-${index}`}
+      className={`${sizeClass} font-bold mb-4 text-pretty scroll-mt-16`}
+    >
       <HighlightedText addDateLinks>{props.children}</HighlightedText>
     </h3>
   )
@@ -221,9 +231,14 @@ const components: Components = {
 }
 
 export default memo(function Markdown(props: {source: string}) {
+  const counterRef = useRef(0)
+  counterRef.current = 0
+
   return (
-    <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
-      {props.source}
-    </ReactMarkdown>
+    <HeadingCounterContext.Provider value={counterRef}>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+        {props.source}
+      </ReactMarkdown>
+    </HeadingCounterContext.Provider>
   )
 })

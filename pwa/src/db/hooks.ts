@@ -1,6 +1,11 @@
 import {useAtomValue, useAtom} from "jotai"
 import {useState, useEffect, useMemo, useCallback} from "react"
-import {getLayerData, useHeadingsInRange, useSearchResults} from "./index"
+import {
+  getLayerData,
+  useHeadingsInRange,
+  useSearchResults,
+  useEntriesByDates,
+} from "./index"
 import {
   searchRegexAtom,
   selectedLayerIdsAtom,
@@ -10,19 +15,21 @@ import {
 import {dateRange, addMonths, subtractMonths, clampDate} from "../helpers/dates"
 import generateLayer from "../helpers/generateLayer"
 import mergeLayers from "../helpers/mergeLayers"
+import splitEntryBySections from "../helpers/splitEntryBySections"
 import {LayerData} from "../types"
 
-export type TimelineData = Array<{
+export interface DayTimelineData {
   date: string
-  headings: string[] | null
-}>
+  headings: string[] | null // null = no entry
+}
+
+export type TimelineData = DayTimelineData[]
 
 export function useTimelineData(
   birthDate: string | undefined,
   today: string,
 ): TimelineData | undefined {
   const selectedDay = useAtomValue(selectedDayAtom)
-  const searchRegex = useAtomValue(searchRegexAtom)
   const [loadedRange, setLoadedRange] = useAtom(loadedRangeAtom)
 
   // Initialize loaded range centered on selected day (6 months total)
@@ -46,20 +53,6 @@ export function useTimelineData(
   const endExclusive = loadedRange?.endExclusive ?? null
 
   const headingsResult = useHeadingsInRange(startInclusive, endExclusive)
-  const allSearchResults = useSearchResults()
-
-  // Filter search results to loaded range
-  const searchResultsInRange = useMemo(() => {
-    if (
-      allSearchResults === undefined ||
-      startInclusive === null ||
-      endExclusive === null
-    )
-      return undefined
-    return allSearchResults.filter(
-      (id) => id >= startInclusive && id < endExclusive,
-    )
-  }, [allSearchResults, startInclusive, endExclusive])
 
   const [stableData, setStableData] = useState<TimelineData | undefined>(
     undefined,
@@ -77,35 +70,13 @@ export function useTimelineData(
       return
     }
 
-    // When searching, show filtered results (or loading state)
-    if (searchRegex) {
-      if (searchResultsInRange === undefined) {
-        return
-      }
-      const visibleDays = searchResultsInRange.sort()
-      setStableData(
-        visibleDays.map((date) => ({
-          date,
-          headings: headingsResult.headings[date] ?? null,
-        })),
-      )
-      return
-    }
-
-    // No search active - show all days
     setStableData(
       dateRange(startInclusive, endExclusive).map((date) => ({
         date,
         headings: headingsResult.headings[date] ?? null,
       })),
     )
-  }, [
-    headingsResult,
-    searchRegex,
-    searchResultsInRange,
-    startInclusive,
-    endExclusive,
-  ])
+  }, [headingsResult, startInclusive, endExclusive])
 
   return stableData
 }
@@ -219,4 +190,62 @@ export function useSelectedLayerData(): LayerData | undefined {
 
   // When not searching, use layer data
   return layerData
+}
+
+export interface SearchMatch {
+  date: string
+  headingIndex: number
+  heading: string
+}
+
+export function useSearchMatchData():
+  | {
+      matchSet: Set<string> // "date:headingIndex" keys for O(1) lookup
+      matchList: SearchMatch[] // ordered by date, then headingIndex
+    }
+  | undefined {
+  const searchRegex = useAtomValue(searchRegexAtom)
+  const allSearchResults = useSearchResults()
+
+  const matchingDates = useMemo(() => {
+    if (!searchRegex || !allSearchResults || allSearchResults.length === 0) {
+      return undefined
+    }
+    return [...allSearchResults].sort()
+  }, [searchRegex, allSearchResults])
+
+  const entries = useEntriesByDates(matchingDates)
+
+  return useMemo(() => {
+    if (!searchRegex || !matchingDates || !entries) {
+      return undefined
+    }
+
+    const regexObject = new RegExp(searchRegex, "i")
+    const matchSet = new Set<string>()
+    const matchList: SearchMatch[] = []
+
+    // Build a map of entries by date for quick lookup
+    const entryMap = new Map(entries.map((e) => [e.date, e]))
+
+    for (const date of matchingDates) {
+      const entry = entryMap.get(date)
+      if (!entry) continue
+
+      const sections = splitEntryBySections(entry.content)
+      for (let i = 0; i < sections.length; i++) {
+        if (regexObject.test(sections[i].content)) {
+          const key = `${date}:${i}`
+          matchSet.add(key)
+          matchList.push({
+            date,
+            headingIndex: i,
+            heading: sections[i].heading,
+          })
+        }
+      }
+    }
+
+    return {matchSet, matchList}
+  }, [searchRegex, matchingDates, entries])
 }
