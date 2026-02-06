@@ -1,8 +1,6 @@
 import getMarkdownWordcount from "../helpers/getMarkdownWordcount"
 import {Entry, Layer} from "../types"
 
-// TODO extract scanned/audio and adjust counts
-
 export function wordcountToScore(wordcount: number) {
   return round(Math.pow(wordcount / 14000, 0.3))
 }

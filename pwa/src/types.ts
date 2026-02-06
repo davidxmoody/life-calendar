@@ -1,12 +1,7 @@
-export interface MarkdownEntry {
-  type: "markdown"
-  id: string
+export interface Entry {
   date: string
-
   content: string
 }
-
-export type Entry = MarkdownEntry
 
 export type LayerData = Record<string, number | undefined>
 

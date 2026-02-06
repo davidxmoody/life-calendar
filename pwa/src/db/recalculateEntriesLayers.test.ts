@@ -24,8 +24,6 @@ test("creates a new markdown layer when one new entry is added", async () => {
     getEntriesForWeek: () =>
       Promise.resolve([
         {
-          id: "2022-09-20-markdown",
-          type: "markdown",
           date: "2022-09-20",
           content: "Hello world",
         },
@@ -49,8 +47,6 @@ test("updates an existing markdown layer when one entry is modified", async () =
       if (weekStart === "2022-09-19") {
         return Promise.resolve([
           {
-            id: "2022-09-20-markdown",
-            type: "markdown",
             date: "2022-09-20",
             content: "Hello world",
           },
@@ -88,14 +84,10 @@ test("combines wordcount from multiple entries in same week", async () => {
       if (weekStart === "2022-09-19") {
         return Promise.resolve([
           {
-            id: "2022-09-20-markdown",
-            type: "markdown",
             date: "2022-09-20",
             content: "Hello world foo bar",
           },
           {
-            id: "2022-09-21-markdown",
-            type: "markdown",
             date: "2022-09-21",
             content: "Another entry here",
           },

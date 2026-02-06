@@ -1,28 +1,22 @@
 import {map as promiseMap} from "bluebird"
 import {readFile} from "fs/promises"
-import {Entry, MarkdownEntry} from "../types"
+import {Entry} from "../types"
 import globSince from "./globSince"
 
-async function getMarkdownEntry(file: string): Promise<MarkdownEntry> {
+async function getEntry(file: string): Promise<Entry> {
   const content = await readFile(file, "utf8")
   const date = file.replace(
     /^.*\/(\d\d\d\d)\/(\d\d)\/(\d\d)\/diary\.md$/,
     "$1-$2-$3",
   )
 
-  return {
-    id: `${date}-markdown`,
-    type: "markdown",
-    date,
-    content,
-  }
+  return {date, content}
 }
 
-export async function getEntries(sinceMs: number | null): Promise<Entry[]> {
-  const markdownEntries = await promiseMap(
+export function getEntries(sinceMs: number | null): Promise<Entry[]> {
+  return promiseMap(
     globSince("entries/????/??/??/diary.md", sinceMs),
-    getMarkdownEntry,
+    getEntry,
     {concurrency: 100},
   )
-  return markdownEntries
 }

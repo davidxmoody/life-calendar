@@ -5,23 +5,22 @@ import {useAtomValue} from "jotai"
 import {Entry, Layer, LayerData, LifeData} from "../types"
 import {authedFetch} from "../helpers/auth"
 import recalculateEntriesLayers from "./recalculateEntriesLayers"
-import {addDays, getNextWeekStart, getWeekStart} from "../helpers/dates"
+import {getNextWeekStart, getWeekStart} from "../helpers/dates"
 import getHeadings from "../helpers/getHeadings"
 import {searchRegexAtom} from "../atoms"
 
 const db = new Dexie("data") as Dexie & {
-  entries: EntityTable<Entry, "id">
+  entries: EntityTable<Entry, "date">
   layers: EntityTable<Layer, "id">
   config: Table<number | null, string>
   cachedHeadings: EntityTable<{date: string; headings: string[]}, "date">
   lifeData: Table<LifeData, string>
 }
 
-db.version(9).stores({
-  entries: "id, type",
+db.version(1).stores({
+  entries: "date",
   layers: "id",
   config: "",
-  scanned: null,
   cachedHeadings: "date",
   lifeData: "",
 })
@@ -34,20 +33,16 @@ db.version(9).stores({
 const searchResultsAtom = atomWithObservable((get) => {
   const regex = get(searchRegexAtom)
 
-  return liveQuery(async () => {
+  return liveQuery(() => {
     if (!regex) {
       return [] as string[]
     }
 
     const regexObject = new RegExp(regex, "i")
 
-    const ids = await db.entries
-      .filter((entry) => {
-        return regexObject.test(entry.content)
-      })
+    return db.entries
+      .filter((entry) => regexObject.test(entry.content))
       .primaryKeys()
-
-    return ids
   })
 })
 
@@ -73,15 +68,10 @@ export interface DBStats {
 export function useDatabaseStats(): DBStats | undefined {
   return useLiveQuery(async () => {
     const lastSyncTimestamp = (await db.config.get("lastSyncTimestamp")) ?? null
-
-    const layers = await db.layers.count()
     const entries = await db.entries.count()
+    const layers = await db.layers.count()
 
-    return {
-      lastSyncTimestamp,
-      entries,
-      layers,
-    }
+    return {lastSyncTimestamp, entries, layers}
   })
 }
 
@@ -116,14 +106,11 @@ export function useHeadingsInRange(
 }
 
 export function useEntry(date: string | null): Entry | undefined {
-  return useLiveQuery(async () => {
+  return useLiveQuery(() => {
     if (!date) {
       return undefined
     }
-    // TODO refactor for single entry
-    return (
-      await db.entries.where("id").between(date, addDays(date, 1)).toArray()
-    )[0]
+    return db.entries.get(date)
   }, [date])
 }
 
@@ -177,15 +164,10 @@ export async function sync({fullSync}: {fullSync: boolean}) {
         await db.entries.put(entry)
       }
 
-      for (const date of Array.from(new Set(entries.map((e) => e.date)))) {
-        const dayEntries = await db.entries
-          .where("id")
-          .between(date, addDays(date, 1))
-          .toArray()
-
+      for (const entry of entries) {
         await db.cachedHeadings.put({
-          date,
-          headings: getHeadings(dayEntries),
+          date: entry.date,
+          headings: getHeadings(entry.content),
         })
       }
 
@@ -199,7 +181,7 @@ export async function sync({fullSync}: {fullSync: boolean}) {
         ),
         getEntriesForWeek: (weekStart) =>
           db.entries
-            .where("id")
+            .where("date")
             .between(weekStart, getNextWeekStart(weekStart))
             .toArray(),
         getLayer: (id) => db.layers.get(id),

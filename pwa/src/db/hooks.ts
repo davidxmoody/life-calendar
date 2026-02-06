@@ -7,12 +7,7 @@ import {
   selectedDayAtom,
   loadedRangeAtom,
 } from "../atoms"
-import {
-  dateRange,
-  addMonths,
-  subtractMonths,
-  clampDate,
-} from "../helpers/dates"
+import {dateRange, addMonths, subtractMonths, clampDate} from "../helpers/dates"
 import generateLayer from "../helpers/generateLayer"
 import mergeLayers from "../helpers/mergeLayers"
 import {LayerData} from "../types"
@@ -38,7 +33,11 @@ export function useTimelineData(
         birthDate,
         today,
       )
-      const endExclusive = clampDate(addMonths(selectedDay, 3), birthDate, today)
+      const endExclusive = clampDate(
+        addMonths(selectedDay, 3),
+        birthDate,
+        today,
+      )
       setLoadedRange({startInclusive, endExclusive})
     }
   }, [loadedRange, selectedDay, birthDate, today, setLoadedRange])
@@ -83,10 +82,7 @@ export function useTimelineData(
       if (searchResultsInRange === undefined) {
         return
       }
-      // IDs are entry IDs (date + time), extract unique dates
-      const visibleDays = [
-        ...new Set(searchResultsInRange.map((id) => id.slice(0, 10))),
-      ].sort()
+      const visibleDays = searchResultsInRange.sort()
       setStableData(
         visibleDays.map((date) => ({
           date,
@@ -189,9 +185,8 @@ export function useSelectedLayerData(): LayerData | undefined {
       return undefined
     }
 
-    // Extract dates from entry IDs (first 10 chars are the date)
     return generateLayer({
-      dates: allSearchResults.map((id) => id.slice(0, 10)),
+      dates: allSearchResults,
       scoringFn: (count) => Math.min(1, Math.pow(count / 7, 0.5)),
     })
   }, [searchRegex, allSearchResults])
