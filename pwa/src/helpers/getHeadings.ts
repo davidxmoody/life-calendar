@@ -1,23 +1,38 @@
 import getMarkdownWordcount from "./getMarkdownWordcount"
 
-function getMarkdownHeadings(content: string) {
-  return content
-    .split("\n")
-    .filter((line) => line.startsWith("#"))
-    .map((line) => line.replace(/^#* */, ""))
-    .map((text) => text.replace(/^\d{1,2}:\d{2}\s*/, ""))
-    .filter((text) => text.length > 0)
-}
-
 function pluralise(count: number, singular: string, plural: string) {
   return count === 1
     ? `${count} ${singular}`
     : `${count.toLocaleString()} ${plural}`
 }
 
+function wordCountLabel(text: string) {
+  const wordcount = getMarkdownWordcount(text)
+  return pluralise(wordcount, "word", "words")
+}
+
 export default function getHeadings(content: string): string[] {
-  const headings = getMarkdownHeadings(content)
-  if (headings.length > 0) return headings
-  const wordcount = getMarkdownWordcount(content)
-  return [pluralise(wordcount, "word", "words")]
+  const lines = content.split("\n")
+  const headingIndices: number[] = []
+  lines.forEach((line, i) => {
+    if (line.startsWith("#")) headingIndices.push(i)
+  })
+
+  if (headingIndices.length === 0) {
+    return [wordCountLabel(content)]
+  }
+
+  return headingIndices.map((headingIndex, i) => {
+    const raw = lines[headingIndex].replace(/^#* */, "")
+    const stripped = raw.replace(/^\d{1,2}:\d{2}\s*/, "")
+    if (stripped.length > 0) return stripped
+
+    const nextIndex =
+      i + 1 < headingIndices.length ? headingIndices[i + 1] : lines.length
+    const sectionBody = lines
+      .slice(headingIndex + 1, nextIndex)
+      .join("\n")
+      .trim()
+    return wordCountLabel(sectionBody)
+  })
 }
