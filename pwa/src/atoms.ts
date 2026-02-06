@@ -2,9 +2,12 @@ import {atom} from "jotai"
 import {atomWithStorage} from "jotai/utils"
 import {getToday, getWeekStart} from "./helpers/dates"
 
-export const mobileViewAtom = atomWithStorage<
-  "calendar" | "timeline" | "content"
->("mobileView", "calendar")
+type MobileView = "calendar" | "timeline" | "content"
+
+export const mobileViewAtom = atomWithStorage<MobileView>(
+  "mobileView",
+  "calendar",
+)
 
 export const selectedLayerIdsAtom = atomWithStorage<string[]>(
   "selectedLayerIds",

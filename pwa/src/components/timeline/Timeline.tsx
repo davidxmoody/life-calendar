@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-
 import {memo, useCallback, useEffect, useMemo, useRef} from "react"
 import {useAtomValue} from "jotai"
 import {Virtuoso, VirtuosoHandle} from "react-virtuoso"
@@ -30,8 +28,9 @@ export default memo(function Timeline() {
     if (!visibleTimeline.length) return 0
     const idx = visibleTimeline.findIndex((d) => d.date >= selectedDay)
     return idx >= 0 ? idx : visibleTimeline.length - 1
-  }, []) // Only compute on mount
+  }, [visibleTimeline])
 
+  // TODO this doesn't work, fix it
   // When selectedDay changes (from calendar), scroll to that day
   useEffect(() => {
     if (!virtuosoRef.current || !visibleTimeline.length) return
