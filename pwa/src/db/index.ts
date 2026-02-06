@@ -59,6 +59,7 @@ export function useLayerIds(): string[] | undefined {
   return useLiveQuery(() => db.layers.toCollection().primaryKeys())
 }
 
+// TODO change to observable for suspense
 export function useLifeData(): LifeData | undefined {
   return useLiveQuery(() => db.lifeData.get("lifeData"))
 }
@@ -114,12 +115,15 @@ export function useHeadingsInRange(
   }, [effectiveStart, effectiveEnd])
 }
 
-export function useEntriesForDay(date: string | null): Entry[] | undefined {
+export function useEntry(date: string | null): Entry | undefined {
   return useLiveQuery(async () => {
     if (!date) {
-      return []
+      return undefined
     }
-    return db.entries.where("id").between(date, addDays(date, 1)).toArray()
+    // TODO refactor for single entry
+    return (
+      await db.entries.where("id").between(date, addDays(date, 1)).toArray()
+    )[0]
   }, [date])
 }
 

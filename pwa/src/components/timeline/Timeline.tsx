@@ -128,6 +128,9 @@ export default memo(function Timeline() {
     return null
   }
 
+  // TODO add isScrolling
+  // TODO add footer for padding?
+
   return (
     <Virtuoso
       ref={virtuosoRef}
@@ -140,9 +143,6 @@ export default memo(function Timeline() {
       rangeChanged={handleRangeChanged}
       overscan={200}
       className="h-full"
-      components={{
-        Footer: () => <div className="pb-10" />,
-      }}
     />
   )
 })
