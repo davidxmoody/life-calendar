@@ -98,7 +98,7 @@ function DayHeader(props: {
   return (
     <div
       ref={props.headerRef}
-      className="bg-gray-800 sticky top-0 z-40 md:pt-2"
+      className="sticky top-0 z-40 md:pt-2 bg-[#1a202c]"
     >
       <div
         className="p-4 md:rounded-t-md md:border border-gray-600 cursor-pointer bg-sky-900"
