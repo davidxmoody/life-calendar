@@ -89,7 +89,7 @@ function MarkdownAudio(props: {src?: string}) {
 
 function MarkdownOrderedList(props: {children?: React.ReactNode}) {
   return (
-    <ol className="mb-5 list-decimal list-inside ms-0">{props.children}</ol>
+    <ol className="mb-5 list-decimal list-outside ms-5">{props.children}</ol>
   )
 }
 
@@ -101,7 +101,7 @@ function MarkdownUnorderedList(props: {
   return (
     <ul
       className={`mb-5 ${
-        isTaskList ? "list-none ms-0" : "list-disc list-inside"
+        isTaskList ? "list-none ms-0" : "list-disc list-outside ms-5"
       }`}
     >
       {props.children}
