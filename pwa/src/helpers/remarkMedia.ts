@@ -1,13 +1,14 @@
 import {visit} from "unist-util-visit"
-import type {Root, Image} from "mdast"
+import type {Plugin} from "unified"
+import type {Root} from "mdast"
 import {createAuthedUrl} from "./auth"
 
 const VIDEO_EXTENSIONS = /\.(mp4|webm|mov|avi|mkv)$/i
 const AUDIO_EXTENSIONS = /\.(mp3|m4a|wav|ogg)$/i
 
-export function remarkMedia(date: string) {
-  return () => (tree: Root) => {
-    visit(tree, "image", (node: Image, index, parent) => {
+export default function remarkMedia(date: string): Plugin<[], Root> {
+  return () => (tree) => {
+    visit(tree, "image", (node, index, parent) => {
       const src = node.url
       const isRemote = src.startsWith("http") || src.startsWith("//")
 

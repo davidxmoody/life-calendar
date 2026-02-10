@@ -11,7 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table"
-import {remarkMedia} from "../../helpers/remarkMedia"
+import remarkSplitLists from "../../helpers/remarkSplitLists"
+import remarkMedia from "../../helpers/remarkMedia"
 
 const HeadingCounterContext = createContext<React.RefObject<number> | null>(
   null,
@@ -229,7 +230,7 @@ export default memo(function Markdown(props: {source: string; date: string}) {
   return (
     <HeadingCounterContext.Provider value={counterRef}>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkMedia(props.date)]}
+        remarkPlugins={[remarkGfm, remarkSplitLists, remarkMedia(props.date)]}
         components={components}
       >
         {props.source}
