@@ -88,20 +88,28 @@ function MarkdownAudio(props: {src?: string}) {
   return <audio className="max-w-full" src={props.src} controls={true} />
 }
 
-function MarkdownOrderedList(props: {children?: React.ReactNode}) {
+function MarkdownOrderedList(props: {
+  "data-nested"?: boolean
+  children?: React.ReactNode
+}) {
   return (
-    <ol className="mb-5 list-decimal list-outside ms-5">{props.children}</ol>
+    <ol
+      className={`${props["data-nested"] ? "" : "mb-5 "}list-decimal list-outside ms-5`}
+    >
+      {props.children}
+    </ol>
   )
 }
 
 function MarkdownUnorderedList(props: {
   className?: string
+  "data-nested"?: boolean
   children?: React.ReactNode
 }) {
   const isTaskList = props.className?.includes("contains-task-list")
   return (
     <ul
-      className={`mb-5 ${
+      className={`${props["data-nested"] ? "" : "mb-5 "}${
         isTaskList ? "list-none ms-0" : "list-disc list-outside ms-5"
       }`}
     >

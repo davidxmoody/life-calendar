@@ -15,6 +15,17 @@ import type {Root, List, ListItem} from "mdast"
  */
 const remarkSplitLists: Plugin<[], Root> = () => {
   return (tree) => {
+    // Annotate nested lists with data-nested for styling
+    visit(tree, "list", (node, _index, parent) => {
+      if (parent?.type === "listItem") {
+        const data = node.data ?? (node.data = {})
+        const hProperties = (data.hProperties ??
+          (data.hProperties = {})) as Record<string, unknown>
+        hProperties["data-nested"] = true
+      }
+    })
+
+    // Split loose lists at blank-line boundaries
     visit(tree, "list", (node, index, parent) => {
       if (!parent || index == null) return
 
