@@ -50,8 +50,8 @@ export default memo(function ContentPane() {
 
       {entry ? (
         <>
-          <div className="sticky top-0 z-30 bg-ctp-surface0 p-4">
-            <h3 className="text-lg font-bold text-ctp-text">
+          <div className="sticky top-0 z-30 bg-ctp-mantle border-b border-ctp-surface1 p-4">
+            <h3 className="text-lg font-bold text-ctp-subtext1">
               {prettyFormatDateTime({date: selectedDay})}
             </h3>
           </div>
