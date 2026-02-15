@@ -12,7 +12,7 @@ export default function DateLink(props: Props) {
 
   return (
     <button
-      className="!text-teal-500 hover:underline cursor-pointer"
+      className="!text-ctp-sapphire hover:underline cursor-pointer"
       onClick={() => startTransition(() => setSelectedDay(date))}
     >
       {date}

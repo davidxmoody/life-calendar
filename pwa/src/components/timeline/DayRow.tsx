@@ -29,7 +29,7 @@ export default memo(function DayRow({day, searchMatchSet}: DayRowProps) {
 
   return (
     <div className="px-3 pb-1">
-      <div className="text-xs text-gray-400 font-mono px-1 pt-1">
+      <div className="text-xs text-ctp-overlay1 font-mono px-1 pt-1">
         {dayLabel} {day.date}
       </div>
       {(day.headings ?? []).map((heading, headingIndex) => {
@@ -38,9 +38,9 @@ export default memo(function DayRow({day, searchMatchSet}: DayRowProps) {
         return (
           <div
             key={headingIndex}
-            className={`text-sm cursor-pointer hover:bg-gray-700/50 px-1 rounded ${
+            className={`text-sm cursor-pointer hover:bg-ctp-surface1/50 px-1 rounded ${
               isMatch
-                ? "border-l-2 border-l-orange-400 bg-orange-900/20 pl-2"
+                ? "border-l-2 border-l-ctp-peach bg-ctp-peach/15 pl-2"
                 : ""
             }`}
             onClick={() => handleHeadingClick(headingIndex)}

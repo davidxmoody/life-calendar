@@ -66,7 +66,7 @@ export default memo(function SearchNavButtons() {
       >
         <ChevronUp className="size-5" />
       </Button>
-      <span className="text-sm text-white/80 min-w-[3rem] text-center tabular-nums">
+      <span className="text-sm text-ctp-subtext0 min-w-[3rem] text-center tabular-nums">
         {display}
       </span>
       <Button

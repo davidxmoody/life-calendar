@@ -36,7 +36,7 @@ export default memo(function ContentPane() {
   return (
     <div ref={containerRef} className="h-full overflow-y-auto">
       {mobileView === "content" && (
-        <div className="sticky top-0 z-40 bg-[#1a202c] p-2 md:hidden">
+        <div className="sticky top-0 z-40 bg-ctp-base p-2 md:hidden">
           <Button
             variant="ghost"
             size="sm"
@@ -50,8 +50,8 @@ export default memo(function ContentPane() {
 
       {entry ? (
         <>
-          <div className="sticky top-0 z-30 bg-sky-900 p-4">
-            <h3 className="text-lg font-bold text-white">
+          <div className="sticky top-0 z-30 bg-ctp-surface0 p-4">
+            <h3 className="text-lg font-bold text-ctp-text">
               {prettyFormatDateTime({date: selectedDay})}
             </h3>
           </div>
@@ -60,7 +60,7 @@ export default memo(function ContentPane() {
           </div>
         </>
       ) : (
-        <div className="flex items-center justify-center h-full text-gray-500">
+        <div className="flex items-center justify-center h-full text-ctp-overlay0">
           <p>
             {selectedDay
               ? "No entry for this day"

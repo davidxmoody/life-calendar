@@ -11,7 +11,7 @@ export const NAV_BAR_HEIGHT_PX = 72
 export default memo(function NavBar() {
   return (
     <div
-      className="flex items-center gap-4 p-4 bg-sky-600 z-10"
+      className="flex items-center gap-4 p-4 bg-ctp-crust z-10"
       style={{height: NAV_BAR_HEIGHT_PX}}
     >
       <div className="md:hidden">

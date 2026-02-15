@@ -26,7 +26,7 @@ export default function App() {
             </div>
 
             <div
-              className={`flex-1 max-w-sm border-r border-gray-700 ${mobileVisibility(
+              className={`flex-1 max-w-sm border-r border-ctp-surface1 ${mobileVisibility(
                 mobileView === "timeline",
               )}`}
             >

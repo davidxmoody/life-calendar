@@ -69,7 +69,7 @@ function surroundMatches(
 
 function HighlightMatch(props: {children: React.ReactNode}) {
   return (
-    <span className="rounded-xs bg-orange-600 selection:bg-orange-400">
+    <span className="rounded-xs bg-ctp-peach selection:bg-ctp-peach/70">
       {props.children}
     </span>
   )

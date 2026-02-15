@@ -46,7 +46,7 @@ function MarkdownLink(props: {href?: string; children?: React.ReactNode}) {
       href={props.href}
       target="_blank"
       rel="noreferrer"
-      className="text-teal-500 hover:underline"
+      className="text-ctp-sapphire hover:underline"
     >
       {props.children}
     </a>
@@ -63,7 +63,7 @@ function MarkdownParagraph(props: {children?: React.ReactNode}) {
 
 function MarkdownBlockquote(props: {children?: React.ReactNode}) {
   return (
-    <blockquote className="pl-4 italic border-l-8 border-gray-600 opacity-75">
+    <blockquote className="pl-4 italic border-l-8 border-ctp-surface2 opacity-75">
       {props.children}
     </blockquote>
   )
@@ -94,7 +94,9 @@ function MarkdownOrderedList(props: {
 }) {
   return (
     <ol
-      className={`${props["data-nested"] ? "" : "mb-5 "}list-decimal list-outside ms-5`}
+      className={`${
+        props["data-nested"] ? "" : "mb-5 "
+      }list-decimal list-outside ms-5`}
     >
       {props.children}
     </ol>
@@ -128,7 +130,7 @@ function MarkdownListItem(props: {children?: React.ReactNode}) {
 
 function MarkdownPre(props: {children?: React.ReactNode}) {
   return (
-    <pre className="mb-5 bg-gray-600 rounded-sm py-2 px-3">
+    <pre className="mb-5 bg-ctp-surface1 rounded-sm py-2 px-3">
       {props.children}
     </pre>
   )
@@ -136,7 +138,7 @@ function MarkdownPre(props: {children?: React.ReactNode}) {
 
 function MarkdownCode(props: {inline?: boolean; children?: React.ReactNode}) {
   return (
-    <code className="bg-gray-600 rounded-sm">
+    <code className="bg-ctp-surface1 rounded-sm">
       <HighlightedText addDateLinks>{props.children}</HighlightedText>
     </code>
   )
@@ -169,7 +171,7 @@ function MarkdownCheckbox(props: {checked?: boolean}) {
 }
 
 function HorizontalRule() {
-  return <hr className="border-b border-gray-600 mb-5 border-dashed" />
+  return <hr className="border-b border-ctp-surface2 mb-5 border-dashed" />
 }
 
 function MarkdownTable(props: {children?: React.ReactNode}) {

@@ -1,10 +1,10 @@
-const startR = 200
-const startG = 82
-const startB = 35
+const startR = 137
+const startG = 180
+const startB = 250
 
-const endR = 88
-const endG = 49
-const endB = 40
+const endR = 203
+const endG = 166
+const endB = 247
 
 function scale(amount: number, start: number, end: number) {
   return amount * end + (1 - amount) * start
