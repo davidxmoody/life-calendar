@@ -7,7 +7,7 @@ import {
   useEntriesByDates,
 } from "./index"
 import {searchRegexAtom, selectedLayerIdsAtom} from "../atoms"
-import {dateRange} from "../helpers/dates"
+import {addDays, dateRange} from "../helpers/dates"
 import generateLayer from "../helpers/generateLayer"
 import mergeLayers from "../helpers/mergeLayers"
 import splitEntryBySections from "../helpers/splitEntryBySections"
@@ -31,7 +31,7 @@ export function useTimelineData(
       return undefined
     }
 
-    return dateRange(birthDate, today).map((date) => ({
+    return dateRange(birthDate, addDays(today, 1)).map((date) => ({
       date,
       headings: headings[date] ?? null,
     }))
