@@ -1,22 +1,14 @@
 import {memo, useEffect, useRef} from "react"
-import {useAtom, useAtomValue, useSetAtom} from "jotai"
-import {ArrowLeft} from "lucide-react"
-import {
-  selectedDayAtom,
-  contentScrollTargetAtom,
-  mobileViewAtom,
-} from "../../atoms"
+import {useAtom, useAtomValue} from "jotai"
+import {selectedDayAtom, contentScrollTargetAtom} from "../../atoms"
 import {useEntry} from "../../db"
 import {prettyFormatDateTime} from "../../helpers/dates"
 import Markdown from "../timeline/Markdown"
-import {Button} from "@/components/ui/button"
 
 export default memo(function ContentPane() {
   const selectedDay = useAtomValue(selectedDayAtom)
   const entry = useEntry(selectedDay)
   const [scrollTarget, setScrollTarget] = useAtom(contentScrollTargetAtom)
-  const mobileView = useAtomValue(mobileViewAtom)
-  const setMobileView = useSetAtom(mobileViewAtom)
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Scroll-to-heading effect
@@ -35,19 +27,6 @@ export default memo(function ContentPane() {
 
   return (
     <div ref={containerRef} className="h-full overflow-y-auto">
-      {mobileView === "content" && (
-        <div className="sticky top-0 z-40 bg-ctp-base p-2 md:hidden">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setMobileView("timeline")}
-          >
-            <ArrowLeft className="size-4 mr-1" />
-            Back
-          </Button>
-        </div>
-      )}
-
       {entry ? (
         <>
           <div className="sticky top-0 z-30 bg-ctp-mantle border-b border-ctp-surface1 p-4">
