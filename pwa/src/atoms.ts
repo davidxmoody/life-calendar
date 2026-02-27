@@ -1,6 +1,7 @@
 import {atom} from "jotai"
 import {atomWithStorage} from "jotai/utils"
-import {getToday, getWeekStart} from "./helpers/dates"
+import {Temporal} from "@js-temporal/polyfill"
+import {getWeekStart} from "./helpers/dates"
 
 type MobileView = "calendar" | "timeline" | "content"
 
@@ -24,7 +25,10 @@ export const syncStateAtom = atom<SyncState>({
   lastSyncTimestamp: null,
 })
 
-export const selectedDayAtom = atomWithStorage("selectedDay", getToday())
+export const selectedDayAtom = atomWithStorage(
+  "selectedDay",
+  Temporal.Now.plainDateISO().toString(),
+)
 
 export const selectedWeekStartAtom = atom(
   (get) => getWeekStart(get(selectedDayAtom)),

@@ -7,7 +7,7 @@ import {
   useEntriesByDates,
 } from "./index"
 import {searchRegexAtom, selectedLayerIdsAtom} from "../atoms"
-import {addDays, dateRange} from "../helpers/dates"
+import {Temporal} from "@js-temporal/polyfill"
 import generateLayer from "../helpers/generateLayer"
 import mergeLayers from "../helpers/mergeLayers"
 import splitEntryBySections from "../helpers/splitEntryBySections"
@@ -31,7 +31,15 @@ export function useTimelineData(
       return undefined
     }
 
-    return dateRange(birthDate, addDays(today, 1)).map((date) => ({
+    const endExclusive = Temporal.PlainDate.from(today).add({days: 1})
+    const range: string[] = []
+    let cursor = Temporal.PlainDate.from(birthDate)
+    while (Temporal.PlainDate.compare(cursor, endExclusive) < 0) {
+      range.push(cursor.toString())
+      cursor = cursor.add({days: 1})
+    }
+
+    return range.map((date) => ({
       date,
       headings: headings[date] ?? null,
     }))

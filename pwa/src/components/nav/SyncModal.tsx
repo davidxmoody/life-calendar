@@ -42,7 +42,7 @@ export default function SyncModal(props: Props) {
   const syncIfNotSyncedRecently = useCallback(() => {
     if (
       syncState.lastSyncTimestamp !== null &&
-      syncState.lastSyncTimestamp + syncIntervalMs <= new Date().getTime()
+      syncState.lastSyncTimestamp + syncIntervalMs <= Date.now()
     ) {
       startSync({fullSync: false})
     }

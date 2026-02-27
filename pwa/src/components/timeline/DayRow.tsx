@@ -1,6 +1,6 @@
 import {memo} from "react"
 import {useSetAtom} from "jotai"
-import {format, parseISO} from "date-fns"
+import {Temporal} from "@js-temporal/polyfill"
 import {
   selectedDayAtom,
   contentScrollTargetAtom,
@@ -25,7 +25,9 @@ export default memo(function DayRow({day, searchMatchSet}: DayRowProps) {
     setMobileView("content")
   }
 
-  const dayLabel = format(parseISO(day.date), "EEE")
+  const dayLabel = Temporal.PlainDate.from(day.date).toLocaleString(undefined, {
+    weekday: "short",
+  })
 
   return (
     <div className="px-3 pb-1">

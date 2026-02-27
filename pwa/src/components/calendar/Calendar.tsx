@@ -12,7 +12,8 @@ import {useSelectedLayerData} from "../../db/hooks"
 import {useAtom, useSetAtom} from "jotai"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
 import useWindowSize from "../../helpers/useWindowSize"
-import {getWeekStart, parseYear} from "../../helpers/dates"
+import {Temporal} from "@js-temporal/polyfill"
+import {getWeekStart} from "../../helpers/dates"
 import {useState} from "react"
 
 const ZOOM_SCALE = 8
@@ -103,8 +104,10 @@ export default memo(function Calendar() {
 
     if (useZoomBehaviour && zoomedYearIndex === null) {
       setZoomedYearIndex(
-        parseYear(week.startDate) -
-          parseYear(getWeekStart(data!.decades[0].years[0].weeks[0].startDate)),
+        Temporal.PlainDate.from(week.startDate).year -
+          Temporal.PlainDate.from(
+            getWeekStart(data!.decades[0].years[0].weeks[0].startDate),
+          ).year,
       )
       return
     }

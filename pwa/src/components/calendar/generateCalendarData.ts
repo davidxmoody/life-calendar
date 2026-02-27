@@ -1,9 +1,9 @@
 import probabilityOfSurvival from "./probabilityOfSurvival"
 import {Era} from "../../types"
+import {Temporal} from "@js-temporal/polyfill"
 import {
   getWeekStart,
   getNextWeekStart,
-  parseYear,
   getFirstWeekInYear,
 } from "../../helpers/dates"
 
@@ -24,7 +24,10 @@ export interface CalendarData {
 }
 
 function getYearNum(firstWeekStart: string, weekStart: string): number {
-  return parseYear(weekStart) - parseYear(firstWeekStart)
+  return (
+    Temporal.PlainDate.from(weekStart).year -
+    Temporal.PlainDate.from(firstWeekStart).year
+  )
 }
 
 function getEra(eras: Era[], weekStart: string): Era {
@@ -51,7 +54,7 @@ export default function generateCalendarData({
   eras: Era[]
 }) {
   const firstWeekStartDate = getFirstWeekInYear(
-    parseYear(getWeekStart(birthDate)),
+    Temporal.PlainDate.from(getWeekStart(birthDate)).year,
   )
   const firstEraWeekStartDate = getWeekStart(birthDate)
 

@@ -2,7 +2,7 @@ import {useSetAtom} from "jotai"
 import {memo, startTransition} from "react"
 import {mobileViewAtom, selectedDayAtom} from "../../atoms"
 import {FastForward} from "lucide-react"
-import {getToday} from "../../helpers/dates"
+import {Temporal} from "@js-temporal/polyfill"
 import {Button} from "@/components/ui/button"
 
 export default memo(function TodayButton() {
@@ -16,7 +16,7 @@ export default memo(function TodayButton() {
       aria-label="Jump to today"
       onClick={() =>
         startTransition(() => {
-          setSelectedDay(getToday())
+          setSelectedDay(Temporal.Now.plainDateISO().toString())
           setMobileView("timeline")
         })
       }

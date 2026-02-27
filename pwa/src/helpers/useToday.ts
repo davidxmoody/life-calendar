@@ -1,11 +1,16 @@
 import {useState, useEffect} from "react"
-import {getToday} from "../helpers/dates"
+import {Temporal} from "@js-temporal/polyfill"
 
 export default function useToday() {
-  const [today, setToday] = useState(getToday())
+  const [today, setToday] = useState(() =>
+    Temporal.Now.plainDateISO().toString(),
+  )
 
   useEffect(() => {
-    const interval = setInterval(() => setToday(getToday()), 60 * 1000)
+    const interval = setInterval(
+      () => setToday(Temporal.Now.plainDateISO().toString()),
+      60 * 1000,
+    )
     return () => clearInterval(interval)
   }, [])
 

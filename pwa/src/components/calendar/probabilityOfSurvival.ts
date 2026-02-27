@@ -1,4 +1,4 @@
-import {differenceInYears} from "../../helpers/dates"
+import {Temporal} from "@js-temporal/polyfill"
 
 // From: https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/datasets/deathregistrationssummarytablesenglandandwalesreferencetables/2015/syoacause2015.xls
 const totalSampleSize = 257207
@@ -16,6 +16,14 @@ const maleProbabilityOfDyingByAge = [
 
 function lerp(a: number, b: number, t: number) {
   return a * (1 - t) + b * t
+}
+
+function differenceInYears(date: string, fromDate: string): number {
+  return (
+    Temporal.PlainDate.from(date).since(Temporal.PlainDate.from(fromDate), {
+      largestUnit: "days",
+    }).days / 365.25
+  )
 }
 
 export default function probabilityOfSurvival(

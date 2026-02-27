@@ -2,8 +2,36 @@ import {memo, useEffect, useRef} from "react"
 import {useAtom, useAtomValue} from "jotai"
 import {selectedDayAtom, contentScrollTargetAtom} from "../../atoms"
 import {useEntry} from "../../db"
-import {prettyFormatDateTime} from "../../helpers/dates"
+import {Temporal} from "@js-temporal/polyfill"
 import Markdown from "../timeline/Markdown"
+
+function prettyFormatDateTime({
+  date,
+  time,
+}: {
+  date: string
+  time?: string
+}): string {
+  if (!time) {
+    return Temporal.PlainDate.from(date).toLocaleString(undefined, {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    })
+  }
+  return Temporal.PlainDateTime.from(`${date}T${time}`).toLocaleString(
+    undefined,
+    {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    },
+  )
+}
 
 export default memo(function ContentPane() {
   const selectedDay = useAtomValue(selectedDayAtom)

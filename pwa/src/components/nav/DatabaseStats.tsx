@@ -1,7 +1,6 @@
 import {useAtomValue} from "jotai"
 import {SyncState, syncStateAtom} from "../../atoms"
 import {DBStats, useDatabaseStats} from "../../db"
-import {formatTimestampAgo} from "../../helpers/dates"
 import {
   Table,
   TableBody,
@@ -11,6 +10,21 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table"
+
+const rtf = new Intl.RelativeTimeFormat(undefined, {numeric: "auto"})
+
+function formatTimestampAgo(timestamp: number): string {
+  const seconds = Math.round((timestamp - Date.now()) / 1000)
+  const absSeconds = Math.abs(seconds)
+
+  if (absSeconds < 60) return rtf.format(seconds, "second")
+  const minutes = Math.round(seconds / 60)
+  if (Math.abs(minutes) < 60) return rtf.format(minutes, "minute")
+  const hours = Math.round(seconds / 3600)
+  if (Math.abs(hours) < 24) return rtf.format(hours, "hour")
+  const days = Math.round(seconds / 86400)
+  return rtf.format(days, "day")
+}
 
 export default function DatabaseStats() {
   const stats = useDatabaseStats()
