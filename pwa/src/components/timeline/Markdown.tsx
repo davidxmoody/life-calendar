@@ -1,6 +1,7 @@
-import {memo, createContext, useContext, useRef} from "react"
+import {memo, createContext, useContext, useRef, startTransition} from "react"
 import ReactMarkdown, {Components} from "react-markdown"
 import remarkGfm from "remark-gfm"
+import {useSetAtom} from "jotai"
 import HighlightedText from "./HighlightedText"
 import {Checkbox} from "../ui/checkbox"
 import {
@@ -13,6 +14,8 @@ import {
 } from "../ui/table"
 import remarkSplitLists from "../../helpers/remarkSplitLists"
 import remarkMedia from "../../helpers/remarkMedia"
+import remarkDateLinks from "../../helpers/remarkDateLinks"
+import {selectedDayAtom} from "../../atoms"
 
 const HeadingCounterContext = createContext<React.RefObject<number> | null>(
   null,
@@ -35,12 +38,20 @@ function MarkdownHeading(props: {
       id={`heading-${index}`}
       className={`${sizeClass} font-bold mb-4 text-pretty scroll-mt-16`}
     >
-      <HighlightedText addDateLinks>{props.children}</HighlightedText>
+      <HighlightedText>{props.children}</HighlightedText>
     </h3>
   )
 }
 
+const DATE_LINK_REGEX = /^\d{4}-\d{2}-\d{2}$/
+
 function MarkdownLink(props: {href?: string; children?: React.ReactNode}) {
+  if (props.href && DATE_LINK_REGEX.test(props.href)) {
+    return (
+      <MarkdownDateLink date={props.href}>{props.children}</MarkdownDateLink>
+    )
+  }
+
   return (
     <a
       href={props.href}
@@ -53,10 +64,23 @@ function MarkdownLink(props: {href?: string; children?: React.ReactNode}) {
   )
 }
 
+function MarkdownDateLink(props: {date: string; children?: React.ReactNode}) {
+  const setSelectedDay = useSetAtom(selectedDayAtom)
+
+  return (
+    <button
+      className="!text-ctp-sapphire hover:underline cursor-pointer"
+      onClick={() => startTransition(() => setSelectedDay(props.date))}
+    >
+      {props.children}
+    </button>
+  )
+}
+
 function MarkdownParagraph(props: {children?: React.ReactNode}) {
   return (
     <p className="mb-5">
-      <HighlightedText addDateLinks>{props.children}</HighlightedText>
+      <HighlightedText>{props.children}</HighlightedText>
     </p>
   )
 }
@@ -121,11 +145,7 @@ function MarkdownUnorderedList(props: {
 }
 
 function MarkdownListItem(props: {children?: React.ReactNode}) {
-  return (
-    <HighlightedText addDateLinks as="li">
-      {props.children}
-    </HighlightedText>
-  )
+  return <HighlightedText as="li">{props.children}</HighlightedText>
 }
 
 function MarkdownPre(props: {children?: React.ReactNode}) {
@@ -139,25 +159,17 @@ function MarkdownPre(props: {children?: React.ReactNode}) {
 function MarkdownCode(props: {inline?: boolean; children?: React.ReactNode}) {
   return (
     <code className="bg-ctp-surface1 rounded-sm">
-      <HighlightedText addDateLinks>{props.children}</HighlightedText>
+      <HighlightedText>{props.children}</HighlightedText>
     </code>
   )
 }
 
 function MarkdownEmphasis(props: {children?: React.ReactNode}) {
-  return (
-    <HighlightedText addDateLinks as="em">
-      {props.children}
-    </HighlightedText>
-  )
+  return <HighlightedText as="em">{props.children}</HighlightedText>
 }
 
 function MarkdownStrong(props: {children?: React.ReactNode}) {
-  return (
-    <HighlightedText addDateLinks as="strong">
-      {props.children}
-    </HighlightedText>
-  )
+  return <HighlightedText as="strong">{props.children}</HighlightedText>
 }
 
 function MarkdownStrikethrough(props: {children?: React.ReactNode}) {
@@ -240,7 +252,12 @@ export default memo(function Markdown(props: {source: string; date: string}) {
   return (
     <HeadingCounterContext.Provider value={counterRef}>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkSplitLists, remarkMedia(props.date)]}
+        remarkPlugins={[
+          remarkGfm,
+          remarkSplitLists,
+          remarkMedia(props.date),
+          remarkDateLinks,
+        ]}
         components={components}
       >
         {props.source}

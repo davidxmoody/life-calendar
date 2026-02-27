@@ -1,13 +1,9 @@
 import {useAtomValue} from "jotai"
 import {Children, Fragment} from "react"
 import {searchRegexAtom} from "../../atoms"
-import DateLink from "./DateLink"
-
-const DATE_REGEX = /\b\d{4}-\d{2}-\d{2}\b/g
 
 interface Props {
   as?: React.ElementType<{children: React.ReactNode}>
-  addDateLinks?: boolean
   children: React.ReactNode
 }
 
@@ -26,43 +22,28 @@ export default function HighlightedText(props: Props) {
           return child
         }
 
-        return surroundMatches(child, [
-          ...(searchRegex
-            ? [{regex: searchRegex, MatchComponent: HighlightMatch}]
-            : []),
-          ...(props.addDateLinks
-            ? [{regex: DATE_REGEX, MatchComponent: DateLink}]
-            : []),
-        ])
+        if (!searchRegex) {
+          return child
+        }
+
+        return surroundMatches(child, searchRegex)
       })}
     </Container>
   )
 }
 
-function surroundMatches(
-  text: string,
-  replacements: Array<{
-    regex: RegExp
-    MatchComponent: React.ComponentType<{children: string}>
-  }>,
-): React.ReactNode {
-  if (replacements.length === 0) {
-    return text
-  }
-
-  const [{regex, MatchComponent}, ...rest] = replacements
-
+function surroundMatches(text: string, regex: RegExp): React.ReactNode {
   const matches = text.match(regex)
   const parts = text.split(regex)
 
   return parts.flatMap((part, index) => {
     if (index === 0) {
-      return [surroundMatches(part, rest)]
+      return [part]
     }
 
     return [
-      <MatchComponent key={index}>{matches?.[index - 1] ?? ""}</MatchComponent>,
-      surroundMatches(part, rest),
+      <HighlightMatch key={index}>{matches?.[index - 1] ?? ""}</HighlightMatch>,
+      part,
     ]
   })
 }
