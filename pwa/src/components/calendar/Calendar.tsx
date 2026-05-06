@@ -1,22 +1,15 @@
-import {memo, startTransition, useEffect, useMemo, useRef} from "react"
-import generateCalendarData, {CalendarData} from "./generateCalendarData"
+import {memo, startTransition, useMemo} from "react"
+import generateCalendarData from "./generateCalendarData"
 import useToday from "../../helpers/useToday"
-import drawCalendar from "./drawCalendar"
-import calculateCalendarDimensions, {
-  CalendarDimensions,
-} from "./calculateCalendarDimensions"
-import getWeekUnderCursor from "./getWeekUnderCursor"
+import Year from "./Year"
 import {mobileViewAtom, selectedWeekStartAtom} from "../../atoms"
 import {useLifeData} from "../../db"
 import {useSelectedLayerData} from "../../db/hooks"
-import {useAtom, useSetAtom} from "jotai"
+import {useSetAtom, useAtomValue} from "jotai"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
 import useWindowSize from "../../helpers/useWindowSize"
-import {Temporal} from "@js-temporal/polyfill"
-import {getWeekStart} from "../../helpers/dates"
-import {useState} from "react"
 
-const ZOOM_SCALE = 8
+const ASPECT_RATIO = 1.46
 
 function useCalendarData() {
   const today = useToday()
@@ -32,205 +25,65 @@ function useCalendarData() {
 
 export default memo(function Calendar() {
   const data = useCalendarData()
-  const [selectedWeekStart, setSelectedWeekStart] = useAtom(
-    selectedWeekStartAtom,
-  )
+  const selectedWeekStart = useAtomValue(selectedWeekStartAtom)
+  const setSelectedWeekStart = useSetAtom(selectedWeekStartAtom)
   const setMobileView = useSetAtom(mobileViewAtom)
   const layerData = useSelectedLayerData()
 
-  const [zoomedYearIndex, setZoomedYearIndex] = useState<number | null>(null)
-
-  const ref = useRef<HTMLCanvasElement>(null)
-
   const windowSize = useWindowSize()
-  const useZoomBehaviour = windowSize.width < 768
-  const ratio = 1.46
-  let canvasHeight = Math.min(1000, windowSize.height - NAV_BAR_HEIGHT_PX)
-  let canvasWidth = Math.floor(canvasHeight / ratio)
+  let height = Math.min(1000, windowSize.height - NAV_BAR_HEIGHT_PX)
+  let width = Math.floor(height / ASPECT_RATIO)
 
-  if (canvasWidth > windowSize.width) {
-    canvasWidth = Math.min(700, windowSize.width)
-    canvasHeight = canvasWidth * ratio
+  if (width > windowSize.width) {
+    width = Math.min(700, windowSize.width)
+    height = width * ASPECT_RATIO
   }
 
-  const pixelRatio = window.devicePixelRatio
-  const drawWidth = pixelRatio * canvasWidth
-  const drawHeight = pixelRatio * canvasHeight
+  const years = useMemo(() => {
+    if (!data) return []
+    return data.decades.flatMap((decade) => decade.years)
+  }, [data])
 
-  const d = useMemo(
+  const selectedIndices = useMemo(
     () =>
-      calculateCalendarDimensions({
-        width: drawWidth,
-        height: drawHeight,
+      years.map((year) => {
+        for (let i = 0; i < year.weeks.length; i++) {
+          if (year.weeks[i].startDate === selectedWeekStart) return i
+        }
+        return -1
       }),
-    [drawWidth, drawHeight],
+    [years, selectedWeekStart],
   )
-
-  const lastDraw = useRef<typeof d | undefined>(undefined)
-
-  useEffect(() => {
-    if (ref.current && data) {
-      const ctx = ref.current.getContext("2d")
-      if (ctx) {
-        const incremental = lastDraw.current === d
-        drawCalendar({d, ctx, data, layerData, incremental})
-        lastDraw.current = d
-      }
-    }
-  }, [data, layerData, d])
 
   if (!data) {
     return <div />
   }
 
   function onClick(e: React.MouseEvent) {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const x = (e.pageX - window.pageXOffset - rect.left) * pixelRatio
-    const y = (e.pageY - window.pageYOffset - rect.top) * pixelRatio
-
-    const week = getWeekUnderCursor({
-      x,
-      y,
-      d,
-      data: data!,
-      zoomScale: ZOOM_SCALE,
-      zoomedYearIndex: useZoomBehaviour ? zoomedYearIndex : null,
-    })
-
-    if (!week || !("era" in week)) {
-      setZoomedYearIndex(null)
-      return
-    }
-
-    if (useZoomBehaviour && zoomedYearIndex === null) {
-      setZoomedYearIndex(
-        Temporal.PlainDate.from(week.startDate).year -
-          Temporal.PlainDate.from(
-            getWeekStart(data!.decades[0].years[0].weeks[0].startDate),
-          ).year,
-      )
-      return
-    }
+    const target = (e.target as HTMLElement).closest<HTMLElement>(
+      "[data-week-start]",
+    )
+    if (!target) return
+    const startDate = target.dataset.weekStart!
 
     startTransition(() => {
-      setZoomedYearIndex(null)
-      setSelectedWeekStart(week.startDate)
+      setSelectedWeekStart(startDate)
       setMobileView("timeline")
     })
   }
 
-  const zoomTransform =
-    useZoomBehaviour && zoomedYearIndex !== null
-      ? `translate(${
-          ((d.canvas.w / 2 -
-            d.canvas.px -
-            d.year.w / 2 -
-            d.year.w * (zoomedYearIndex % d.layout.yearsPerRow)) /
-            pixelRatio) *
-          ZOOM_SCALE
-        }px, ${
-          ((d.canvas.h / 2 -
-            d.canvas.py -
-            d.year.h / 2 -
-            d.year.h * Math.floor(zoomedYearIndex / d.layout.yearsPerRow)) /
-            pixelRatio) *
-          ZOOM_SCALE
-        }px) scale(${ZOOM_SCALE})`
-      : undefined
-
   return (
-    <div
-      className="cursor-pointer"
-      style={{width: canvasWidth, height: canvasHeight}}
-      onClick={onClick}
-    >
-      <div
-        className="w-full h-full relative"
-        style={{
-          transition: useZoomBehaviour ? "transform 0.3s" : undefined,
-          transform: zoomTransform,
-        }}
-      >
-        <canvas
-          ref={ref}
-          width={drawWidth}
-          height={drawHeight}
-          style={{width: canvasWidth, height: canvasHeight}}
-        />
-
-        <SelectedWeekHighlight
-          data={data}
-          d={d}
-          selectedWeekStart={selectedWeekStart}
-          pixelRatio={pixelRatio}
-          animate={!useZoomBehaviour}
-        />
+    <div style={{width, height}} onClick={onClick}>
+      <div className="grid grid-cols-10 w-full">
+        {years.map((year, i) => (
+          <Year
+            key={i}
+            weeks={year.weeks}
+            layerData={layerData}
+            selectedWeekIndex={selectedIndices[i]}
+          />
+        ))}
       </div>
     </div>
   )
 })
-
-const SelectedWeekHighlight = memo(
-  ({
-    data,
-    d,
-    selectedWeekStart,
-    pixelRatio,
-    animate,
-  }: {
-    data: CalendarData
-    d: CalendarDimensions
-    selectedWeekStart: string
-    pixelRatio: number
-    animate: boolean
-  }) => {
-    let selectedWeekPosition:
-      | {di: number; yi: number; wi: number; color: string}
-      | undefined
-
-    for (let di = 0; di < data.decades.length; di++) {
-      for (let yi = 0; yi < data.decades[di].years.length; yi++) {
-        for (let wi = 0; wi < data.decades[di].years[yi].weeks.length; wi++) {
-          const week = data.decades[di].years[yi].weeks[wi]
-          if (week.startDate === selectedWeekStart) {
-            const color = "era" in week ? week.era.color : "red"
-            selectedWeekPosition = {di, yi, wi, color}
-          }
-        }
-      }
-    }
-
-    if (!selectedWeekPosition) {
-      return null
-    }
-
-    return (
-      <div
-        className="box-border absolute top-0 left-0"
-        style={{
-          width: `${d.week.w / pixelRatio}px`,
-          height: `${d.week.h / pixelRatio}px`,
-          border: `2px solid ${selectedWeekPosition.color}`,
-          filter: "hue-rotate(180deg) saturate(1000%) contrast(1000%)",
-          transform: `translate(${
-            (d.canvas.px +
-              d.year.p +
-              d.year.w * selectedWeekPosition.yi +
-              d.week.w * (selectedWeekPosition.wi % d.layout.weeksPerYearRow)) /
-            pixelRatio
-          }px, ${
-            (d.canvas.py +
-              d.year.p +
-              d.year.h * selectedWeekPosition.di +
-              d.week.h *
-                Math.floor(
-                  selectedWeekPosition.wi / d.layout.weeksPerYearRow,
-                )) /
-            pixelRatio
-          }px)`,
-          transition: animate ? "all 0.3s" : undefined,
-        }}
-      />
-    )
-  },
-)
