@@ -4,7 +4,7 @@ import {LayerData} from "../../types"
 
 interface YearProps {
   weeks: Week[]
-  layerData: LayerData | undefined
+  layerData: LayerData
   selectedWeekIndex: number
 }
 
@@ -32,11 +32,7 @@ export default memo(function Year({
   )
 })
 
-function pastWeekOpacity(
-  layerData: LayerData | undefined,
-  startDate: string,
-): number {
-  if (layerData === undefined) return 1
+function pastWeekOpacity(layerData: LayerData, startDate: string): number {
   return 0.35 + 0.65 * (layerData[startDate] ?? 0)
 }
 

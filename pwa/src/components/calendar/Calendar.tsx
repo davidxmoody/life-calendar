@@ -8,8 +8,10 @@ import {useSelectedLayerData} from "../../db/hooks"
 import {useSetAtom, useAtomValue} from "jotai"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
 import useWindowSize from "../../helpers/useWindowSize"
+import {LayerData} from "../../types"
 
 const ASPECT_RATIO = 1.46
+const EMPTY_LAYER: LayerData = {}
 
 function useCalendarData() {
   const today = useToday()
@@ -28,7 +30,7 @@ export default memo(function Calendar() {
   const selectedWeekStart = useAtomValue(selectedWeekStartAtom)
   const setSelectedWeekStart = useSetAtom(selectedWeekStartAtom)
   const setMobileView = useSetAtom(mobileViewAtom)
-  const layerData = useSelectedLayerData()
+  const layerData = useSelectedLayerData() ?? EMPTY_LAYER
 
   const windowSize = useWindowSize()
   let height = Math.min(1000, windowSize.height - NAV_BAR_HEIGHT_PX)
