@@ -8,7 +8,6 @@ import {
 } from "./index"
 import {searchRegexAtom, selectedLayerIdsAtom} from "../atoms"
 import {Temporal} from "@js-temporal/polyfill"
-import generateLayer from "../helpers/generateLayer"
 import mergeLayers from "../helpers/mergeLayers"
 import splitEntryBySections from "../helpers/splitEntryBySections"
 import {LayerData} from "../types"
@@ -61,10 +60,9 @@ export function useSelectedLayerData(): LayerData | undefined {
       return undefined
     }
 
-    return generateLayer({
-      dates: allSearchResults,
-      scoringFn: (count) => Math.min(1, Math.pow(count / 7, 0.5)),
-    })
+    return mergeLayers([
+      Object.fromEntries(allSearchResults.map((date) => [date, 1])),
+    ])
   }, [searchRegex, allSearchResults])
 
   // Fetch layer data when not searching
@@ -76,7 +74,7 @@ export function useSelectedLayerData(): LayerData | undefined {
     let cancelled = false
 
     Promise.all(selectedLayerIds.map(getLayerData))
-      .then(mergeLayers)
+      .then((layers) => mergeLayers(layers.filter((l) => l !== null)))
       .then((result) => {
         if (!cancelled) {
           setLayerData(result)

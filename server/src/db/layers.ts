@@ -11,10 +11,7 @@ function parseLayer(contents: string): Record<string, number | undefined> {
     skipEmptyLines: true,
     dynamicTyping: true,
   })
-  const maxValue = Math.max(...data.map((d) => d.value))
-  return Object.fromEntries(
-    data.map(({date, value}) => [date, Math.pow(value / maxValue, 0.5)]),
-  )
+  return Object.fromEntries(data.map(({date, value}) => [date, value]))
 }
 
 export async function getLayers(sinceMs: number | null): Promise<Array<Layer>> {

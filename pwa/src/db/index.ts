@@ -4,9 +4,8 @@ import {atomWithObservable} from "jotai/utils"
 import {useAtomValue} from "jotai"
 import {Entry, Layer, LayerData, LifeData} from "../types"
 import {authedFetch} from "../helpers/auth"
-import recalculateEntriesLayers from "./recalculateEntriesLayers"
-import {getNextWeekStart, getWeekStart} from "../helpers/dates"
 import getHeadings from "../helpers/getHeadings"
+import getMarkdownWordcount from "../helpers/getMarkdownWordcount"
 import {searchRegexAtom} from "../atoms"
 
 const db = new Dexie("data") as Dexie & {
@@ -121,7 +120,7 @@ export async function sync({fullSync}: {fullSync: boolean}) {
 
   const lastSyncTimestamp = fullSync
     ? null
-    : (await db.config.get("lastSyncTimestamp")) ?? null
+    : ((await db.config.get("lastSyncTimestamp")) ?? null)
 
   const {
     timestamp,
@@ -153,33 +152,24 @@ export async function sync({fullSync}: {fullSync: boolean}) {
         await db.lifeData.put(lifeData, "lifeData")
       }
 
-      for (const entry of entries) {
-        await db.entries.put(entry)
+      const markdownLayerData: LayerData = {
+        ...(await db.layers.get("diary/markdown"))?.data,
       }
 
       for (const entry of entries) {
+        await db.entries.put(entry)
         await db.cachedHeadings.put({
           date: entry.date,
           headings: getHeadings(entry.content),
         })
+        markdownLayerData[entry.date] = getMarkdownWordcount(entry.content)
       }
+
+      await db.layers.put({id: "diary/markdown", data: markdownLayerData})
 
       for (const layer of layers) {
         await db.layers.put(layer)
       }
-
-      await recalculateEntriesLayers({
-        changedWeeks: Array.from(
-          new Set(entries.map((e) => getWeekStart(e.date))),
-        ),
-        getEntriesForWeek: (weekStart) =>
-          db.entries
-            .where("date")
-            .between(weekStart, getNextWeekStart(weekStart))
-            .toArray(),
-        getLayer: (id) => db.layers.get(id),
-        saveLayer: (layer) => db.layers.put(layer),
-      })
 
       await db.config.put(timestamp, "lastSyncTimestamp")
     },

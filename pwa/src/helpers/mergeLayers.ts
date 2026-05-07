@@ -1,28 +1,36 @@
 import {LayerData} from "../types"
+import {getWeekStart} from "./dates"
 
-export default function mergeLayers(
-  layers: Array<LayerData | null>,
-): LayerData | undefined {
+export default function mergeLayers(layers: LayerData[]): LayerData {
   const result: LayerData = {}
 
   for (const layer of layers) {
-    if (!layer) {
+    const weekSums = aggregateToWeekSums(layer)
+    const max = Math.max(0, ...Object.values(weekSums))
+    if (max === 0) {
       continue
     }
 
-    for (const week of Object.keys(layer)) {
-      result[week] = mergeValues(result[week], layer[week])
+    for (const week of Object.keys(weekSums)) {
+      const normalized = Math.pow(weekSums[week]! / max, 0.5)
+      result[week] = clamp((result[week] ?? 0) + normalized)
     }
-  }
-
-  if (Object.keys(result).length === 0) {
-    return undefined
   }
 
   return result
 }
 
-function mergeValues(a: number | undefined, b: number | undefined) {
-  const combined = (a ?? 0) + (b ?? 0)
-  return Math.max(0, Math.min(1, combined))
+function aggregateToWeekSums(layer: LayerData): Record<string, number> {
+  const sums: Record<string, number> = {}
+  for (const date of Object.keys(layer)) {
+    const value = layer[date]
+    if (value === undefined) continue
+    const weekStart = getWeekStart(date)
+    sums[weekStart] = (sums[weekStart] ?? 0) + value
+  }
+  return sums
+}
+
+function clamp(v: number) {
+  return Math.max(0, Math.min(1, v))
 }
