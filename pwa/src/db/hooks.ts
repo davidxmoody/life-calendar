@@ -3,6 +3,7 @@ import {useState, useEffect, useMemo} from "react"
 import {
   getLayerData,
   useAllHeadings,
+  useLayersByIds,
   useSearchResults,
   useEntriesByDates,
 } from "./index"
@@ -151,4 +152,47 @@ export function useSearchMatchData():
 
     return {matchSet, matchList}
   }, [searchRegex, matchingDates, entries])
+}
+
+export interface HabitGraphLayerData {
+  id: string
+  title: string
+  data: LayerData
+}
+
+export function useHabitGraphData(): HabitGraphLayerData[] | undefined {
+  const selectedLayerIds = useAtomValue(selectedLayerIdsAtom)
+  const searchRegex = useAtomValue(searchRegexAtom)
+  const allSearchResults = useSearchResults()
+  const dbLayers = useLayersByIds(selectedLayerIds)
+
+  return useMemo(() => {
+    const result: HabitGraphLayerData[] = []
+
+    if (searchRegex) {
+      if (allSearchResults === undefined) {
+        return undefined
+      }
+      result.push({
+        id: "__search__",
+        title: "search",
+        data: Object.fromEntries(allSearchResults.map((d) => [d, 1])),
+      })
+    }
+
+    if (dbLayers === undefined) {
+      return undefined
+    }
+
+    const layerById = new Map(dbLayers.map((l) => [l.id, l]))
+    for (const id of selectedLayerIds) {
+      result.push({
+        id,
+        title: id,
+        data: layerById.get(id)?.data ?? {},
+      })
+    }
+
+    return result
+  }, [searchRegex, allSearchResults, dbLayers, selectedLayerIds])
 }

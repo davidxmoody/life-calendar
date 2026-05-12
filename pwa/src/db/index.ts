@@ -106,6 +106,16 @@ export function useEntriesByDates(
   }, [key])
 }
 
+export function useLayersByIds(ids: string[]): Layer[] | undefined {
+  const key = ids.join(",")
+  return useLiveQuery(() => {
+    if (ids.length === 0) {
+      return []
+    }
+    return db.layers.where("id").anyOf(ids).toArray()
+  }, [key])
+}
+
 // =============================================================================
 // Async Functions (non-reactive, for imperative operations)
 // =============================================================================

@@ -1,14 +1,16 @@
 import Timeline from "./timeline/Timeline"
 import NavBar from "./nav/NavBar"
 import Calendar from "./calendar/Calendar"
+import HabitGraphs from "./calendar/HabitGraphs"
 import ContentPane from "./content/ContentPane"
 import {Suspense} from "react"
 import {useAtomValue} from "jotai"
-import {mobileViewAtom} from "../atoms"
+import {calendarViewModeAtom, mobileViewAtom} from "../atoms"
 import FirstTimeSetupModal from "./FirstTimeSetupModal"
 
 export default function App() {
   const mobileView = useAtomValue(mobileViewAtom)
+  const calendarViewMode = useAtomValue(calendarViewModeAtom)
 
   return (
     <>
@@ -22,7 +24,7 @@ export default function App() {
                 mobileView === "calendar",
               )}`}
             >
-              <Calendar />
+              {calendarViewMode === "habits" ? <HabitGraphs /> : <Calendar />}
             </div>
 
             <div

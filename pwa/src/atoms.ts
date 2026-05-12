@@ -10,6 +10,13 @@ export const mobileViewAtom = atomWithStorage<MobileView>(
   "calendar",
 )
 
+type CalendarViewMode = "calendar" | "habits"
+
+export const calendarViewModeAtom = atomWithStorage<CalendarViewMode>(
+  "calendarViewMode",
+  "calendar",
+)
+
 export const selectedLayerIdsAtom = atomWithStorage<string[]>(
   "selectedLayerIds",
   [],
