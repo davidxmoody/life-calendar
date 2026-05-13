@@ -2,7 +2,8 @@ import {memo, useMemo} from "react"
 import {Temporal} from "@js-temporal/polyfill"
 import {LayerData} from "../../types"
 
-const EMPTY_BG = "rgb(49, 50, 68)"
+const EMPTY_BG = "#313244"
+const MIN_L = 0.65
 const WEEKS = 52
 
 interface HabitGraphProps {
@@ -72,13 +73,6 @@ interface Cell {
   value: number | undefined
 }
 
-function hexToRgba(hex: string, opacity: number): string {
-  const r = parseInt(hex.slice(1, 3), 16)
-  const g = parseInt(hex.slice(3, 5), 16)
-  const b = parseInt(hex.slice(5, 7), 16)
-  return `rgba(${r}, ${g}, ${b}, ${opacity})`
-}
-
 function DayCell({
   cell,
   baseColor,
@@ -94,7 +88,9 @@ function DayCell({
   const hasValue = v !== undefined && v > 0
   const normalized = hasValue && maxValue > 0 ? Math.pow(v! / maxValue, 0.5) : 0
   const opacity = 0.25 + 0.75 * normalized
-  const bgColor = hasValue ? hexToRgba(baseColor, opacity) : EMPTY_BG
+  const bgColor = hasValue
+    ? `oklch(from ${baseColor} max(l, ${MIN_L}) c h / ${opacity})`
+    : EMPTY_BG
 
   return (
     <div
