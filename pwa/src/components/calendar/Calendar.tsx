@@ -58,7 +58,7 @@ export default memo(function Calendar() {
   )
 
   if (!data) {
-    return <div />
+    return <div style={{width, height}} />
   }
 
   function onClick(e: React.MouseEvent) {
