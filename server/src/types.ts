@@ -5,6 +5,10 @@ export interface Entry {
 
 export interface Layer {
   id: string
+  title: string
+  groupTitle: string
+  color: string
+  order: number
   data: Record<string, number | undefined>
 }
 
