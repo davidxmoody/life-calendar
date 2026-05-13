@@ -175,7 +175,14 @@ export async function sync({fullSync}: {fullSync: boolean}) {
         markdownLayerData[entry.date] = getMarkdownWordcount(entry.content)
       }
 
-      await db.layers.put({id: "diary/markdown", data: markdownLayerData})
+      await db.layers.put({
+        id: "diary/markdown",
+        title: "markdown",
+        groupTitle: "Diary",
+        color: "#A6E3A1",
+        order: 0,
+        data: markdownLayerData,
+      })
 
       for (const layer of layers) {
         await db.layers.put(layer)

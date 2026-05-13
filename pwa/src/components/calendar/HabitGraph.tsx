@@ -2,7 +2,6 @@ import {memo, useMemo} from "react"
 import {Temporal} from "@js-temporal/polyfill"
 import {LayerData} from "../../types"
 
-const DEFAULT_BASE_COLOR = "rgb(166, 227, 161)"
 const EMPTY_BG = "rgb(49, 50, 68)"
 const WEEKS = 52
 
@@ -11,7 +10,7 @@ interface HabitGraphProps {
   data: LayerData
   today: string
   selectedDay: string
-  baseColor?: string
+  baseColor: string
 }
 
 export default memo(function HabitGraph({
@@ -19,7 +18,7 @@ export default memo(function HabitGraph({
   data,
   today,
   selectedDay,
-  baseColor = DEFAULT_BASE_COLOR,
+  baseColor,
 }: HabitGraphProps) {
   const {cells, maxValue} = useMemo(() => {
     const todayPD = Temporal.PlainDate.from(today)
@@ -33,16 +32,10 @@ export default memo(function HabitGraph({
 
     const cells: Cell[] = []
     let cursor = firstWeekStart
-    for (let w = 0; w < WEEKS; w++) {
-      for (let d = 0; d < 7; d++) {
-        const date = cursor.toString()
-        cells.push({
-          date,
-          value: data[date],
-          isFuture: Temporal.PlainDate.compare(cursor, todayPD) > 0,
-        })
-        cursor = cursor.add({days: 1})
-      }
+    while (Temporal.PlainDate.compare(cursor, todayPD) <= 0) {
+      const date = cursor.toString()
+      cells.push({date, value: data[date]})
+      cursor = cursor.add({days: 1})
     }
 
     return {cells, maxValue: max}
@@ -77,7 +70,13 @@ export default memo(function HabitGraph({
 interface Cell {
   date: string
   value: number | undefined
-  isFuture: boolean
+}
+
+function hexToRgba(hex: string, opacity: number): string {
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`
 }
 
 function DayCell({
@@ -91,18 +90,11 @@ function DayCell({
   maxValue: number
   selected: boolean
 }) {
-  if (cell.isFuture) {
-    return <div />
-  }
-
   const v = cell.value
   const hasValue = v !== undefined && v > 0
-  const normalized =
-    hasValue && maxValue > 0 ? Math.pow(v! / maxValue, 0.5) : 0
+  const normalized = hasValue && maxValue > 0 ? Math.pow(v! / maxValue, 0.5) : 0
   const opacity = 0.25 + 0.75 * normalized
-  const bgColor = hasValue
-    ? baseColor.replace(/rgb\(([^)]+)\)/, `rgba($1, ${opacity})`)
-    : EMPTY_BG
+  const bgColor = hasValue ? hexToRgba(baseColor, opacity) : EMPTY_BG
 
   return (
     <div

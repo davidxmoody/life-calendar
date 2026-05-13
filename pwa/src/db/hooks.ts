@@ -157,6 +157,7 @@ export function useSearchMatchData():
 export interface HabitGraphLayerData {
   id: string
   title: string
+  color: string
   data: LayerData
 }
 
@@ -176,6 +177,7 @@ export function useHabitGraphData(): HabitGraphLayerData[] | undefined {
       result.push({
         id: "__search__",
         title: "search",
+        color: "#F9E2AF",
         data: Object.fromEntries(allSearchResults.map((d) => [d, 1])),
       })
     }
@@ -184,15 +186,16 @@ export function useHabitGraphData(): HabitGraphLayerData[] | undefined {
       return undefined
     }
 
-    const layerById = new Map(dbLayers.map((l) => [l.id, l]))
-    for (const id of selectedLayerIds) {
+    const sorted = [...dbLayers].sort((a, b) => a.order - b.order)
+    for (const layer of sorted) {
       result.push({
-        id,
-        title: id,
-        data: layerById.get(id)?.data ?? {},
+        id: layer.id,
+        title: layer.title,
+        color: layer.color,
+        data: layer.data,
       })
     }
 
     return result
-  }, [searchRegex, allSearchResults, dbLayers, selectedLayerIds])
+  }, [searchRegex, allSearchResults, dbLayers])
 }

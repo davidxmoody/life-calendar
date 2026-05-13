@@ -21,9 +21,7 @@ export default memo(function HabitGraphs() {
   const height = windowSize.height - NAV_BAR_HEIGHT_PX
 
   function onClick(e: React.MouseEvent) {
-    const target = (e.target as HTMLElement).closest<HTMLElement>(
-      "[data-date]",
-    )
+    const target = (e.target as HTMLElement).closest<HTMLElement>("[data-date]")
     if (!target) return
     const date = target.dataset.date!
 
@@ -55,6 +53,7 @@ export default memo(function HabitGraphs() {
             data={habit.data}
             today={today}
             selectedDay={selectedDay}
+            baseColor={habit.color}
           />
         ))
       )}
