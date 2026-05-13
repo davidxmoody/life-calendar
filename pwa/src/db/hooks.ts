@@ -176,7 +176,7 @@ export function useHabitGraphData(): HabitGraphLayerData[] | undefined {
       }
       result.push({
         id: "__search__",
-        title: "search",
+        title: "Search",
         color: "#F9E2AF",
         data: Object.fromEntries(allSearchResults.map((d) => [d, 1])),
       })

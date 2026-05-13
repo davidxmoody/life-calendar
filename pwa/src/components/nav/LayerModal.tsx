@@ -58,7 +58,7 @@ export default function LayerModal(props: Props) {
                   startTransition(() => setSearchRegex(""))
                 }
               />
-              <span className="text-base">search</span>
+              <span className="text-base">Search</span>
             </label>
           </div>
 
@@ -73,7 +73,6 @@ export default function LayerModal(props: Props) {
                   <label className={`${ROW} flex-1`}>
                     <Checkbox
                       className="size-5"
-                      disabled={!!searchRegex}
                       checked={
                         group.someSelected && !group.allSelected
                           ? "indeterminate"
@@ -103,7 +102,6 @@ export default function LayerModal(props: Props) {
                       <label key={layer.id} className={`${ROW} pl-9`}>
                         <Checkbox
                           className="size-5"
-                          disabled={!!searchRegex}
                           checked={layer.isSelected}
                           onCheckedChange={() =>
                             startTransition(() =>
