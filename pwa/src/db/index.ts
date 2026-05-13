@@ -53,6 +53,10 @@ export function useLayerIds(): string[] | undefined {
   return useLiveQuery(() => db.layers.toCollection().primaryKeys())
 }
 
+export function useAllLayers(): Layer[] | undefined {
+  return useLiveQuery(() => db.layers.toArray())
+}
+
 // TODO change to observable for suspense
 export function useLifeData(): LifeData | undefined {
   return useLiveQuery(() => db.lifeData.get("lifeData"))

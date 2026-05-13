@@ -1,7 +1,8 @@
 import {useAtom} from "jotai"
-import {startTransition} from "react"
+import {startTransition, useMemo} from "react"
 import {searchRegexAtom, selectedLayerIdsAtom} from "../../atoms"
-import {useLayerIds} from "../../db"
+import {useAllLayers} from "../../db"
+import {Layer} from "../../types"
 import {
   Accordion,
   AccordionContent,
@@ -16,89 +17,108 @@ interface Props {
   onClose: () => void
 }
 
+const ROW = "flex items-center gap-3 px-2 min-h-11 rounded-md cursor-pointer"
+
 export default function LayerModal(props: Props) {
   const [searchRegex, setSearchRegex] = useAtom(searchRegexAtom)
-  const layerIds = useLayerIds()
+  const allLayers = useAllLayers()
   const [selectedLayerIds, setSelectedLayerIds] = useAtom(selectedLayerIdsAtom)
 
-  const groups = groupLayers(layerIds ?? [], selectedLayerIds)
+  const groups = useMemo(
+    () => groupAndSortLayers(allLayers ?? [], selectedLayerIds),
+    [allLayers, selectedLayerIds],
+  )
 
   const defaultOpen = groups
-    .filter((group) => group.layers.some((l) => l.isSelected))
-    .map((group) => group.groupName)
+    .filter((g) => g.layers.some((l) => l.isSelected))
+    .map((g) => g.groupTitle)
 
   return (
     <Dialog
       open={props.isOpen}
       onOpenChange={(open) => !open && props.onClose()}
     >
-      <DialogContent className="max-w-xs">
+      <DialogContent className="max-w-sm gap-2">
         <DialogHeader>
           <DialogTitle>Layers</DialogTitle>
         </DialogHeader>
-        <div className="pb-4">
+        <div className="max-h-[70vh] overflow-y-auto -mx-2">
           <div
             className="overflow-hidden transition-all duration-400"
             style={{
-              height: searchRegex ? 36 : 0,
+              height: searchRegex ? 44 : 0,
               opacity: searchRegex ? 1 : 0,
             }}
           >
-            <label className="flex items-center gap-2 pl-4 h-9">
+            <label className={ROW}>
               <Checkbox
+                className="size-5"
                 checked={!!searchRegex}
                 onCheckedChange={() =>
                   startTransition(() => setSearchRegex(""))
                 }
               />
-              <span>search</span>
+              <span className="text-base">search</span>
             </label>
           </div>
 
           <Accordion type="multiple" defaultValue={defaultOpen}>
-            {groups.map(({groupName, allSelected, someSelected, layers}) => (
-              <AccordionItem key={groupName} value={groupName}>
-                <div className="flex items-center">
-                  <label className="flex items-center gap-2 pl-4 pr-2">
+            {groups.map((group) => (
+              <AccordionItem
+                key={group.groupTitle}
+                value={group.groupTitle}
+                className="border-b-0"
+              >
+                <div className="flex items-stretch">
+                  <label className={`${ROW} flex-1`}>
                     <Checkbox
+                      className="size-5"
                       disabled={!!searchRegex}
                       checked={
-                        someSelected && !allSelected
+                        group.someSelected && !group.allSelected
                           ? "indeterminate"
-                          : allSelected
+                          : group.allSelected
                       }
                       onCheckedChange={() =>
                         startTransition(() =>
-                          setSelectedLayerIds((existingLayerIds) =>
+                          setSelectedLayerIds((existing) =>
                             toggle(
-                              existingLayerIds,
-                              layers.map((x) => x.layerId),
+                              existing,
+                              group.layers.map((l) => l.id),
                             ),
                           ),
                         )
                       }
                     />
-                    <span>{groupName}</span>
+                    <span className="text-base font-medium">
+                      {group.groupTitle}
+                    </span>
                   </label>
-                  <AccordionTrigger className="flex-1 justify-end py-2" />
+                  <AccordionTrigger className="px-3 py-0 flex-none [&>svg]:size-5" />
                 </div>
 
-                <AccordionContent>
-                  <div className="flex flex-col gap-1 ml-6">
-                    {layers.map(({layerId, layerName, isSelected}) => (
-                      <label key={layerId} className="flex items-center gap-2">
+                <AccordionContent className="pt-0 pb-1">
+                  <div className="flex flex-col">
+                    {group.layers.map((layer) => (
+                      <label key={layer.id} className={`${ROW} pl-9`}>
                         <Checkbox
+                          className="size-5"
                           disabled={!!searchRegex}
-                          checked={isSelected}
+                          checked={layer.isSelected}
                           onCheckedChange={() =>
                             startTransition(() =>
-                              setSelectedLayerIds((existingLayerIds) =>
-                                toggle(existingLayerIds, [layerId]),
+                              setSelectedLayerIds((existing) =>
+                                toggle(existing, [layer.id]),
                               ),
                             )
                           }
                         />
-                        <span>{layerName}</span>
+                        <span
+                          className="inline-block size-4 rounded-sm shrink-0"
+                          style={{backgroundColor: layer.color}}
+                          aria-hidden
+                        />
+                        <span className="text-base">{layer.title}</span>
                       </label>
                     ))}
                   </div>
@@ -116,53 +136,69 @@ function toggle(existing: string[], changed: string[]) {
   if (changed.some((x) => existing.includes(x))) {
     return existing.filter((x) => !changed.includes(x))
   }
-
   return [...existing, ...changed]
 }
 
-function groupLayers(layerIds: string[], selectedLayerIds: string[]) {
-  const groups: Array<{
-    groupName: string
-    allSelected: boolean
-    someSelected: boolean
-    layers: Array<{layerId: string; layerName: string; isSelected: boolean}>
-  }> = []
-
-  for (const layerId of layerIds) {
-    const {groupName, layerName} = decomposeLayerId(layerId)
-
-    const layer = {
-      layerId,
-      layerName,
-      isSelected: selectedLayerIds.includes(layerId),
-    }
-
-    const group = groups.find((g) => g.groupName === groupName)
-    if (group) {
-      group.layers.push(layer)
-      group.allSelected = group.allSelected && layer.isSelected
-      group.someSelected = group.someSelected || layer.isSelected
-    } else {
-      groups.push({
-        groupName,
-        allSelected: layer.isSelected,
-        someSelected: layer.isSelected,
-        layers: [layer],
-      })
-    }
-  }
-
-  return groups
+interface ModalLayer {
+  id: string
+  title: string
+  color: string
+  order: number
+  isSelected: boolean
 }
 
-function decomposeLayerId(layerId: string) {
-  const separatorIndex = layerId.indexOf("/")
-  if (separatorIndex <= 0 || separatorIndex === layerId.length - 1) {
-    return {groupName: "other", layerName: layerId}
+interface ModalGroup {
+  groupTitle: string
+  minOrder: number
+  allSelected: boolean
+  someSelected: boolean
+  layers: ModalLayer[]
+}
+
+function groupAndSortLayers(
+  layers: Layer[],
+  selectedLayerIds: string[],
+): ModalGroup[] {
+  const byTitle = new Map<string, ModalGroup>()
+
+  for (const layer of layers) {
+    const groupTitle = layer.groupTitle ?? "other"
+    const order = layer.order ?? 0
+    const modalLayer: ModalLayer = {
+      id: layer.id,
+      title: layer.title ?? layer.id,
+      color: layer.color ?? "#A6E3A1",
+      order,
+      isSelected: selectedLayerIds.includes(layer.id),
+    }
+
+    let group = byTitle.get(groupTitle)
+    if (!group) {
+      group = {
+        groupTitle,
+        minOrder: order,
+        allSelected: modalLayer.isSelected,
+        someSelected: modalLayer.isSelected,
+        layers: [],
+      }
+      byTitle.set(groupTitle, group)
+    } else {
+      group.minOrder = Math.min(group.minOrder, order)
+      group.allSelected = group.allSelected && modalLayer.isSelected
+      group.someSelected = group.someSelected || modalLayer.isSelected
+    }
+    group.layers.push(modalLayer)
   }
 
-  return {
-    groupName: layerId.slice(0, separatorIndex),
-    layerName: layerId.slice(separatorIndex + 1),
+  const groups = Array.from(byTitle.values())
+  for (const group of groups) {
+    group.layers.sort(
+      (a, b) => a.order - b.order || a.title.localeCompare(b.title),
+    )
   }
+  groups.sort(
+    (a, b) =>
+      a.minOrder - b.minOrder || a.groupTitle.localeCompare(b.groupTitle),
+  )
+  return groups
 }
