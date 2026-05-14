@@ -1,6 +1,7 @@
 import {startTransition, useEffect, useState} from "react"
-import {useAtom} from "jotai"
-import {searchRegexAtom} from "../../atoms"
+import {useAtom, useSetAtom} from "jotai"
+import {searchRegexAtom, selectedLayerIdsAtom} from "../../atoms"
+import {saveSearchLayer} from "../../db"
 import {Button} from "../ui/button"
 import {
   Dialog,
@@ -27,15 +28,25 @@ function isValidRegex(pattern: string) {
 
 export default function SearchModal(props: Props) {
   const [searchRegex, setSearchRegex] = useAtom(searchRegexAtom)
+  const setSelectedLayerIds = useSetAtom(selectedLayerIdsAtom)
   const [inputValue, setInputValue] = useState(searchRegex)
 
   useEffect(() => {
     setInputValue(searchRegex)
   }, [searchRegex, setInputValue])
 
-  function submitSearch() {
+  async function submitSearch() {
+    const term = inputValue
+    if (!term) return
+
+    const {layerId, evictedIds} = await saveSearchLayer(term)
+
     startTransition(() => {
-      setSearchRegex(inputValue)
+      setSearchRegex(term)
+      setSelectedLayerIds((prev) => {
+        const filtered = prev.filter((id) => !evictedIds.includes(id))
+        return filtered.includes(layerId) ? filtered : [...filtered, layerId]
+      })
       props.onClose()
     })
   }
@@ -91,7 +102,7 @@ export default function SearchModal(props: Props) {
             >
               Clear
             </Button>
-            <Button type="submit" disabled={isInvalid}>
+            <Button type="submit" disabled={isInvalid || !inputValue}>
               Search
             </Button>
           </DialogFooter>

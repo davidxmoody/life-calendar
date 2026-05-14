@@ -1,7 +1,6 @@
 import {useAtomValue} from "jotai"
-import {useState, useEffect, useMemo} from "react"
+import {useMemo} from "react"
 import {
-  getLayerData,
   useAllHeadings,
   useLayersByIds,
   useSearchResults,
@@ -48,52 +47,12 @@ export function useTimelineData(
 
 export function useSelectedLayerData(): LayerData | undefined {
   const selectedLayerIds = useAtomValue(selectedLayerIdsAtom)
-  const searchRegex = useAtomValue(searchRegexAtom)
+  const dbLayers = useLayersByIds(selectedLayerIds)
 
-  const allSearchResults = useSearchResults()
-
-  // State for async layer data fetching (non-search mode)
-  const [layerData, setLayerData] = useState<LayerData | undefined>(undefined)
-
-  // When search is active, generate layer from search results
-  const searchLayerData = useMemo(() => {
-    if (!searchRegex || allSearchResults === undefined) {
-      return undefined
-    }
-
-    return mergeLayers([
-      Object.fromEntries(allSearchResults.map((date) => [date, 1])),
-    ])
-  }, [searchRegex, allSearchResults])
-
-  // Fetch layer data when not searching
-  useEffect(() => {
-    if (searchRegex) {
-      return
-    }
-
-    let cancelled = false
-
-    Promise.all(selectedLayerIds.map(getLayerData))
-      .then((layers) => mergeLayers(layers.filter((l) => l !== null)))
-      .then((result) => {
-        if (!cancelled) {
-          setLayerData(result)
-        }
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [selectedLayerIds, searchRegex])
-
-  // When searching, use search layer data
-  if (searchRegex) {
-    return searchLayerData
-  }
-
-  // When not searching, use layer data
-  return layerData
+  return useMemo(() => {
+    if (dbLayers === undefined) return undefined
+    return mergeLayers(dbLayers.map((l) => l.data))
+  }, [dbLayers])
 }
 
 export interface SearchMatch {
@@ -163,39 +122,17 @@ export interface HabitGraphLayerData {
 
 export function useHabitGraphData(): HabitGraphLayerData[] | undefined {
   const selectedLayerIds = useAtomValue(selectedLayerIdsAtom)
-  const searchRegex = useAtomValue(searchRegexAtom)
-  const allSearchResults = useSearchResults()
   const dbLayers = useLayersByIds(selectedLayerIds)
 
   return useMemo(() => {
-    const result: HabitGraphLayerData[] = []
-
-    if (searchRegex) {
-      if (allSearchResults === undefined) {
-        return undefined
-      }
-      result.push({
-        id: "__search__",
-        title: "Search",
-        color: "#F9E2AF",
-        data: Object.fromEntries(allSearchResults.map((d) => [d, 1])),
-      })
-    }
-
-    if (dbLayers === undefined) {
-      return undefined
-    }
+    if (dbLayers === undefined) return undefined
 
     const sorted = [...dbLayers].sort((a, b) => a.order - b.order)
-    for (const layer of sorted) {
-      result.push({
-        id: layer.id,
-        title: layer.title,
-        color: layer.color,
-        data: layer.data,
-      })
-    }
-
-    return result
-  }, [searchRegex, allSearchResults, dbLayers])
+    return sorted.map((layer) => ({
+      id: layer.id,
+      title: layer.title,
+      color: layer.color,
+      data: layer.data,
+    }))
+  }, [dbLayers])
 }

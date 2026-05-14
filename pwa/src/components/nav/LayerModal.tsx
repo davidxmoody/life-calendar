@@ -1,6 +1,6 @@
 import {useAtom} from "jotai"
 import {startTransition, useMemo} from "react"
-import {searchRegexAtom, selectedLayerIdsAtom} from "../../atoms"
+import {selectedLayerIdsAtom} from "../../atoms"
 import {useAllLayers} from "../../db"
 import {Layer} from "../../types"
 import {
@@ -20,7 +20,6 @@ interface Props {
 const ROW = "flex items-center gap-3 px-2 min-h-11 rounded-md cursor-pointer"
 
 export default function LayerModal(props: Props) {
-  const [searchRegex, setSearchRegex] = useAtom(searchRegexAtom)
   const allLayers = useAllLayers()
   const [selectedLayerIds, setSelectedLayerIds] = useAtom(selectedLayerIdsAtom)
 
@@ -43,25 +42,6 @@ export default function LayerModal(props: Props) {
           <DialogTitle>Layers</DialogTitle>
         </DialogHeader>
         <div className="max-h-[70vh] overflow-y-auto -mx-2">
-          <div
-            className="overflow-hidden transition-all duration-400"
-            style={{
-              height: searchRegex ? 44 : 0,
-              opacity: searchRegex ? 1 : 0,
-            }}
-          >
-            <label className={ROW}>
-              <Checkbox
-                className="size-5"
-                checked={!!searchRegex}
-                onCheckedChange={() =>
-                  startTransition(() => setSearchRegex(""))
-                }
-              />
-              <span className="text-base">Search</span>
-            </label>
-          </div>
-
           <Accordion type="multiple" defaultValue={defaultOpen}>
             {groups.map((group) => (
               <AccordionItem

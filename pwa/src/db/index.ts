@@ -123,9 +123,44 @@ export function useLayersByIds(ids: string[]): Layer[] | undefined {
 // Async Functions (non-reactive, for imperative operations)
 // =============================================================================
 
-export async function getLayerData(layerId: string): Promise<LayerData | null> {
-  const layer = await db.layers.get(layerId)
-  return layer?.data ?? null
+const MAX_SEARCH_LAYERS = 10
+
+export async function saveSearchLayer(
+  term: string,
+): Promise<{layerId: string; evictedIds: string[]}> {
+  const id = `search/${term}`
+  const regex = new RegExp(term, "i")
+
+  return db.transaction("rw", [db.entries, db.layers], async () => {
+    const dates = await db.entries
+      .filter((entry) => regex.test(entry.content))
+      .primaryKeys()
+
+    const data: LayerData = Object.fromEntries(dates.map((d) => [d, 1]))
+
+    await db.layers.put({
+      id,
+      title: term,
+      groupTitle: "Search",
+      color: "#F9E2AF",
+      order: -Date.now(),
+      data,
+    })
+
+    const searchLayers = await db.layers
+      .where("id")
+      .startsWith("search/")
+      .toArray()
+
+    searchLayers.sort((a, b) => a.order - b.order)
+    const evicted = searchLayers.slice(MAX_SEARCH_LAYERS)
+    const evictedIds = evicted.map((l) => l.id)
+    if (evictedIds.length > 0) {
+      await db.layers.bulkDelete(evictedIds)
+    }
+
+    return {layerId: id, evictedIds}
+  })
 }
 
 export async function sync({fullSync}: {fullSync: boolean}) {
