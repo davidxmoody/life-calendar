@@ -1,15 +1,9 @@
 import {useAtomValue} from "jotai"
 import {useMemo} from "react"
-import {
-  useAllHeadings,
-  useLayersByIds,
-  useSearchResults,
-  useEntriesByDates,
-} from "./index"
+import {useAllHeadings, useLayersByIds, useSearchResults} from "./index"
 import {searchRegexAtom, selectedLayerIdsAtom} from "../atoms"
 import {Temporal} from "@js-temporal/polyfill"
 import mergeLayers from "../helpers/mergeLayers"
-import splitEntryBySections from "../helpers/splitEntryBySections"
 import {LayerData} from "../types"
 
 export interface DayTimelineData {
@@ -55,62 +49,19 @@ export function useSelectedLayerData(): LayerData | undefined {
   }, [dbLayers])
 }
 
-export interface SearchMatch {
-  date: string
-  headingIndex: number
-  heading: string
-}
-
 export function useSearchMatchData():
-  | {
-      matchSet: Set<string> // "date:headingIndex" keys for O(1) lookup
-      matchList: SearchMatch[] // ordered by date, then headingIndex
-    }
+  | {matchSet: Set<string>; matchList: string[]}
   | undefined {
   const searchRegex = useAtomValue(searchRegexAtom)
   const allSearchResults = useSearchResults()
 
-  const matchingDates = useMemo(() => {
+  return useMemo(() => {
     if (!searchRegex || !allSearchResults || allSearchResults.length === 0) {
       return undefined
     }
-    return [...allSearchResults].sort()
+    const matchList = [...allSearchResults].sort()
+    return {matchSet: new Set(matchList), matchList}
   }, [searchRegex, allSearchResults])
-
-  const entries = useEntriesByDates(matchingDates)
-
-  return useMemo(() => {
-    if (!searchRegex || !matchingDates || !entries) {
-      return undefined
-    }
-
-    const regexObject = new RegExp(searchRegex, "i")
-    const matchSet = new Set<string>()
-    const matchList: SearchMatch[] = []
-
-    // Build a map of entries by date for quick lookup
-    const entryMap = new Map(entries.map((e) => [e.date, e]))
-
-    for (const date of matchingDates) {
-      const entry = entryMap.get(date)
-      if (!entry) continue
-
-      const sections = splitEntryBySections(entry.content)
-      for (let i = 0; i < sections.length; i++) {
-        if (regexObject.test(sections[i].content)) {
-          const key = `${date}:${i}`
-          matchSet.add(key)
-          matchList.push({
-            date,
-            headingIndex: i,
-            heading: sections[i].heading,
-          })
-        }
-      }
-    }
-
-    return {matchSet, matchList}
-  }, [searchRegex, matchingDates, entries])
 }
 
 export interface HabitGraphLayerData {

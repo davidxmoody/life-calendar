@@ -5,7 +5,6 @@ import {
   searchRegexAtom,
   searchMatchCursorAtom,
   selectedDayAtom,
-  contentScrollTargetAtom,
   mobileViewAtom,
 } from "../../atoms"
 import {useSearchMatchData} from "../../db/hooks"
@@ -16,7 +15,6 @@ export default memo(function SearchNavButtons() {
   const searchMatchData = useSearchMatchData()
   const [cursor, setCursor] = useAtom(searchMatchCursorAtom)
   const setSelectedDay = useSetAtom(selectedDayAtom)
-  const setScrollTarget = useSetAtom(contentScrollTargetAtom)
   const setMobileView = useSetAtom(mobileViewAtom)
 
   // Reset cursor when search changes
@@ -38,9 +36,7 @@ export default memo(function SearchNavButtons() {
 
   function navigateTo(index: number) {
     setCursor(index)
-    const match = matchList[index]
-    setSelectedDay(match.date)
-    setScrollTarget(match.headingIndex)
+    setSelectedDay(matchList[index])
     setMobileView("content")
   }
 
