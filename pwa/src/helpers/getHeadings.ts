@@ -1,14 +1,6 @@
-import getMarkdownWordcount from "./getMarkdownWordcount"
-
-function pluralise(count: number, singular: string, plural: string) {
-  return count === 1
-    ? `${count} ${singular}`
-    : `${count.toLocaleString()} ${plural}`
-}
-
 function wordCountLabel(text: string) {
-  const wordcount = getMarkdownWordcount(text)
-  return pluralise(wordcount, "word", "words")
+  const count = text.trim().split(/\s+/).length
+  return count === 1 ? "1 word" : `${count.toLocaleString()} words`
 }
 
 export default function getHeadings(content: string): string[] {

@@ -5,7 +5,6 @@ import {useAtomValue} from "jotai"
 import {Entry, Layer, LayerData, LifeData} from "../types"
 import {authedFetch} from "../helpers/auth"
 import getHeadings from "../helpers/getHeadings"
-import getMarkdownWordcount from "../helpers/getMarkdownWordcount"
 import {searchRegexAtom} from "../atoms"
 
 const db = new Dexie("data") as Dexie & {
@@ -166,27 +165,13 @@ export async function sync({fullSync}: {fullSync: boolean}) {
         await db.lifeData.put(lifeData, "lifeData")
       }
 
-      const markdownLayerData: LayerData = {
-        ...(await db.layers.get("diary/markdown"))?.data,
-      }
-
       for (const entry of entries) {
         await db.entries.put(entry)
         await db.cachedHeadings.put({
           date: entry.date,
           headings: getHeadings(entry.content),
         })
-        markdownLayerData[entry.date] = getMarkdownWordcount(entry.content)
       }
-
-      await db.layers.put({
-        id: "diary/markdown",
-        title: "markdown",
-        groupTitle: "Diary",
-        color: "#A6E3A1",
-        order: 0,
-        data: markdownLayerData,
-      })
 
       for (const layer of layers) {
         await db.layers.put(layer)
