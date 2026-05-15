@@ -6,7 +6,7 @@ import {useLifeData} from "../../db"
 import {
   DayTimelineData,
   useTimelineData,
-  useSearchMatchData,
+  useHabitGraphData,
 } from "../../db/hooks"
 import DayRow from "./DayRow"
 import useToday from "../../helpers/useToday"
@@ -17,7 +17,17 @@ export default memo(function Timeline() {
   const birthDate = lifeData?.birthDate
   const data = useTimelineData(birthDate, today)
   const selectedDay = useAtomValue(selectedDayAtom)
-  const searchMatchData = useSearchMatchData()
+  const habitData = useHabitGraphData()
+  const layers = useMemo(() => {
+    if (!habitData) return []
+    return habitData.map((layer) => {
+      let max = 0
+      for (const v of Object.values(layer.data)) {
+        if (v !== undefined && v > max) max = v
+      }
+      return {...layer, maxValue: max}
+    })
+  }, [habitData])
 
   const virtuosoRef = useRef<VirtuosoHandle>(null)
 
@@ -47,9 +57,9 @@ export default memo(function Timeline() {
 
   const itemContent = useCallback(
     (_index: number, day: DayTimelineData) => (
-      <DayRow day={day} searchMatchSet={searchMatchData?.matchSet} />
+      <DayRow day={day} layers={layers} />
     ),
-    [searchMatchData],
+    [layers],
   )
 
   if (!lifeData || !data || !visibleTimeline.length) {

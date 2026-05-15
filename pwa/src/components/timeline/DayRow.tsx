@@ -8,13 +8,14 @@ import {
 } from "../../atoms"
 import {DayTimelineData} from "../../db/hooks"
 import HighlightedText from "./HighlightedText"
+import LayerSquares, {LayerWithMax} from "./LayerSquares"
 
 interface DayRowProps {
   day: DayTimelineData
-  searchMatchSet?: Set<string>
+  layers: LayerWithMax[]
 }
 
-export default memo(function DayRow({day, searchMatchSet}: DayRowProps) {
+export default memo(function DayRow({day, layers}: DayRowProps) {
   const setSelectedDay = useSetAtom(selectedDayAtom)
   const setScrollTarget = useSetAtom(contentScrollTargetAtom)
   const setMobileView = useSetAtom(mobileViewAtom)
@@ -29,26 +30,25 @@ export default memo(function DayRow({day, searchMatchSet}: DayRowProps) {
     weekday: "short",
   })
 
-  const isMatch = searchMatchSet?.has(day.date)
-
   return (
-    <div
-      className={`px-3 pb-1 ${
-        isMatch ? "border-l-2 border-l-ctp-peach" : ""
-      }`}
-    >
-      <div className="text-xs text-ctp-overlay1 font-mono px-1 pt-1">
-        {dayLabel} {day.date}
-      </div>
-      {(day.headings ?? []).map((heading, headingIndex) => (
-        <div
-          key={headingIndex}
-          className="text-sm cursor-pointer hover:bg-ctp-surface1/50 px-1 rounded"
-          onClick={() => handleHeadingClick(headingIndex)}
-        >
-          <HighlightedText>{heading}</HighlightedText>
+    <div className="px-2 pb-2">
+      <div className="bg-ctp-surface0 rounded-md px-2 py-1.5">
+        <div className="flex items-center justify-between gap-2">
+          <div className="text-sm text-ctp-overlay1 font-mono px-1">
+            {dayLabel} {day.date}
+          </div>
+          <LayerSquares date={day.date} layers={layers} />
         </div>
-      ))}
+        {(day.headings ?? []).map((heading, headingIndex) => (
+          <div
+            key={headingIndex}
+            className="text-base cursor-pointer hover:bg-ctp-surface1/50 px-1 rounded"
+            onClick={() => handleHeadingClick(headingIndex)}
+          >
+            <HighlightedText>{heading}</HighlightedText>
+          </div>
+        ))}
+      </div>
     </div>
   )
 })
