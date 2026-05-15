@@ -1,11 +1,8 @@
-import Dexie, {liveQuery, type EntityTable, type Table} from "dexie"
+import Dexie, {type EntityTable, type Table} from "dexie"
 import {useLiveQuery} from "dexie-react-hooks"
-import {atomWithObservable} from "jotai/utils"
-import {useAtomValue} from "jotai"
 import {Entry, Layer, LayerData, LifeData} from "../types"
 import {authedFetch} from "../helpers/auth"
 import getHeadings from "../helpers/getHeadings"
-import {searchRegexAtom} from "../atoms"
 
 const db = new Dexie("data") as Dexie & {
   entries: EntityTable<Entry, "date">
@@ -26,27 +23,6 @@ db.version(1).stores({
 // =============================================================================
 // Reactive Hooks (using useLiveQuery)
 // =============================================================================
-
-// Shared search results atom - searches all entries matching regex (no bounds)
-const searchResultsAtom = atomWithObservable((get) => {
-  const regex = get(searchRegexAtom)
-
-  return liveQuery(() => {
-    if (!regex) {
-      return [] as string[]
-    }
-
-    const regexObject = new RegExp(regex, "i")
-
-    return db.entries
-      .filter((entry) => regexObject.test(entry.content))
-      .primaryKeys()
-  })
-})
-
-export function useSearchResults(): string[] | undefined {
-  return useAtomValue(searchResultsAtom)
-}
 
 export function useLayerIds(): string[] | undefined {
   return useLiveQuery(() => db.layers.toCollection().primaryKeys())

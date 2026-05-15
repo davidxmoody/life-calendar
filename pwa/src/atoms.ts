@@ -45,5 +45,3 @@ export const selectedWeekStartAtom = atom(
 export const searchRegexAtom = atomWithStorage<string>("searchRegex", "")
 
 export const contentScrollTargetAtom = atom<number | null>(null)
-
-export const searchMatchCursorAtom = atom<number | null>(null)

@@ -1,7 +1,7 @@
 import {useAtomValue} from "jotai"
 import {useMemo} from "react"
-import {useAllHeadings, useLayersByIds, useSearchResults} from "./index"
-import {searchRegexAtom, selectedLayerIdsAtom} from "../atoms"
+import {useAllHeadings, useLayersByIds} from "./index"
+import {selectedLayerIdsAtom} from "../atoms"
 import {Temporal} from "@js-temporal/polyfill"
 import mergeLayers from "../helpers/mergeLayers"
 import {LayerData} from "../types"
@@ -47,21 +47,6 @@ export function useSelectedLayerData(): LayerData | undefined {
     if (dbLayers === undefined) return undefined
     return mergeLayers(dbLayers.map((l) => l.data))
   }, [dbLayers])
-}
-
-export function useSearchMatchData():
-  | {matchSet: Set<string>; matchList: string[]}
-  | undefined {
-  const searchRegex = useAtomValue(searchRegexAtom)
-  const allSearchResults = useSearchResults()
-
-  return useMemo(() => {
-    if (!searchRegex || !allSearchResults || allSearchResults.length === 0) {
-      return undefined
-    }
-    const matchList = [...allSearchResults].sort()
-    return {matchSet: new Set(matchList), matchList}
-  }, [searchRegex, allSearchResults])
 }
 
 export interface HabitGraphLayerData {
