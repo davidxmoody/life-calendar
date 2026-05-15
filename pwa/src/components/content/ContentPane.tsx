@@ -3,7 +3,7 @@ import {useAtom, useAtomValue} from "jotai"
 import {selectedDayAtom, contentScrollTargetAtom} from "../../atoms"
 import {useEntry} from "../../db"
 import {Temporal} from "@js-temporal/polyfill"
-import Markdown from "../timeline/Markdown"
+import Markdown from "./Markdown"
 
 function prettyFormatDateTime({
   date,

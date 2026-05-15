@@ -7,7 +7,7 @@ import {
   mobileViewAtom,
 } from "../../atoms"
 import {DayTimelineData} from "../../db/hooks"
-import HighlightedText from "./HighlightedText"
+import HighlightedText from "../HighlightedText"
 import LayerSquares, {LayerWithMax} from "./LayerSquares"
 
 interface DayRowProps {

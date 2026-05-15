@@ -1,7 +1,7 @@
 import {visit} from "unist-util-visit"
 import type {Plugin} from "unified"
 import type {Root} from "mdast"
-import {createAuthedUrl} from "./auth"
+import {createAuthedUrl} from "../../../helpers/auth"
 
 const VIDEO_EXTENSIONS = /\.(mp4|webm|mov|avi|mkv)$/i
 const AUDIO_EXTENSIONS = /\.(mp3|m4a|wav|ogg)$/i

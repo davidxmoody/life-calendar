@@ -1,6 +1,6 @@
 import {useAtomValue} from "jotai"
 import {Children, Fragment} from "react"
-import {searchRegexAtom} from "../../atoms"
+import {searchRegexAtom} from "../atoms"
 
 interface Props {
   as?: React.ElementType<{children: React.ReactNode}>

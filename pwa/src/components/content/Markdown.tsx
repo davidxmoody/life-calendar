@@ -2,7 +2,7 @@ import {memo, createContext, useContext, useRef, startTransition} from "react"
 import ReactMarkdown, {Components} from "react-markdown"
 import remarkGfm from "remark-gfm"
 import {useSetAtom} from "jotai"
-import HighlightedText from "./HighlightedText"
+import HighlightedText from "../HighlightedText"
 import {Checkbox} from "../ui/checkbox"
 import {
   Table,
@@ -12,9 +12,9 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table"
-import remarkSplitLists from "../../helpers/remarkSplitLists"
-import remarkMedia from "../../helpers/remarkMedia"
-import remarkDateLinks from "../../helpers/remarkDateLinks"
+import remarkSplitLists from "./remark/remarkSplitLists"
+import remarkMedia from "./remark/remarkMedia"
+import remarkDateLinks from "./remark/remarkDateLinks"
 import {selectedDayAtom} from "../../atoms"
 
 const HeadingCounterContext = createContext<React.RefObject<number> | null>(
