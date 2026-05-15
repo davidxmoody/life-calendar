@@ -1,13 +1,9 @@
-import {memo, useCallback, useEffect, useMemo, useRef} from "react"
+import {memo, useLayoutEffect, useMemo, useRef} from "react"
 import {useAtomValue} from "jotai"
-import {Virtuoso, VirtuosoHandle} from "react-virtuoso"
+import {VList, VListHandle} from "virtua"
 import {selectedDayAtom} from "../../atoms"
 import {useLifeData} from "../../db"
-import {
-  DayTimelineData,
-  useTimelineData,
-  useHabitGraphData,
-} from "../../db/hooks"
+import {useTimelineData, useHabitGraphData} from "../../db/hooks"
 import DayRow from "./DayRow"
 import useToday from "../../helpers/useToday"
 
@@ -29,51 +25,43 @@ export default memo(function Timeline() {
     })
   }, [habitData])
 
-  const virtuosoRef = useRef<VirtuosoHandle>(null)
+  const ref = useRef<VListHandle>(null)
+  const visibleTimeline = data
 
-  const visibleTimeline = data ?? []
-
-  // Find initial index for selected day
-  const initialIndex = useMemo(() => {
-    if (!visibleTimeline.length) return 0
-    const idx = visibleTimeline.findIndex((d) => d.date >= selectedDay)
-    return idx >= 0 ? idx : visibleTimeline.length - 1
+  // Estimate average row size so virtua's initial scroll offset (and
+  // unmeasured-row placeholders) land close to the real positions.
+  const estimatedItemSize = useMemo(() => {
+    if (!visibleTimeline?.length) return 48
+    let totalHeadings = 0
+    for (const d of visibleTimeline) {
+      totalHeadings += d.headings?.length ?? 0
+    }
+    const avg = totalHeadings / visibleTimeline.length
+    return Math.round(36 + avg * 28)
   }, [visibleTimeline])
 
   // TODO this doesn't work, fix it
-  // When selectedDay changes (from calendar), scroll to that day
-  useEffect(() => {
-    if (!virtuosoRef.current || !visibleTimeline.length) return
-
-    const idx = visibleTimeline.findIndex((d) => d.date === selectedDay)
-    if (idx >= 0) {
-      virtuosoRef.current.scrollToIndex({
-        index: idx,
-        align: "start",
-        behavior: "auto",
-      })
-    }
+  // Scroll to selectedDay on mount and when it changes (e.g. from calendar).
+  // useLayoutEffect runs before paint so the initial scroll has no flash.
+  useLayoutEffect(() => {
+    if (!ref.current || !visibleTimeline?.length) return
+    const idx = visibleTimeline.findIndex((d) => d.date >= selectedDay)
+    const target = idx >= 0 ? idx : visibleTimeline.length - 1
+    ref.current.scrollToIndex(target, {align: "start"})
   }, [selectedDay, visibleTimeline])
 
-  const itemContent = useCallback(
-    (_index: number, day: DayTimelineData) => (
-      <DayRow day={day} layers={layers} />
-    ),
-    [layers],
-  )
-
-  if (!lifeData || !data || !visibleTimeline.length) {
+  if (!lifeData || !visibleTimeline || !visibleTimeline.length) {
     return null
   }
 
   return (
-    <Virtuoso
-      ref={virtuosoRef}
+    <VList
+      ref={ref}
+      style={{height: "100%"}}
+      itemSize={estimatedItemSize}
       data={visibleTimeline}
-      initialTopMostItemIndex={initialIndex}
-      itemContent={itemContent}
-      overscan={200}
-      className="h-full"
-    />
+    >
+      {(day) => <DayRow day={day} layers={layers} />}
+    </VList>
   )
 })
