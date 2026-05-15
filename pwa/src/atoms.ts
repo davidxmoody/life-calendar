@@ -44,4 +44,9 @@ export const selectedWeekStartAtom = atom(
 
 export const searchRegexAtom = atomWithStorage<string>("searchRegex", "")
 
-export const contentScrollTargetAtom = atom<number | null>(null)
+export interface ContentScrollTarget {
+  date: string
+  headingIndex: number
+}
+
+export const contentScrollTargetAtom = atom<ContentScrollTarget | null>(null)

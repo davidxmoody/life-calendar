@@ -1,4 +1,4 @@
-import {memo, createContext, useContext, useRef, startTransition} from "react"
+import {memo, startTransition} from "react"
 import ReactMarkdown, {Components} from "react-markdown"
 import remarkGfm from "remark-gfm"
 import {useSetAtom} from "jotai"
@@ -15,19 +15,14 @@ import {
 import remarkSplitLists from "./remark/remarkSplitLists"
 import remarkMedia from "./remark/remarkMedia"
 import remarkDateLinks from "./remark/remarkDateLinks"
+import remarkHeadingIds from "./remark/remarkHeadingIds"
 import {selectedDayAtom} from "../../atoms"
 
-const HeadingCounterContext = createContext<React.RefObject<number> | null>(
-  null,
-)
-
 function MarkdownHeading(props: {
+  id?: string
   node?: {tagName: string}
   children?: React.ReactNode
 }) {
-  const counterRef = useContext(HeadingCounterContext)
-  const index = counterRef ? counterRef.current++ : 0
-
   const sizeClass =
     {h1: "text-4xl", h2: "text-4xl", h3: "text-2xl"}[
       props.node?.tagName ?? ""
@@ -35,7 +30,7 @@ function MarkdownHeading(props: {
 
   return (
     <h3
-      id={`heading-${index}`}
+      id={props.id}
       className={`${sizeClass} font-bold mb-4 text-pretty scroll-mt-16`}
     >
       <HighlightedText>{props.children}</HighlightedText>
@@ -246,22 +241,18 @@ const components: Components = {
 }
 
 export default memo(function Markdown(props: {source: string; date: string}) {
-  const counterRef = useRef(0)
-  counterRef.current = 0
-
   return (
-    <HeadingCounterContext.Provider value={counterRef}>
-      <ReactMarkdown
-        remarkPlugins={[
-          remarkGfm,
-          remarkSplitLists,
-          remarkMedia(props.date),
-          remarkDateLinks,
-        ]}
-        components={components}
-      >
-        {props.source}
-      </ReactMarkdown>
-    </HeadingCounterContext.Provider>
+    <ReactMarkdown
+      remarkPlugins={[
+        remarkGfm,
+        remarkSplitLists,
+        remarkMedia(props.date),
+        remarkDateLinks,
+        remarkHeadingIds,
+      ]}
+      components={components}
+    >
+      {props.source}
+    </ReactMarkdown>
   )
 })

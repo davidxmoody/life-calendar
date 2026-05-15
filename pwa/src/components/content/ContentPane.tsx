@@ -42,10 +42,10 @@ export default memo(function ContentPane() {
   // Scroll-to-heading effect
   useEffect(() => {
     if (scrollTarget === null) return
-    if (!entry) return
+    if (!entry || entry.date !== scrollTarget.date) return
 
     const element = containerRef.current?.querySelector(
-      `#heading-${scrollTarget}`,
+      `#heading-${scrollTarget.headingIndex}`,
     )
     if (element) {
       element.scrollIntoView({block: "start"})

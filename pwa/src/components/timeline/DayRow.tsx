@@ -22,7 +22,7 @@ export default memo(function DayRow({day, layers}: DayRowProps) {
 
   function handleHeadingClick(headingIndex: number) {
     setSelectedDay(day.date)
-    setScrollTarget(headingIndex)
+    setScrollTarget({date: day.date, headingIndex})
     setMobileView("content")
   }
 
