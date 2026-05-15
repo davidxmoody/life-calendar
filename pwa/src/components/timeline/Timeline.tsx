@@ -40,14 +40,23 @@ export default memo(function Timeline() {
     return Math.round(36 + avg * 28)
   }, [visibleTimeline])
 
-  // TODO this doesn't work, fix it
   // Scroll to selectedDay on mount and when it changes (e.g. from calendar).
-  // useLayoutEffect runs before paint so the initial scroll has no flash.
+  // Skip scrolling if the target row is already fully visible, otherwise
+  // center it. useLayoutEffect runs before paint so the initial scroll has
+  // no flash.
   useLayoutEffect(() => {
     if (!ref.current || !visibleTimeline?.length) return
     const idx = visibleTimeline.findIndex((d) => d.date >= selectedDay)
     const target = idx >= 0 ? idx : visibleTimeline.length - 1
-    ref.current.scrollToIndex(target, {align: "start"})
+
+    const itemTop = ref.current.getItemOffset(target)
+    const itemBottom = itemTop + ref.current.getItemSize(target)
+    const viewTop = ref.current.scrollOffset
+    const viewBottom = viewTop + ref.current.viewportSize
+
+    if (itemTop >= viewTop && itemBottom <= viewBottom) return
+
+    ref.current.scrollToIndex(target, {align: "center"})
   }, [selectedDay, visibleTimeline])
 
   if (!lifeData || !visibleTimeline || !visibleTimeline.length) {
@@ -61,7 +70,13 @@ export default memo(function Timeline() {
       itemSize={estimatedItemSize}
       data={visibleTimeline}
     >
-      {(day) => <DayRow day={day} layers={layers} />}
+      {(day) => (
+        <DayRow
+          day={day}
+          layers={layers}
+          isSelected={day.date === selectedDay}
+        />
+      )}
     </VList>
   )
 })

@@ -13,9 +13,10 @@ import LayerSquares, {LayerWithMax} from "./LayerSquares"
 interface DayRowProps {
   day: DayTimelineData
   layers: LayerWithMax[]
+  isSelected: boolean
 }
 
-export default memo(function DayRow({day, layers}: DayRowProps) {
+export default memo(function DayRow({day, layers, isSelected}: DayRowProps) {
   const setSelectedDay = useSetAtom(selectedDayAtom)
   const setScrollTarget = useSetAtom(contentScrollTargetAtom)
   const setMobileView = useSetAtom(mobileViewAtom)
@@ -32,7 +33,11 @@ export default memo(function DayRow({day, layers}: DayRowProps) {
 
   return (
     <div className="px-2 pb-2">
-      <div className="bg-ctp-surface0 rounded-md px-2 py-1.5">
+      <div
+        className={`bg-ctp-surface0 rounded-md px-2 py-1.5 border-l-4 ${
+          isSelected ? "border-ctp-sapphire" : "border-transparent"
+        }`}
+      >
         <div className="flex items-center justify-between gap-2">
           <div className="text-sm text-ctp-overlay1 font-mono px-1">
             {dayLabel} {day.date}
