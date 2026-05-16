@@ -3,22 +3,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-body {
-  overflow-y: scroll;
-  margin: 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  white-space: pre-wrap;
-  font-family:
-    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
-}
-
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -88,71 +72,37 @@ code {
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.21 0.006 285.885);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.705 0.015 286.067);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.21 0.006 285.885);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.705 0.015 286.067);
-}
-
-.dark {
-  --background: #1e1e2e;
-  --foreground: #cdd6f4;
-  --card: #313244;
-  --card-foreground: #cdd6f4;
-  --popover: #313244;
-  --popover-foreground: #cdd6f4;
-  --primary: #89b4fa;
-  --primary-foreground: #11111b;
-  --secondary: #313244;
-  --secondary-foreground: #cdd6f4;
-  --muted: #313244;
-  --muted-foreground: #7f849c;
-  --accent: #45475a;
-  --accent-foreground: #cdd6f4;
-  --destructive: #f38ba8;
-  --border: #45475a;
-  --input: #45475a;
-  --ring: #b4befe;
-  --chart-1: #89b4fa;
-  --chart-2: #94e2d5;
-  --chart-3: #f9e2af;
-  --chart-4: #cba6f7;
-  --chart-5: #fab387;
-  --sidebar: #181825;
-  --sidebar-foreground: #cdd6f4;
-  --sidebar-primary: #89b4fa;
-  --sidebar-primary-foreground: #11111b;
-  --sidebar-accent: #313244;
-  --sidebar-accent-foreground: #cdd6f4;
-  --sidebar-border: #45475a;
-  --sidebar-ring: #b4befe;
+  --background: var(--color-ctp-base);
+  --foreground: var(--color-ctp-text);
+  --card: var(--color-ctp-surface0);
+  --card-foreground: var(--color-ctp-text);
+  --popover: var(--color-ctp-surface0);
+  --popover-foreground: var(--color-ctp-text);
+  --primary: var(--color-ctp-blue);
+  --primary-foreground: var(--color-ctp-crust);
+  --secondary: var(--color-ctp-surface0);
+  --secondary-foreground: var(--color-ctp-text);
+  --muted: var(--color-ctp-surface0);
+  --muted-foreground: var(--color-ctp-overlay1);
+  --accent: var(--color-ctp-surface1);
+  --accent-foreground: var(--color-ctp-text);
+  --destructive: var(--color-ctp-red);
+  --border: var(--color-ctp-surface1);
+  --input: var(--color-ctp-surface1);
+  --ring: var(--color-ctp-lavender);
+  --chart-1: var(--color-ctp-blue);
+  --chart-2: var(--color-ctp-teal);
+  --chart-3: var(--color-ctp-yellow);
+  --chart-4: var(--color-ctp-mauve);
+  --chart-5: var(--color-ctp-peach);
+  --sidebar: var(--color-ctp-mantle);
+  --sidebar-foreground: var(--color-ctp-text);
+  --sidebar-primary: var(--color-ctp-blue);
+  --sidebar-primary-foreground: var(--color-ctp-crust);
+  --sidebar-accent: var(--color-ctp-surface0);
+  --sidebar-accent-foreground: var(--color-ctp-text);
+  --sidebar-border: var(--color-ctp-surface1);
+  --sidebar-ring: var(--color-ctp-lavender);
 }
 
 @layer base {

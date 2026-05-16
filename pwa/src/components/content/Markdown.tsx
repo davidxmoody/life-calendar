@@ -145,7 +145,7 @@ function MarkdownListItem(props: {children?: React.ReactNode}) {
 
 function MarkdownPre(props: {children?: React.ReactNode}) {
   return (
-    <pre className="mb-5 bg-ctp-surface1 rounded-sm py-2 px-3">
+    <pre className="mb-5 bg-ctp-surface1 rounded-sm py-2 px-3 whitespace-pre-wrap">
       {props.children}
     </pre>
   )
@@ -153,7 +153,7 @@ function MarkdownPre(props: {children?: React.ReactNode}) {
 
 function MarkdownCode(props: {inline?: boolean; children?: React.ReactNode}) {
   return (
-    <code className="bg-ctp-surface1 rounded-sm">
+    <code className="bg-ctp-surface1 rounded-sm whitespace-pre-wrap">
       <HighlightedText>{props.children}</HighlightedText>
     </code>
   )
