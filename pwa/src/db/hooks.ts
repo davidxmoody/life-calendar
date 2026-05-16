@@ -63,7 +63,9 @@ export function useHabitGraphData(): HabitGraphLayerData[] | undefined {
   return useMemo(() => {
     if (dbLayers === undefined) return undefined
 
-    const sorted = [...dbLayers].sort((a, b) => a.order - b.order)
+    const sorted = [...dbLayers].sort(
+      (a, b) => a.groupTitle.localeCompare(b.groupTitle) || a.order - b.order,
+    )
     return sorted.map((layer) => ({
       id: layer.id,
       title: layer.title,
