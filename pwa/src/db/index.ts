@@ -139,8 +139,14 @@ export async function saveSearchLayer(
   })
 }
 
-export async function sync({fullSync}: {fullSync: boolean}) {
-  await authedFetch("/ping", {timeoutMs: 1000})
+export async function sync({
+  fullSync,
+  remoteUrl,
+}: {
+  fullSync: boolean
+  remoteUrl?: string
+}) {
+  await authedFetch("/ping", {timeoutMs: 1000, remoteUrl})
 
   const lastSyncTimestamp = fullSync
     ? null
@@ -158,6 +164,7 @@ export async function sync({fullSync}: {fullSync: boolean}) {
     lifeData: LifeData | null
   } = await authedFetch(
     `/sync${lastSyncTimestamp ? `?sinceMs=${lastSyncTimestamp}` : ""}`,
+    {remoteUrl},
   ).then((res) => res.json())
 
   await db.transaction(

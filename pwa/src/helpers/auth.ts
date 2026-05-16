@@ -8,29 +8,39 @@ function getAuthToken(): string {
   return authToken
 }
 
-function getRemoteUrl(): string {
-  const remoteUrl: string | undefined = localStorage.REMOTE_URL
+function resolveRemoteUrl(override?: string): string {
+  const remoteUrl = override ?? (localStorage.REMOTE_URL as string | undefined)
   if (!remoteUrl) {
     throw new Error("Remote URL has not been set")
   }
   return remoteUrl
 }
 
-export function createAuthedUrl(path: string): string {
-  return `${getRemoteUrl()}${path}?token=${getAuthToken()}`
+export function createAuthedUrl(path: string, remoteUrl?: string): string {
+  return `${resolveRemoteUrl(remoteUrl)}${path}?token=${getAuthToken()}`
+}
+
+export class HttpError extends Error {
+  constructor(public status: number) {
+    super(`Request failed with status ${status}`)
+  }
 }
 
 export async function authedFetch(
   path: string,
-  options: {timeoutMs: number} = {timeoutMs: 120000},
+  options: {timeoutMs?: number; remoteUrl?: string} = {},
 ): Promise<Response> {
+  const {timeoutMs = 120000, remoteUrl} = options
   const controller = new AbortController()
-  const id = setTimeout(() => controller.abort(), options.timeoutMs)
-  const response = await fetch(`${getRemoteUrl()}${path}`, {
+  const id = setTimeout(() => controller.abort(), timeoutMs)
+  const response = await fetch(`${resolveRemoteUrl(remoteUrl)}${path}`, {
     headers: {token: getAuthToken()},
     signal: controller.signal,
   })
   clearTimeout(id)
+  if (!response.ok) {
+    throw new HttpError(response.status)
+  }
   return response
 }
 
@@ -43,15 +53,10 @@ export function useRemoteUrl(): [string | null, (value: string) => void] {
     (localStorage.REMOTE_URL as string | undefined) || null,
   )
 
-  const setRemoteUrlWithStorage = useCallback(
-    (value: string) => {
-      if (isValidRemoteUrl(value)) {
-        localStorage.REMOTE_URL = value
-        setRemoteUrl(value)
-      }
-    },
-    [setRemoteUrl],
-  )
+  const setRemoteUrlWithStorage = useCallback((value: string) => {
+    localStorage.REMOTE_URL = value
+    setRemoteUrl(value)
+  }, [])
 
   return [remoteUrl, setRemoteUrlWithStorage]
 }

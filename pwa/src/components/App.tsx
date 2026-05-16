@@ -6,45 +6,56 @@ import ContentPane from "./content/ContentPane"
 import {Suspense} from "react"
 import {useAtomValue} from "jotai"
 import {calendarViewModeAtom, mobileViewAtom} from "../atoms"
-import FirstTimeSetupModal from "./FirstTimeSetupModal"
+import FirstTimeSetupScreen from "./FirstTimeSetupScreen"
+import {useRemoteUrl} from "../helpers/auth"
+import {sync} from "../db"
 
 export default function App() {
   const mobileView = useAtomValue(mobileViewAtom)
   const calendarViewMode = useAtomValue(calendarViewModeAtom)
+  const [remoteUrl, setRemoteUrl] = useRemoteUrl()
+
+  if (!remoteUrl) {
+    return (
+      <FirstTimeSetupScreen
+        onSubmit={async (url) => {
+          await sync({fullSync: true, remoteUrl: url})
+          setRemoteUrl(url)
+        }}
+      />
+    )
+  }
 
   return (
-    <>
-      <Suspense>
-        <div className="flex h-screen flex-col">
-          <NavBar />
+    <Suspense>
+      <div className="flex h-screen flex-col">
+        <NavBar />
 
-          <div className="flex flex-1 overflow-hidden relative">
-            <div
-              className={`flex-none ${mobileVisibility(
-                mobileView === "calendar",
-              )}`}
-            >
-              {calendarViewMode === "habits" ? <HabitGraphs /> : <Calendar />}
-            </div>
+        <div className="flex flex-1 overflow-hidden relative">
+          <div
+            className={`flex-none ${mobileVisibility(
+              mobileView === "calendar",
+            )}`}
+          >
+            {calendarViewMode === "habits" ? <HabitGraphs /> : <Calendar />}
+          </div>
 
-            <div
-              className={`flex-1 max-w-sm border-r border-ctp-surface1 ${mobileVisibility(
-                mobileView === "timeline",
-              )}`}
-            >
-              <Timeline />
-            </div>
+          <div
+            className={`flex-1 max-w-sm border-r border-ctp-surface1 ${mobileVisibility(
+              mobileView === "timeline",
+            )}`}
+          >
+            <Timeline />
+          </div>
 
-            <div
-              className={`flex-1 ${mobileVisibility(mobileView === "content")}`}
-            >
-              <ContentPane />
-            </div>
+          <div
+            className={`flex-1 ${mobileVisibility(mobileView === "content")}`}
+          >
+            <ContentPane />
           </div>
         </div>
-      </Suspense>
-      <FirstTimeSetupModal />
-    </>
+      </div>
+    </Suspense>
   )
 }
 
