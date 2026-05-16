@@ -66,6 +66,7 @@ export default memo(function Timeline() {
   return (
     <VList
       ref={ref}
+      className="no-scrollbar"
       style={{height: "100%"}}
       itemSize={estimatedItemSize}
       data={visibleTimeline}
