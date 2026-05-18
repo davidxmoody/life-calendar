@@ -4,7 +4,6 @@ import {LayerData} from "../../types"
 
 const EMPTY_BG = "#313244"
 const MIN_L = 0.65
-const WEEKS = 52
 
 interface HabitGraphProps {
   title: string
@@ -12,6 +11,9 @@ interface HabitGraphProps {
   today: string
   selectedDay: string
   baseColor: string
+  firstWeekStart: string
+  weeks: number
+  isAtToday: boolean
 }
 
 export default memo(function HabitGraph({
@@ -20,27 +22,34 @@ export default memo(function HabitGraph({
   today,
   selectedDay,
   baseColor,
+  firstWeekStart,
+  weeks,
+  isAtToday,
 }: HabitGraphProps) {
   const {cells, maxValue} = useMemo(() => {
+    const firstWeekPD = Temporal.PlainDate.from(firstWeekStart)
     const todayPD = Temporal.PlainDate.from(today)
-    const currentWeekStart = todayPD.subtract({days: todayPD.dayOfWeek - 1})
-    const firstWeekStart = currentWeekStart.subtract({weeks: WEEKS - 1})
 
     let max = 0
     for (const v of Object.values(data)) {
       if (v !== undefined && v > max) max = v
     }
 
+    const totalDays = weeks * 7
     const cells: Cell[] = []
-    let cursor = firstWeekStart
-    while (Temporal.PlainDate.compare(cursor, todayPD) <= 0) {
-      const date = cursor.toString()
+    for (let i = 0; i < totalDays; i++) {
+      const d = firstWeekPD.add({days: i})
+      if (Temporal.PlainDate.compare(d, todayPD) > 0) continue
+      const date = d.toString()
       cells.push({date, value: data[date]})
-      cursor = cursor.add({days: 1})
     }
 
     return {cells, maxValue: max}
-  }, [data, today])
+  }, [data, today, firstWeekStart, weeks])
+
+  const maskImage = isAtToday
+    ? "linear-gradient(to right, transparent 0%, black 8%, black 100%)"
+    : "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)"
 
   return (
     <div>
@@ -48,10 +57,12 @@ export default memo(function HabitGraph({
       <div
         className="grid gap-px"
         style={{
-          gridTemplateColumns: `repeat(${WEEKS}, minmax(0, 1fr))`,
+          gridTemplateColumns: `repeat(${weeks}, minmax(0, 1fr))`,
           gridTemplateRows: "repeat(7, minmax(0, 1fr))",
           gridAutoFlow: "column",
-          aspectRatio: `${WEEKS} / 7`,
+          aspectRatio: `${weeks} / 7`,
+          maskImage,
+          WebkitMaskImage: maskImage,
         }}
       >
         {cells.map((cell) => (
