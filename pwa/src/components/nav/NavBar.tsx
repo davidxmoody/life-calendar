@@ -1,6 +1,4 @@
 import {memo} from "react"
-import CalendarViewToggle from "./CalendarViewToggle"
-import LayerButton from "./LayerButton"
 import SyncButton from "./SyncButton"
 import MobileViewSwitcher from "./MobileViewSwitcher"
 import SearchButton from "./SearchButton"
@@ -17,8 +15,6 @@ export default memo(function NavBar() {
       <div className="md:hidden">
         <MobileViewSwitcher />
       </div>
-      <LayerButton />
-      <CalendarViewToggle />
 
       <div className="flex-1" />
 

@@ -11,14 +11,19 @@ export default memo(function CalendarViewToggle() {
   return (
     <Button
       variant="nav"
-      size="icon-lg"
-      aria-label={isHabits ? "Show calendar view" : "Show habits view"}
+      size="lg"
       onClick={() => setMode(isHabits ? "calendar" : "habits")}
     >
       {isHabits ? (
-        <LayoutGrid className="size-5" />
+        <>
+          <LayoutGrid className="size-5" />
+          Calendar
+        </>
       ) : (
-        <Activity className="size-5" />
+        <>
+          <Activity className="size-5" />
+          Habits
+        </>
       )}
     </Button>
   )

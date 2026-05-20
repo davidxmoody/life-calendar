@@ -1,6 +1,7 @@
 import {memo} from "react"
 import {ChevronLeft, ChevronRight} from "lucide-react"
 import {Button} from "@/components/ui/button"
+import {LEFT_COLUMN_HEADER_HEIGHT_PX} from "./LeftColumnHeader"
 
 interface Props {
   rangeStart: string
@@ -18,7 +19,10 @@ export default memo(function HabitGraphControl({
   rightDisabled,
 }: Props) {
   return (
-    <div className="flex items-center justify-between gap-2">
+    <div
+      className="sticky z-10 flex items-center justify-between gap-2 px-2 py-1 bg-ctp-base border-b border-ctp-surface1"
+      style={{top: LEFT_COLUMN_HEADER_HEIGHT_PX}}
+    >
       <Button
         variant="ghost"
         size="icon-lg"

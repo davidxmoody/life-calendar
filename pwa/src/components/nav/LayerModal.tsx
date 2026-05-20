@@ -1,6 +1,5 @@
-import {useAtom} from "jotai"
+import {PrimitiveAtom, useAtom} from "jotai"
 import {startTransition, useMemo} from "react"
-import {selectedLayerIdsAtom} from "../../atoms"
 import {useAllLayers} from "../../db"
 import {Layer} from "../../types"
 import {
@@ -15,13 +14,14 @@ import {Dialog, DialogContent, DialogHeader, DialogTitle} from "../ui/dialog"
 interface Props {
   isOpen: boolean
   onClose: () => void
+  layerIdsAtom: PrimitiveAtom<string[]>
 }
 
 const ROW = "flex items-center gap-3 px-2 min-h-11 rounded-md cursor-pointer"
 
 export default function LayerModal(props: Props) {
   const allLayers = useAllLayers()
-  const [selectedLayerIds, setSelectedLayerIds] = useAtom(selectedLayerIdsAtom)
+  const [selectedLayerIds, setSelectedLayerIds] = useAtom(props.layerIdsAtom)
 
   const groups = useMemo(
     () => groupAndSortLayers(allLayers ?? [], selectedLayerIds),

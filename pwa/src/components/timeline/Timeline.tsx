@@ -1,7 +1,7 @@
 import {memo, useLayoutEffect, useMemo, useRef} from "react"
 import {useAtomValue} from "jotai"
 import {VList, VListHandle} from "virtua"
-import {selectedDayAtom} from "../../atoms"
+import {habitLayerIdsAtom, selectedDayAtom} from "../../atoms"
 import {useLifeData} from "../../db"
 import {useTimelineData, useHabitGraphData} from "../../db/hooks"
 import DayRow from "./DayRow"
@@ -13,7 +13,8 @@ export default memo(function Timeline() {
   const birthDate = lifeData?.birthDate
   const data = useTimelineData(birthDate, today)
   const selectedDay = useAtomValue(selectedDayAtom)
-  const habitData = useHabitGraphData()
+  const habitLayerIds = useAtomValue(habitLayerIdsAtom)
+  const habitData = useHabitGraphData(habitLayerIds)
   const layers = useMemo(() => {
     if (!habitData) return []
     return habitData.map((layer) => {

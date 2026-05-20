@@ -1,6 +1,11 @@
 import {startTransition, useEffect, useState} from "react"
-import {useAtom, useSetAtom} from "jotai"
-import {searchRegexAtom, selectedLayerIdsAtom} from "../../atoms"
+import {useAtom, useAtomValue, useSetAtom} from "jotai"
+import {
+  calendarLayerIdsAtom,
+  calendarViewModeAtom,
+  habitLayerIdsAtom,
+  searchRegexAtom,
+} from "../../atoms"
 import {saveSearchLayer} from "../../db"
 import {Button} from "../ui/button"
 import {
@@ -28,7 +33,10 @@ function isValidRegex(pattern: string) {
 
 export default function SearchModal(props: Props) {
   const [searchRegex, setSearchRegex] = useAtom(searchRegexAtom)
-  const setSelectedLayerIds = useSetAtom(selectedLayerIdsAtom)
+  const calendarViewMode = useAtomValue(calendarViewModeAtom)
+  const setSelectedLayerIds = useSetAtom(
+    calendarViewMode === "habits" ? habitLayerIdsAtom : calendarLayerIdsAtom,
+  )
   const [inputValue, setInputValue] = useState(searchRegex)
 
   useEffect(() => {

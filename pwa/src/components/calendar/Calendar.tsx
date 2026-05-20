@@ -2,11 +2,16 @@ import {memo, startTransition, useMemo} from "react"
 import generateCalendarData from "./generateCalendarData"
 import useToday from "../../helpers/useToday"
 import Year from "./Year"
-import {mobileViewAtom, selectedWeekStartAtom} from "../../atoms"
+import {
+  calendarLayerIdsAtom,
+  mobileViewAtom,
+  selectedWeekStartAtom,
+} from "../../atoms"
 import {useLifeData} from "../../db"
-import {useSelectedLayerData} from "../../db/hooks"
+import {useLayerData} from "../../db/hooks"
 import {useSetAtom, useAtomValue} from "jotai"
 import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
+import {LEFT_COLUMN_HEADER_HEIGHT_PX} from "./LeftColumnHeader"
 import useWindowSize from "../../helpers/useWindowSize"
 import {LayerData} from "../../types"
 
@@ -30,10 +35,13 @@ export default memo(function Calendar() {
   const selectedWeekStart = useAtomValue(selectedWeekStartAtom)
   const setSelectedWeekStart = useSetAtom(selectedWeekStartAtom)
   const setMobileView = useSetAtom(mobileViewAtom)
-  const layerData = useSelectedLayerData() ?? EMPTY_LAYER
+  const calendarLayerIds = useAtomValue(calendarLayerIdsAtom)
+  const layerData = useLayerData(calendarLayerIds) ?? EMPTY_LAYER
 
   const windowSize = useWindowSize()
-  let height = Math.min(1000, windowSize.height - NAV_BAR_HEIGHT_PX)
+  const availableHeight =
+    windowSize.height - NAV_BAR_HEIGHT_PX - LEFT_COLUMN_HEADER_HEIGHT_PX
+  let height = Math.min(1000, availableHeight)
   let width = Math.floor(height / ASPECT_RATIO)
 
   if (width > windowSize.width) {

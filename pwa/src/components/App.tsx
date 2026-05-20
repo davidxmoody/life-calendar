@@ -3,6 +3,7 @@ import NavBar from "./nav/NavBar"
 import Calendar from "./calendar/Calendar"
 import HabitGraphs from "./calendar/HabitGraphs"
 import ContentPane from "./content/ContentPane"
+import LeftColumnHeader from "./calendar/LeftColumnHeader"
 import {Suspense} from "react"
 import {useAtomValue} from "jotai"
 import {calendarViewModeAtom, mobileViewAtom} from "../atoms"
@@ -33,10 +34,11 @@ export default function App() {
 
         <div className="flex flex-1 overflow-hidden relative">
           <div
-            className={`flex-none ${mobileVisibility(
+            className={`flex-none overflow-y-auto no-scrollbar ${mobileVisibility(
               mobileView === "calendar",
             )}`}
           >
+            <LeftColumnHeader />
             {calendarViewMode === "habits" ? <HabitGraphs /> : <Calendar />}
           </div>
 

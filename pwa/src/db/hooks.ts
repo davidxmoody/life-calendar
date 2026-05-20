@@ -1,7 +1,5 @@
-import {useAtomValue} from "jotai"
 import {useMemo} from "react"
 import {useAllHeadings, useLayersByIds} from "./index"
-import {selectedLayerIdsAtom} from "../atoms"
 import {Temporal} from "@js-temporal/polyfill"
 import mergeLayers from "../helpers/mergeLayers"
 import {LayerData} from "../types"
@@ -39,9 +37,8 @@ export function useTimelineData(
   }, [birthDate, today, headings])
 }
 
-export function useSelectedLayerData(): LayerData | undefined {
-  const selectedLayerIds = useAtomValue(selectedLayerIdsAtom)
-  const dbLayers = useLayersByIds(selectedLayerIds)
+export function useLayerData(layerIds: string[]): LayerData | undefined {
+  const dbLayers = useLayersByIds(layerIds)
 
   return useMemo(() => {
     if (dbLayers === undefined) return undefined
@@ -56,9 +53,10 @@ export interface HabitGraphLayerData {
   data: LayerData
 }
 
-export function useHabitGraphData(): HabitGraphLayerData[] | undefined {
-  const selectedLayerIds = useAtomValue(selectedLayerIdsAtom)
-  const dbLayers = useLayersByIds(selectedLayerIds)
+export function useHabitGraphData(
+  layerIds: string[],
+): HabitGraphLayerData[] | undefined {
+  const dbLayers = useLayersByIds(layerIds)
 
   return useMemo(() => {
     if (dbLayers === undefined) return undefined

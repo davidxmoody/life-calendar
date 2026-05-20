@@ -17,10 +17,12 @@ export const calendarViewModeAtom = atomWithStorage<CalendarViewMode>(
   "calendar",
 )
 
-export const selectedLayerIdsAtom = atomWithStorage<string[]>(
-  "selectedLayerIds",
+export const calendarLayerIdsAtom = atomWithStorage<string[]>(
+  "calendarLayerIds",
   [],
 )
+
+export const habitLayerIdsAtom = atomWithStorage<string[]>("habitLayerIds", [])
 
 export interface SyncState {
   type: "initial" | "loading" | "error" | "success"
