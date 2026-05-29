@@ -112,7 +112,10 @@ function DayCell({
       {selected && (
         <div
           className="absolute inset-0 box-border pointer-events-none rounded-[1px]"
-          style={{border: `1px solid ${baseColor}`, filter: "invert(1)"}}
+          style={{
+            border: `2px solid ${hasValue ? baseColor : bgColor}`,
+            filter: "invert(1)",
+          }}
         />
       )}
     </div>
