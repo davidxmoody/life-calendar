@@ -1,9 +1,11 @@
 import {memo, useMemo} from "react"
 import {Temporal} from "@js-temporal/polyfill"
+import {Maximize2} from "lucide-react"
+import {Button} from "@/components/ui/button"
 import {LayerData} from "../../types"
 
-const EMPTY_BG = "#313244"
-const MIN_L = 0.65
+export const EMPTY_BG = "#313244"
+export const MIN_L = 0.65
 
 interface HabitGraphProps {
   title: string
@@ -14,6 +16,7 @@ interface HabitGraphProps {
   firstWeekStart: string
   weeks: number
   isAtToday: boolean
+  onExpand: () => void
 }
 
 export default memo(function HabitGraph({
@@ -25,6 +28,7 @@ export default memo(function HabitGraph({
   firstWeekStart,
   weeks,
   isAtToday,
+  onExpand,
 }: HabitGraphProps) {
   const {cells, maxValue} = useMemo(() => {
     const firstWeekPD = Temporal.PlainDate.from(firstWeekStart)
@@ -53,7 +57,17 @@ export default memo(function HabitGraph({
 
   return (
     <div>
-      <div className="text-xs text-ctp-subtext1 mb-1 font-mono">{title}</div>
+      <div className="flex items-center justify-between mb-1">
+        <div className="text-xs text-ctp-subtext1 font-mono">{title}</div>
+        <Button
+          variant="ghost"
+          size="icon-xs"
+          onClick={onExpand}
+          aria-label={`Expand ${title}`}
+        >
+          <Maximize2 />
+        </Button>
+      </div>
       <div
         className="grid gap-px"
         style={{
@@ -79,12 +93,12 @@ export default memo(function HabitGraph({
   )
 })
 
-interface Cell {
+export interface Cell {
   date: string
   value: number | undefined
 }
 
-function DayCell({
+export function DayCell({
   cell,
   baseColor,
   maxValue,

@@ -1,12 +1,18 @@
 import {memo, startTransition, useMemo, useState} from "react"
 import {useAtomValue, useSetAtom} from "jotai"
 import {Temporal} from "@js-temporal/polyfill"
-import {habitLayerIdsAtom, mobileViewAtom, selectedDayAtom} from "../../atoms"
+import {
+  expandedHabitIdAtom,
+  habitLayerIdsAtom,
+  mobileViewAtom,
+  selectedDayAtom,
+} from "../../atoms"
 import {useHabitGraphData} from "../../db/hooks"
 import useToday from "../../helpers/useToday"
 import useWindowSize from "../../helpers/useWindowSize"
 import HabitGraph from "./HabitGraph"
 import HabitGraphControl from "./HabitGraphControl"
+import HabitYearGraph from "./HabitYearGraph"
 
 const MAX_WIDTH = 685
 const HORIZONTAL_PADDING_PX = 32
@@ -21,6 +27,8 @@ export default memo(function HabitGraphs() {
   const selectedDay = useAtomValue(selectedDayAtom)
   const setSelectedDay = useSetAtom(selectedDayAtom)
   const setMobileView = useSetAtom(mobileViewAtom)
+  const expandedHabitId = useAtomValue(expandedHabitIdAtom)
+  const setExpandedHabitId = useSetAtom(expandedHabitIdAtom)
 
   const windowSize = useWindowSize()
   const width = Math.min(MAX_WIDTH, windowSize.width)
@@ -69,6 +77,25 @@ export default memo(function HabitGraphs() {
     return <div style={{width}} />
   }
 
+  const expandedHabit = habits.find((h) => h.id === expandedHabitId)
+
+  if (expandedHabit) {
+    return (
+      <div style={{width}} className="flex flex-col" onClick={onClick}>
+        <div className="flex flex-col gap-6 p-4">
+          <HabitYearGraph
+            title={expandedHabit.title}
+            data={expandedHabit.data}
+            today={today}
+            selectedDay={selectedDay}
+            baseColor={expandedHabit.color}
+            onCollapse={() => setExpandedHabitId(null)}
+          />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div style={{width}} className="flex flex-col" onClick={onClick}>
       <HabitGraphControl
@@ -95,6 +122,7 @@ export default memo(function HabitGraphs() {
               firstWeekStart={firstWeekStart}
               weeks={weeksVisible}
               isAtToday={isAtToday}
+              onExpand={() => setExpandedHabitId(habit.id)}
             />
           ))
         )}

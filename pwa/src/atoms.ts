@@ -24,6 +24,11 @@ export const calendarLayerIdsAtom = atomWithStorage<string[]>(
 
 export const habitLayerIdsAtom = atomWithStorage<string[]>("habitLayerIds", [])
 
+export const expandedHabitIdAtom = atomWithStorage<string | null>(
+  "expandedHabitId",
+  null,
+)
+
 export interface SyncState {
   type: "initial" | "loading" | "error" | "success"
   lastSyncTimestamp: number | null
