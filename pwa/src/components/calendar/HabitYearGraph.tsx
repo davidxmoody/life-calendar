@@ -7,6 +7,7 @@ import {Cell, DayCell} from "./HabitGraph"
 
 interface HabitYearGraphProps {
   title: string
+  groupTitle: string
   data: LayerData
   today: string
   selectedDay: string
@@ -18,10 +19,12 @@ interface YearBlock {
   year: number
   weeks: number
   cells: (Cell | null)[]
+  activeDays: number
 }
 
 export default memo(function HabitYearGraph({
   title,
+  groupTitle,
   data,
   today,
   selectedDay,
@@ -53,6 +56,7 @@ export default memo(function HabitYearGraph({
       const totalDays = gridStart.until(gridEnd, {largestUnit: "days"}).days + 1
 
       const cells: (Cell | null)[] = []
+      let activeDays = 0
       for (let i = 0; i < totalDays; i++) {
         const d = gridStart.add({days: i})
         // Days outside this calendar year (boundary weeks) or in the future
@@ -64,33 +68,39 @@ export default memo(function HabitYearGraph({
         const date = d.toString()
         const value = data[date]
         if (value !== undefined && value > max) max = value
+        if (value !== undefined && value > 0) activeDays++
         cells.push({date, value})
       }
 
-      years.push({year, weeks: totalDays / 7, cells})
+      years.push({year, weeks: totalDays / 7, cells, activeDays})
     }
 
     return {years, maxValue: max}
   }, [data, today])
 
+  const subtitle = `${groupTitle} / ${title}`
+
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <div className="text-xs text-ctp-subtext1 font-mono">{title}</div>
+        <div className="text-sm text-ctp-subtext1 font-mono">{subtitle}</div>
         <Button
           variant="ghost"
           size="icon-xs"
           onClick={onCollapse}
           aria-label={`Collapse ${title}`}
         >
-          <Minimize2 />
+          <Minimize2 className="size-3.5" />
         </Button>
       </div>
       <div className="flex flex-col gap-3">
         {years.map((block) => (
           <div key={block.year} className="flex items-center gap-2">
-            <div className="text-xs text-ctp-subtext1 font-mono w-9 shrink-0">
-              {block.year}
+            <div className="text-sm font-mono w-9 shrink-0 leading-tight text-center">
+              <div className="text-ctp-subtext1">{block.year}</div>
+              <div className="text-xs text-ctp-subtext0">
+                ({block.activeDays})
+              </div>
             </div>
             <div
               className="grid gap-px flex-1"

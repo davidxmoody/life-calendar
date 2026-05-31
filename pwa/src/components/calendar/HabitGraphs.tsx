@@ -85,6 +85,7 @@ export default memo(function HabitGraphs() {
         <div className="flex flex-col gap-6 p-4">
           <HabitYearGraph
             title={expandedHabit.title}
+            groupTitle={expandedHabit.groupTitle}
             data={expandedHabit.data}
             today={today}
             selectedDay={selectedDay}
@@ -115,6 +116,7 @@ export default memo(function HabitGraphs() {
             <HabitGraph
               key={habit.id}
               title={habit.title}
+              groupTitle={habit.groupTitle}
               data={habit.data}
               today={today}
               selectedDay={selectedDay}

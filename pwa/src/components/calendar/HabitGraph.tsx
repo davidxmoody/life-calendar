@@ -9,6 +9,7 @@ export const MIN_L = 0.65
 
 interface HabitGraphProps {
   title: string
+  groupTitle: string
   data: LayerData
   today: string
   selectedDay: string
@@ -21,6 +22,7 @@ interface HabitGraphProps {
 
 export default memo(function HabitGraph({
   title,
+  groupTitle,
   data,
   today,
   selectedDay,
@@ -34,9 +36,9 @@ export default memo(function HabitGraph({
     const firstWeekPD = Temporal.PlainDate.from(firstWeekStart)
     const todayPD = Temporal.PlainDate.from(today)
 
-    let max = 0
+    let maxValue = 0
     for (const v of Object.values(data)) {
-      if (v !== undefined && v > max) max = v
+      if (v !== undefined && v > maxValue) maxValue = v
     }
 
     const totalDays = weeks * 7
@@ -48,8 +50,10 @@ export default memo(function HabitGraph({
       cells.push({date, value: data[date]})
     }
 
-    return {cells, maxValue: max}
+    return {cells, maxValue}
   }, [data, today, firstWeekStart, weeks])
+
+  const subtitle = `${groupTitle} / ${title}`
 
   const maskImage = isAtToday
     ? "linear-gradient(to right, transparent 0%, black 8%, black 100%)"
@@ -58,14 +62,14 @@ export default memo(function HabitGraph({
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <div className="text-xs text-ctp-subtext1 font-mono">{title}</div>
+        <div className="text-sm text-ctp-subtext1 font-mono">{subtitle}</div>
         <Button
           variant="ghost"
           size="icon-xs"
           onClick={onExpand}
           aria-label={`Expand ${title}`}
         >
-          <Maximize2 />
+          <Maximize2 className="size-3.5" />
         </Button>
       </div>
       <div

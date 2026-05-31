@@ -49,6 +49,7 @@ export function useLayerData(layerIds: string[]): LayerData | undefined {
 export interface HabitGraphLayerData {
   id: string
   title: string
+  groupTitle: string
   color: string
   data: LayerData
 }
@@ -67,6 +68,7 @@ export function useHabitGraphData(
     return sorted.map((layer) => ({
       id: layer.id,
       title: layer.title,
+      groupTitle: layer.groupTitle,
       color: layer.color,
       data: layer.data,
     }))
