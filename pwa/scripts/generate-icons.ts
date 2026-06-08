@@ -18,32 +18,34 @@ const BASE = "#1e1e2e" // mocha "base" — touch icon background
 const ACCENT = "rgb(247, 146, 30)" // square colour
 
 // Squares use the accent colour, fading from full opacity at the top-left to
-// 50% opacity at the bottom-right corner of the grid.
-const MIN_OPACITY = 0.3
-
-// --- Geometry (px, in the SVG's native coordinate space) ---
-const SQUARE = 26
-const GAP = 3
-
-/** Opacity of the square at grid position (x, y) in an n×n grid. */
-function squareOpacity(x: number, y: number, n: number) {
-  const max = (n - 1) * (1.2 + 0.9)
-  const t = max === 0 ? 0 : (x * 1.2 + y * 0.9) / max
-  return 1 - (1 - MIN_OPACITY) * t
-}
+// `minOpacity` at the bottom-right corner of the grid.
 
 type IconSpec = {
   file: string
   grid: number // squares per side
+  square: number // px size of each square
+  innerGap: number // px gap between adjacent squares
+  outerGap: number // px gap between the grid and the padding/edge
   padding: number
   border: number
   background: string | null
+  minOpacity: number // opacity of the far (bottom-right) square
   size: number // output px (square)
 }
 
+/** Opacity of the square at grid position (x, y) in an n×n grid. */
+function squareOpacity(x: number, y: number, n: number, minOpacity: number) {
+  const max = (n - 1) * (1.2 + 0.9)
+  const t = max === 0 ? 0 : (x * 1.2 + y * 0.9) / max
+  return 1 - (1 - minOpacity) * t
+}
+
 function renderSvg(spec: IconSpec): string {
-  const cell = SQUARE + GAP * 2
-  const grid = spec.grid * cell
+  const cell = spec.square + spec.innerGap
+  const grid =
+    spec.grid * spec.square +
+    (spec.grid - 1) * spec.innerGap +
+    spec.outerGap * 2
   const total = grid + spec.padding * 2 + spec.border * 2
 
   const rects: string[] = []
@@ -56,10 +58,10 @@ function renderSvg(spec: IconSpec): string {
 
   for (let y = 0; y < spec.grid; y++) {
     for (let x = 0; x < spec.grid; x++) {
-      const px = spec.border + spec.padding + x * cell + GAP
-      const py = spec.border + spec.padding + y * cell + GAP
+      const px = spec.border + spec.padding + spec.outerGap + x * cell
+      const py = spec.border + spec.padding + spec.outerGap + y * cell
       rects.push(
-        `<rect x="${px}" y="${py}" width="${SQUARE}" height="${SQUARE}" fill="${ACCENT}" fill-opacity="${squareOpacity(x, y, spec.grid)}" />`,
+        `<rect x="${px}" y="${py}" width="${spec.square}" height="${spec.square}" fill="${ACCENT}" fill-opacity="${squareOpacity(x, y, spec.grid, spec.minOpacity)}" />`,
       )
     }
   }
@@ -72,18 +74,27 @@ const icons: IconSpec[] = [
   {
     file: "logo192.png",
     grid: 4,
+    square: 26,
+    innerGap: 6,
+    outerGap: 3,
     padding: 32,
     border: 8,
     background: BASE,
+    minOpacity: 0.2,
     size: 192,
   },
-  // Favicon: 2x2 grid (4 squares) on a transparent background.
+  // Favicon: 2x2 grid (4 squares) on a transparent background, squares flush
+  // to the edges (no outer gap or padding).
   {
     file: "favicon.png",
     grid: 2,
-    padding: 8,
+    square: 26,
+    innerGap: 6,
+    outerGap: 0,
+    padding: 0,
     border: 0,
     background: null,
+    minOpacity: 0.3,
     size: 64,
   },
 ]
