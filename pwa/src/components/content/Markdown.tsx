@@ -128,10 +128,13 @@ function MarkdownUnorderedList(props: {
   children?: React.ReactNode
 }) {
   const isTaskList = props.className?.includes("contains-task-list")
+  const isNested = props["data-nested"]
   return (
     <ul
-      className={`${props["data-nested"] ? "" : "mb-5 "}${
-        isTaskList ? "list-none ms-0" : "list-disc list-outside ms-5"
+      className={`${isNested ? "" : "mb-5 "}${
+        isTaskList
+          ? `list-none ${isNested ? "ms-5" : "ms-0"}`
+          : "list-disc list-outside ms-5"
       }`}
     >
       {props.children}
