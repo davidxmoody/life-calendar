@@ -2,6 +2,7 @@ import {atom} from "jotai"
 import {atomWithStorage} from "jotai/utils"
 import {Temporal} from "@js-temporal/polyfill"
 import {getWeekStart} from "./helpers/dates"
+import {Layer} from "./types"
 
 type MobileView = "calendar" | "timeline" | "content"
 
@@ -49,7 +50,11 @@ export const selectedWeekStartAtom = atom(
   (_get, set, value: string) => set(selectedDayAtom, value),
 )
 
-export const searchRegexAtom = atomWithStorage<string>("searchRegex", "")
+// Search is session-scoped: both atoms are in-memory only, so a refresh
+// clears the regex, the highlighting, and the derived search layer.
+export const searchRegexAtom = atom<string>("")
+
+export const searchLayerAtom = atom<Layer | null>(null)
 
 export interface ContentScrollTarget {
   date: string

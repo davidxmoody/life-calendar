@@ -99,44 +99,26 @@ export function useLayersByIds(ids: string[]): Layer[] | undefined {
 // Async Functions (non-reactive, for imperative operations)
 // =============================================================================
 
-const MAX_SEARCH_LAYERS = 10
-
-export async function saveSearchLayer(
-  term: string,
-): Promise<{layerId: string; evictedIds: string[]}> {
-  const id = `search/${term}`
+// Computes an ephemeral search layer by scanning entries for the term. The
+// result is held in memory (searchLayerAtom) and never persisted, so search
+// state is fully session-scoped.
+export async function computeSearchLayer(term: string): Promise<Layer> {
   const regex = new RegExp(term, "i")
 
-  return db.transaction("rw", [db.entries, db.layers], async () => {
-    const dates = await db.entries
-      .filter((entry) => regex.test(entry.content))
-      .primaryKeys()
+  const dates = await db.entries
+    .filter((entry) => regex.test(entry.content))
+    .primaryKeys()
 
-    const data: LayerData = Object.fromEntries(dates.map((d) => [d, 1]))
+  const data: LayerData = Object.fromEntries(dates.map((d) => [d, 1]))
 
-    await db.layers.put({
-      id,
-      title: term,
-      groupTitle: "Search",
-      color: "#F9E2AF",
-      order: -Date.now(),
-      data,
-    })
-
-    const searchLayers = await db.layers
-      .where("id")
-      .startsWith("search/")
-      .toArray()
-
-    searchLayers.sort((a, b) => a.order - b.order)
-    const evicted = searchLayers.slice(MAX_SEARCH_LAYERS)
-    const evictedIds = evicted.map((l) => l.id)
-    if (evictedIds.length > 0) {
-      await db.layers.bulkDelete(evictedIds)
-    }
-
-    return {layerId: id, evictedIds}
-  })
+  return {
+    id: "search",
+    title: term,
+    groupTitle: "Search",
+    color: "#F9E2AF",
+    order: 0,
+    data,
+  }
 }
 
 export async function sync({

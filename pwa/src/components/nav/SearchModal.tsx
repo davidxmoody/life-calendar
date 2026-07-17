@@ -1,12 +1,7 @@
 import {startTransition, useEffect, useState} from "react"
-import {useAtom, useAtomValue, useSetAtom} from "jotai"
-import {
-  calendarLayerIdsAtom,
-  calendarViewModeAtom,
-  habitLayerIdsAtom,
-  searchRegexAtom,
-} from "../../atoms"
-import {saveSearchLayer} from "../../db"
+import {useAtom, useSetAtom} from "jotai"
+import {searchLayerAtom, searchRegexAtom} from "../../atoms"
+import {computeSearchLayer} from "../../db"
 import {Button} from "../ui/button"
 import {
   Dialog,
@@ -33,10 +28,7 @@ function isValidRegex(pattern: string) {
 
 export default function SearchModal(props: Props) {
   const [searchRegex, setSearchRegex] = useAtom(searchRegexAtom)
-  const calendarViewMode = useAtomValue(calendarViewModeAtom)
-  const setSelectedLayerIds = useSetAtom(
-    calendarViewMode === "habits" ? habitLayerIdsAtom : calendarLayerIdsAtom,
-  )
+  const setSearchLayer = useSetAtom(searchLayerAtom)
   const [inputValue, setInputValue] = useState(searchRegex)
 
   useEffect(() => {
@@ -47,14 +39,11 @@ export default function SearchModal(props: Props) {
     const term = inputValue
     if (!term) return
 
-    const {layerId, evictedIds} = await saveSearchLayer(term)
+    const layer = await computeSearchLayer(term)
 
     startTransition(() => {
+      setSearchLayer(layer)
       setSearchRegex(term)
-      setSelectedLayerIds((prev) => {
-        const filtered = prev.filter((id) => !evictedIds.includes(id))
-        return filtered.includes(layerId) ? filtered : [...filtered, layerId]
-      })
       props.onClose()
     })
   }
@@ -66,6 +55,7 @@ export default function SearchModal(props: Props) {
 
   function clear() {
     startTransition(() => {
+      setSearchLayer(null)
       setSearchRegex("")
       setInputValue("")
       props.onClose()
