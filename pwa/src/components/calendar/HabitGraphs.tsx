@@ -1,4 +1,11 @@
-import {memo, startTransition, useMemo, useState} from "react"
+import {
+  memo,
+  startTransition,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import {useAtomValue, useSetAtom} from "jotai"
 import {Temporal} from "@js-temporal/polyfill"
 import {
@@ -19,6 +26,7 @@ const HORIZONTAL_PADDING_PX = 32
 const TARGET_CELL_PX = 10
 const MIN_WEEKS = 20
 const LEFT_FADE_COLUMNS = 5
+const RIGHT_FADE_COLUMNS = 5
 
 export default memo(function HabitGraphs() {
   const habitLayerIds = useAtomValue(habitLayerIdsAtom)
@@ -40,8 +48,27 @@ export default memo(function HabitGraphs() {
   const panStep = Math.max(1, Math.floor(weeksVisible / 3))
 
   const [panWeeks, setPanWeeks] = useState(() =>
-    computeInitialPanWeeks(today, selectedDay, weeksVisible),
+    computePanWeeks(today, selectedDay, weeksVisible, 0),
   )
+
+  // Keep the latest panWeeks readable from the effect below without making it a
+  // dependency — otherwise a manual pan would re-trigger the re-scroll and snap
+  // straight back to the selected day.
+  const panWeeksRef = useRef(panWeeks)
+  panWeeksRef.current = panWeeks
+
+  // Re-scroll the graphs when the selected day changes from elsewhere (jump to
+  // today, timeline scrolling, zooming a year graph and picking a day, etc.),
+  // but only when the selected day would be out of view or too close to a
+  // faded edge. This intentionally does not depend on panWeeks, so manual
+  // panning (which changes panWeeks but not selectedDay) is never fought.
+  useEffect(() => {
+    const current = panWeeksRef.current
+    const next = computePanWeeks(today, selectedDay, weeksVisible, current)
+    if (next !== current) {
+      startTransition(() => setPanWeeks(next))
+    }
+  }, [today, selectedDay, weeksVisible])
 
   const {firstWeekStart, rangeStart, rangeEnd, isAtToday} = useMemo(() => {
     const todayPD = Temporal.PlainDate.from(today)
@@ -133,10 +160,11 @@ export default memo(function HabitGraphs() {
   )
 })
 
-function computeInitialPanWeeks(
+function computePanWeeks(
   today: string,
   selectedDay: string,
   weeksVisible: number,
+  currentPanWeeks: number,
 ): number {
   const todayPD = Temporal.PlainDate.from(today)
   const currentWeekStart = todayPD.subtract({days: todayPD.dayOfWeek - 1})
@@ -148,16 +176,23 @@ function computeInitialPanWeeks(
   const weeksBetween =
     currentWeekStart.since(selectedWeekStart, {largestUnit: "days"}).days / 7
 
-  // At panWeeks = 0, the selected day's column is (weeksVisible-1) - weeksBetween.
-  // It "fits" if it's in view AND not within the LEFT_FADE_COLUMNS leftmost columns.
-  if (
-    weeksBetween >= 0 &&
-    weeksBetween <= weeksVisible - 1 - LEFT_FADE_COLUMNS
-  ) {
-    return 0
+  // The selected day's grid column at the current pan. Column 0 is the leftmost
+  // (oldest) week, weeksVisible-1 the rightmost (most recent) week.
+  const column = weeksVisible - 1 + currentPanWeeks - weeksBetween
+
+  // When parked at today there is no right-hand fade, so the rightmost column
+  // is fully usable; otherwise both edges are faded (matches HabitGraph's mask).
+  const rightBound =
+    currentPanWeeks === 0
+      ? weeksVisible - 1
+      : weeksVisible - 1 - RIGHT_FADE_COLUMNS
+
+  // Already comfortably in view — leave the scroll position untouched.
+  if (column >= LEFT_FADE_COLUMNS && column <= rightBound) {
+    return currentPanWeeks
   }
 
-  // Otherwise center: put selected week at the middle column.
+  // Otherwise center: put the selected week at the middle column.
   const middle = Math.floor(weeksVisible / 2)
   return Math.max(0, weeksBetween - (weeksVisible - 1 - middle))
 }
