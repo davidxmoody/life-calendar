@@ -15,15 +15,25 @@ function prettyFormatDate(date: string): string {
   })
 }
 
+const durationFormat = new Intl.DurationFormat(undefined, {style: "long"})
+
 function formatAge(date: string, today: string): string | null {
-  const days = Temporal.PlainDate.from(today).since(
-    Temporal.PlainDate.from(date),
-    {largestUnit: "day"},
-  ).days
-  if (days < 0) return null
-  if (days === 0) return "today"
-  if (days === 1) return "yesterday"
-  return `${days} days ago`
+  const from = Temporal.PlainDate.from(date)
+  const to = Temporal.PlainDate.from(today)
+  if (Temporal.PlainDate.compare(from, to) > 0) return null
+
+  const {years, months, days} = to.since(from, {largestUnit: "year"})
+  if (years === 0 && months === 0) {
+    if (days === 0) return "today"
+    if (days === 1) return "yesterday"
+  }
+
+  // Drop zero components, but never a non-zero one
+  const parts: Partial<Record<Intl.DurationFormatUnit, number>> = {}
+  if (years) parts.years = years
+  if (months) parts.months = months
+  if (days) parts.days = days
+  return `${durationFormat.format(parts)} ago`
 }
 
 export default memo(function ContentPane() {
