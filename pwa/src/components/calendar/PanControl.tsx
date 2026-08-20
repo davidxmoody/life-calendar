@@ -4,18 +4,18 @@ import {Button} from "@/components/ui/button"
 import {LEFT_COLUMN_HEADER_HEIGHT_PX} from "./LeftColumnHeader"
 
 interface Props {
-  rangeStart: string
-  rangeEnd: string
+  label: string
   onLeft: () => void
   onRight: () => void
+  leftDisabled: boolean
   rightDisabled: boolean
 }
 
-export default memo(function HabitGraphControl({
-  rangeStart,
-  rangeEnd,
+export default memo(function PanControl({
+  label,
   onLeft,
   onRight,
+  leftDisabled,
   rightDisabled,
 }: Props) {
   return (
@@ -28,12 +28,11 @@ export default memo(function HabitGraphControl({
         size="icon-lg"
         onClick={onLeft}
         aria-label="Pan earlier"
+        disabled={leftDisabled}
       >
         <ChevronLeft className="size-5" />
       </Button>
-      <div className="text-xs text-ctp-subtext1 font-mono">
-        {rangeStart} – {rangeEnd}
-      </div>
+      <div className="text-xs text-ctp-subtext1 font-mono">{label}</div>
       <Button
         variant="ghost"
         size="icon-lg"

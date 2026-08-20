@@ -6,13 +6,13 @@ import {
   contentScrollTargetAtom,
   mobileViewAtom,
 } from "../../atoms"
-import {DayTimelineData} from "../../db/hooks"
+import {CalendarLayer, DayTimelineData} from "../../db/hooks"
 import HighlightedText from "../HighlightedText"
-import LayerSquares, {LayerWithMax} from "./LayerSquares"
+import LayerSquares from "./LayerSquares"
 
 interface DayRowProps {
   day: DayTimelineData
-  layers: LayerWithMax[]
+  layers: CalendarLayer[]
   isSelected: boolean
 }
 

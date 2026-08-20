@@ -1,19 +1,17 @@
 import Timeline from "./timeline/Timeline"
 import NavBar from "./nav/NavBar"
 import Calendar from "./calendar/Calendar"
-import HabitGraphs from "./calendar/HabitGraphs"
 import ContentPane from "./content/ContentPane"
 import LeftColumnHeader from "./calendar/LeftColumnHeader"
 import {Suspense} from "react"
 import {useAtomValue} from "jotai"
-import {calendarViewModeAtom, mobileViewAtom} from "../atoms"
+import {mobileViewAtom} from "../atoms"
 import FirstTimeSetupScreen from "./FirstTimeSetupScreen"
 import {useRemoteUrl} from "../helpers/auth"
 import {sync} from "../db"
 
 export default function App() {
   const mobileView = useAtomValue(mobileViewAtom)
-  const calendarViewMode = useAtomValue(calendarViewModeAtom)
   const [remoteUrl, setRemoteUrl] = useRemoteUrl()
 
   if (!remoteUrl) {
@@ -39,7 +37,7 @@ export default function App() {
             )}`}
           >
             <LeftColumnHeader />
-            {calendarViewMode === "habits" ? <HabitGraphs /> : <Calendar />}
+            <Calendar />
           </div>
 
           <div

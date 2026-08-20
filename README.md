@@ -26,10 +26,9 @@ This screenshot shows the number of git commits I've made (in public GitHub repo
 
 ### Calendar
 
-- Manually rendered on canvas for performance
-- Responds to viewport size to align squares perfectly on pixel boundaries
 - Displays "layers" of health/habit data (see [this repo](https://github.com/davidxmoody/self-tracking) for scripts that generate the layers)
-- Later weeks fade out relative to the chance of living to that age
+- Each square is either a single day or a whole week
+- Shows one row per layer or zooms into a single layer
 - Searching for text generates a temporary layer highlighting matches
 
 ## Project history

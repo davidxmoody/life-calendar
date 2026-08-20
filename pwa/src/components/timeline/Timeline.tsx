@@ -1,11 +1,13 @@
 import {memo, useLayoutEffect, useMemo, useRef} from "react"
 import {useAtomValue} from "jotai"
 import {VList, VListHandle} from "virtua"
-import {habitLayerIdsAtom, selectedDayAtom} from "../../atoms"
+import {selectedDayAtom, selectedLayerIdsAtom} from "../../atoms"
 import {useLifeData} from "../../db"
-import {useTimelineData, useHabitGraphData} from "../../db/hooks"
+import {CalendarLayer, useTimelineData, useCalendarLayers} from "../../db/hooks"
 import DayRow from "./DayRow"
 import useToday from "../../helpers/useToday"
+
+const NO_LAYERS: CalendarLayer[] = []
 
 export default memo(function Timeline() {
   const lifeData = useLifeData()
@@ -13,18 +15,8 @@ export default memo(function Timeline() {
   const birthDate = lifeData?.birthDate
   const data = useTimelineData(birthDate, today)
   const selectedDay = useAtomValue(selectedDayAtom)
-  const habitLayerIds = useAtomValue(habitLayerIdsAtom)
-  const habitData = useHabitGraphData(habitLayerIds)
-  const layers = useMemo(() => {
-    if (!habitData) return []
-    return habitData.map((layer) => {
-      let max = 0
-      for (const v of Object.values(layer.data)) {
-        if (v !== undefined && v > max) max = v
-      }
-      return {...layer, maxValue: max}
-    })
-  }, [habitData])
+  const selectedLayerIds = useAtomValue(selectedLayerIdsAtom)
+  const layers = useCalendarLayers(selectedLayerIds, "day") ?? NO_LAYERS
 
   const ref = useRef<VListHandle>(null)
   const visibleTimeline = data

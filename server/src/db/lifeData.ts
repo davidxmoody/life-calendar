@@ -1,7 +1,9 @@
 import {readFile, stat} from "fs/promises"
-import {Era, LifeData} from "../types"
+import {LifeData} from "../types"
 import {parse} from "papaparse"
 
+// The first row of this file marks the start of life; the rest of its columns
+// are no longer used.
 const FILE_PATH = "data/eras.tsv"
 
 export async function getLifeData(
@@ -11,18 +13,11 @@ export async function getLifeData(
     return null
   }
 
-  const eras: Era[] = parse<{start: string; name: string; color: string}>(
-    await readFile(FILE_PATH, "utf-8"),
-    {
-      delimiter: "\t",
-      header: true,
-      skipEmptyLines: true,
-    },
-  ).data
+  const rows = parse<{start: string}>(await readFile(FILE_PATH, "utf-8"), {
+    delimiter: "\t",
+    header: true,
+    skipEmptyLines: true,
+  }).data
 
-  return {
-    birthDate: eras[0].start,
-    deathDate: `${parseInt(eras[0].start.substring(0, 4)) + 99}-12-31`,
-    eras,
-  }
+  return {birthDate: rows[0].start}
 }

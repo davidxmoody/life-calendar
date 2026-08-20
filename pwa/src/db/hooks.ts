@@ -2,9 +2,9 @@ import {useMemo} from "react"
 import {useAtomValue} from "jotai"
 import {useAllHeadings, useLayersByIds} from "./index"
 import {Temporal} from "@js-temporal/polyfill"
-import mergeLayers from "../helpers/mergeLayers"
-import {LayerData} from "../types"
-import {searchLayerAtom} from "../atoms"
+import aggregateWeeks from "../helpers/aggregateWeeks"
+import {Layer, LayerData} from "../types"
+import {CellSize, searchLayerAtom} from "../atoms"
 
 export interface DayTimelineData {
   date: string
@@ -39,30 +39,22 @@ export function useTimelineData(
   }, [birthDate, today, headings])
 }
 
-export function useLayerData(layerIds: string[]): LayerData | undefined {
-  const dbLayers = useLayersByIds(layerIds)
-  const searchLayer = useAtomValue(searchLayerAtom)
-
-  return useMemo(() => {
-    // While a search is active the calendar shows only the search layer;
-    // the selected layers stay selected but are ignored until it clears.
-    if (searchLayer) return searchLayer.data
-    if (dbLayers === undefined) return undefined
-    return mergeLayers(dbLayers.map((l) => l.data))
-  }, [dbLayers, searchLayer])
-}
-
-export interface HabitGraphLayerData {
+export interface CalendarLayer {
   id: string
   title: string
   groupTitle: string
   color: string
+  // Keyed by day, or by week start when the calendar shows week-size cells.
   data: LayerData
+  // Over the whole layer, so cell intensity does not shift when panning or
+  // zooming.
+  maxValue: number
 }
 
-export function useHabitGraphData(
+export function useCalendarLayers(
   layerIds: string[],
-): HabitGraphLayerData[] | undefined {
+  cellSize: CellSize,
+): CalendarLayer[] | undefined {
   const dbLayers = useLayersByIds(layerIds)
   const searchLayer = useAtomValue(searchLayerAtom)
 
@@ -72,25 +64,28 @@ export function useHabitGraphData(
     const sorted = [...dbLayers].sort(
       (a, b) => a.groupTitle.localeCompare(b.groupTitle) || a.order - b.order,
     )
-    const habits: HabitGraphLayerData[] = sorted.map((layer) => ({
-      id: layer.id,
-      title: layer.title,
-      groupTitle: layer.groupTitle,
-      color: layer.color,
-      data: layer.data,
-    }))
 
-    // When a search is active, pin it above the normal habits.
-    if (searchLayer) {
-      habits.unshift({
-        id: searchLayer.id,
-        title: searchLayer.title,
-        groupTitle: searchLayer.groupTitle,
-        color: searchLayer.color,
-        data: searchLayer.data,
-      })
-    }
+    // When a search is active, pin it above the selected layers.
+    const layers = searchLayer ? [searchLayer, ...sorted] : sorted
 
-    return habits
-  }, [dbLayers, searchLayer])
+    return layers.map((layer) => toCalendarLayer(layer, cellSize))
+  }, [dbLayers, searchLayer, cellSize])
+}
+
+function toCalendarLayer(layer: Layer, cellSize: CellSize): CalendarLayer {
+  const data = cellSize === "week" ? aggregateWeeks(layer.data) : layer.data
+
+  let maxValue = 0
+  for (const value of Object.values(data)) {
+    if (value !== undefined && value > maxValue) maxValue = value
+  }
+
+  return {
+    id: layer.id,
+    title: layer.title,
+    groupTitle: layer.groupTitle,
+    color: layer.color,
+    data,
+    maxValue,
+  }
 }

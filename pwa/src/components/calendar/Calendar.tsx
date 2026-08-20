@@ -1,99 +1,78 @@
-import {memo, startTransition, useMemo} from "react"
-import generateCalendarData from "./generateCalendarData"
-import useToday from "../../helpers/useToday"
-import Year from "./Year"
+import {memo, startTransition} from "react"
+import {useAtomValue, useSetAtom} from "jotai"
 import {
-  calendarLayerIdsAtom,
+  cellSizeAtom,
   mobileViewAtom,
-  selectedWeekStartAtom,
+  selectedDayAtom,
+  selectedLayerIdsAtom,
+  zoomedLayerIdAtom,
 } from "../../atoms"
 import {useLifeData} from "../../db"
-import {useLayerData} from "../../db/hooks"
-import {useSetAtom, useAtomValue} from "jotai"
-import {NAV_BAR_HEIGHT_PX} from "../nav/NavBar"
-import {LEFT_COLUMN_HEADER_HEIGHT_PX} from "./LeftColumnHeader"
+import {useCalendarLayers} from "../../db/hooks"
+import {getWeekStart} from "../../helpers/dates"
+import useToday from "../../helpers/useToday"
 import useWindowSize from "../../helpers/useWindowSize"
-import {LayerData} from "../../types"
-
-const ASPECT_RATIO = 1.46
-const EMPTY_LAYER: LayerData = {}
-
-function useCalendarData() {
-  const today = useToday()
-  const lifeData = useLifeData()
-
-  return useMemo(() => {
-    if (!lifeData) {
-      return undefined
-    }
-    return generateCalendarData({today, ...lifeData})
-  }, [today, lifeData])
-}
+import LayerRows from "./LayerRows"
+import ZoomedLayer from "./ZoomedLayer"
+import {CALENDAR_MAX_WIDTH_PX} from "./calendarLayout"
 
 export default memo(function Calendar() {
-  const data = useCalendarData()
-  const selectedWeekStart = useAtomValue(selectedWeekStartAtom)
-  const setSelectedWeekStart = useSetAtom(selectedWeekStartAtom)
+  const cellSize = useAtomValue(cellSizeAtom)
+  const selectedLayerIds = useAtomValue(selectedLayerIdsAtom)
+  const zoomedLayerId = useAtomValue(zoomedLayerIdAtom)
+  const selectedDay = useAtomValue(selectedDayAtom)
+  const setSelectedDay = useSetAtom(selectedDayAtom)
   const setMobileView = useSetAtom(mobileViewAtom)
-  const calendarLayerIds = useAtomValue(calendarLayerIdsAtom)
-  const layerData = useLayerData(calendarLayerIds) ?? EMPTY_LAYER
+
+  const layers = useCalendarLayers(selectedLayerIds, cellSize)
+  const birthDate = useLifeData()?.birthDate
+  const today = useToday()
 
   const windowSize = useWindowSize()
-  const availableHeight =
-    windowSize.height - NAV_BAR_HEIGHT_PX - LEFT_COLUMN_HEADER_HEIGHT_PX
-  let height = Math.min(1000, availableHeight)
-  let width = Math.floor(height / ASPECT_RATIO)
+  const width = Math.min(CALENDAR_MAX_WIDTH_PX, windowSize.width)
 
-  if (width > windowSize.width) {
-    width = Math.min(700, windowSize.width)
-    height = width * ASPECT_RATIO
-  }
-
-  const years = useMemo(() => {
-    if (!data) return []
-    return data.decades.flatMap((decade) => decade.years)
-  }, [data])
-
-  const selectedIndices = useMemo(
-    () =>
-      years.map((year) => {
-        for (let i = 0; i < year.weeks.length; i++) {
-          if (year.weeks[i].startDate === selectedWeekStart) return i
-        }
-        return -1
-      }),
-    [years, selectedWeekStart],
-  )
-
-  if (!data) {
-    return <div style={{width, height}} />
-  }
-
+  // Every cell carries its own date, so one handler covers the whole calendar.
   function onClick(e: React.MouseEvent) {
-    const target = (e.target as HTMLElement).closest<HTMLElement>(
-      "[data-week-start]",
-    )
+    const target = (e.target as HTMLElement).closest<HTMLElement>("[data-date]")
     if (!target) return
-    const startDate = target.dataset.weekStart!
 
     startTransition(() => {
-      setSelectedWeekStart(startDate)
+      setSelectedDay(target.dataset.date!)
       setMobileView("timeline")
     })
   }
 
+  if (!layers || !birthDate) {
+    return <div style={{width}} />
+  }
+
+  // Week cells are keyed by the Monday of their week.
+  const selectedDate =
+    cellSize === "week" ? getWeekStart(selectedDay) : selectedDay
+
+  const zoomedLayer = layers.find((layer) => layer.id === zoomedLayerId)
+
   return (
-    <div style={{width, height}} onClick={onClick}>
-      <div className="grid grid-cols-10 w-full">
-        {years.map((year, i) => (
-          <Year
-            key={i}
-            weeks={year.weeks}
-            layerData={layerData}
-            selectedWeekIndex={selectedIndices[i]}
-          />
-        ))}
-      </div>
+    <div style={{width}} onClick={onClick}>
+      {zoomedLayer ? (
+        <ZoomedLayer
+          layer={zoomedLayer}
+          cellSize={cellSize}
+          today={today}
+          birthDate={birthDate}
+          selectedDate={selectedDate}
+        />
+      ) : (
+        <LayerRows
+          key={cellSize}
+          layers={layers}
+          cellSize={cellSize}
+          today={today}
+          birthDate={birthDate}
+          selectedDate={selectedDate}
+          width={width}
+        />
+      )}
     </div>
   )
 })

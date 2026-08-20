@@ -1,7 +1,6 @@
 import {atom} from "jotai"
 import {atomWithStorage} from "jotai/utils"
 import {Temporal} from "@js-temporal/polyfill"
-import {getWeekStart} from "./helpers/dates"
 import {Layer} from "./types"
 
 type MobileView = "calendar" | "timeline" | "content"
@@ -11,22 +10,20 @@ export const mobileViewAtom = atomWithStorage<MobileView>(
   "calendar",
 )
 
-type CalendarViewMode = "calendar" | "habits"
+// Whether one calendar square represents a single day or a whole week.
+export type CellSize = "day" | "week"
 
-export const calendarViewModeAtom = atomWithStorage<CalendarViewMode>(
-  "calendarViewMode",
-  "calendar",
-)
+export const cellSizeAtom = atomWithStorage<CellSize>("cellSize", "week")
 
-export const calendarLayerIdsAtom = atomWithStorage<string[]>(
-  "calendarLayerIds",
+export const selectedLayerIdsAtom = atomWithStorage<string[]>(
+  "selectedLayerIds",
   [],
 )
 
-export const habitLayerIdsAtom = atomWithStorage<string[]>("habitLayerIds", [])
-
-export const expandedHabitIdAtom = atomWithStorage<string | null>(
-  "expandedHabitId",
+// When set, the calendar shows this single layer across many rows instead of
+// one row per selected layer.
+export const zoomedLayerIdAtom = atomWithStorage<string | null>(
+  "zoomedLayerId",
   null,
 )
 
@@ -43,11 +40,6 @@ export const syncStateAtom = atom<SyncState>({
 export const selectedDayAtom = atomWithStorage(
   "selectedDay",
   Temporal.Now.plainDateISO().toString(),
-)
-
-export const selectedWeekStartAtom = atom(
-  (get) => getWeekStart(get(selectedDayAtom)),
-  (_get, set, value: string) => set(selectedDayAtom, value),
 )
 
 // Search is session-scoped: both atoms are in-memory only, so a refresh

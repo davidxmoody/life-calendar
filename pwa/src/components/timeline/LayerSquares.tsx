@@ -1,5 +1,5 @@
 import {memo} from "react"
-import {HabitGraphLayerData} from "../../db/hooks"
+import {CalendarLayer} from "../../db/hooks"
 
 const TRACK_BG = "#313244"
 const MIN_L = 0.65
@@ -7,13 +7,9 @@ const BAR_W = 10
 const BAR_H = 12
 const MIN_BAR_PX = 2
 
-export interface LayerWithMax extends HabitGraphLayerData {
-  maxValue: number
-}
-
 interface Props {
   date: string
-  layers: LayerWithMax[]
+  layers: CalendarLayer[]
 }
 
 export default memo(function LayerSquares({date, layers}: Props) {
