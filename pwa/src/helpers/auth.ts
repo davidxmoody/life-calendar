@@ -16,8 +16,14 @@ function resolveRemoteUrl(override?: string): string {
   return remoteUrl
 }
 
+// Entry media is resolved through here while rendering markdown, which can
+// happen with no remote configured (demo data, or a stale entry after a
+// reset). Falling back to the bare path renders a broken image rather than
+// throwing part-way through a render.
 export function createAuthedUrl(path: string, remoteUrl?: string): string {
-  return `${resolveRemoteUrl(remoteUrl)}${path}?token=${getAuthToken()}`
+  const base = remoteUrl ?? (localStorage.REMOTE_URL as string | undefined)
+  if (!base) return path
+  return `${base}${path}?token=${getAuthToken()}`
 }
 
 export class HttpError extends Error {
