@@ -3,6 +3,7 @@ import {useLiveQuery} from "dexie-react-hooks"
 import {Entry, Layer, LayerData, LifeData} from "../types"
 import {authedFetch} from "../helpers/auth"
 import getHeadings from "../helpers/getHeadings"
+import {isDemoMode} from "../helpers/demo"
 
 const db = new Dexie("data") as Dexie & {
   entries: EntityTable<Entry, "date">
@@ -121,34 +122,29 @@ export async function computeSearchLayer(term: string): Promise<Layer> {
   }
 }
 
-export async function sync({
-  fullSync,
-  remoteUrl,
-}: {
-  fullSync: boolean
-  remoteUrl?: string
-}) {
-  await authedFetch("/ping", {timeoutMs: 1000, remoteUrl})
+export async function deleteDatabase() {
+  await db.delete()
+}
 
-  const lastSyncTimestamp = fullSync
-    ? null
-    : ((await db.config.get("lastSyncTimestamp")) ?? null)
+export function getLayerIds(): Promise<string[]> {
+  return db.layers.toCollection().primaryKeys()
+}
 
-  const {
-    timestamp,
-    entries,
-    layers,
-    lifeData,
-  }: {
-    timestamp: number
-    entries: Entry[]
-    layers: Layer[]
-    lifeData: LifeData | null
-  } = await authedFetch(
-    `/sync${lastSyncTimestamp ? `?sinceMs=${lastSyncTimestamp}` : ""}`,
-    {remoteUrl},
-  ).then((res) => res.json())
+export function getLatestEntryDate(): Promise<string | undefined> {
+  return db.entries.orderBy(":id").lastKey() as Promise<string | undefined>
+}
 
+interface SyncPayload {
+  timestamp: number
+  entries: Entry[]
+  layers: Layer[]
+  lifeData: LifeData | null
+}
+
+async function applySyncPayload(
+  {timestamp, entries, layers, lifeData}: SyncPayload,
+  {fullSync}: {fullSync: boolean},
+) {
   await db.transaction(
     "rw",
     [db.lifeData, db.entries, db.layers, db.config, db.cachedHeadings],
@@ -165,23 +161,72 @@ export async function sync({
         await db.lifeData.put(lifeData, "lifeData")
       }
 
-      for (const entry of entries) {
-        await db.entries.put(entry)
-        await db.cachedHeadings.put({
+      await db.entries.bulkPut(entries)
+      await db.cachedHeadings.bulkPut(
+        entries.map((entry) => ({
           date: entry.date,
           headings: getHeadings(entry.content),
-        })
-      }
-
-      for (const layer of layers) {
-        await db.layers.put(layer)
-      }
+        })),
+      )
+      await db.layers.bulkPut(layers)
 
       await db.config.put(timestamp, "lastSyncTimestamp")
     },
   )
+}
 
-  const receievedNewData = layers.length > 0 || entries.length > 0 || !!lifeData
+async function fetchSyncPayload({
+  fullSync,
+  remoteUrl,
+}: {
+  fullSync: boolean
+  remoteUrl?: string
+}): Promise<SyncPayload> {
+  await authedFetch("/ping", {timeoutMs: 1000, remoteUrl})
 
-  return {receievedNewData, timestamp}
+  const lastSyncTimestamp = fullSync
+    ? null
+    : ((await db.config.get("lastSyncTimestamp")) ?? null)
+
+  return authedFetch(
+    `/sync${lastSyncTimestamp ? `?sinceMs=${lastSyncTimestamp}` : ""}`,
+    {remoteUrl},
+  ).then((res) => res.json())
+}
+
+// Demo data is generated in the browser rather than fetched, so there is never
+// anything new to pull incrementally; only an explicit full sync rebuilds it.
+async function syncDemo({fullSync}: {fullSync: boolean}) {
+  if (!fullSync) {
+    const timestamp = (await db.config.get("lastSyncTimestamp")) ?? Date.now()
+    return {receievedNewData: false, timestamp}
+  }
+
+  const {generateDemoPayload} = await import("../demo")
+  const payload = generateDemoPayload()
+  await applySyncPayload(payload, {fullSync: true})
+
+  return {receievedNewData: true, timestamp: payload.timestamp}
+}
+
+export async function sync({
+  fullSync,
+  remoteUrl,
+}: {
+  fullSync: boolean
+  remoteUrl?: string
+}) {
+  if (isDemoMode()) {
+    return syncDemo({fullSync})
+  }
+
+  const payload = await fetchSyncPayload({fullSync, remoteUrl})
+  await applySyncPayload(payload, {fullSync})
+
+  const receievedNewData =
+    payload.layers.length > 0 ||
+    payload.entries.length > 0 ||
+    !!payload.lifeData
+
+  return {receievedNewData, timestamp: payload.timestamp}
 }

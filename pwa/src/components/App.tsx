@@ -4,22 +4,41 @@ import Calendar from "./calendar/Calendar"
 import ContentPane from "./content/ContentPane"
 import LeftColumnHeader from "./calendar/LeftColumnHeader"
 import {Suspense} from "react"
-import {useAtomValue} from "jotai"
-import {mobileViewAtom} from "../atoms"
+import {useAtomValue, useSetAtom} from "jotai"
+import {mobileViewAtom, selectedDayAtom, selectedLayerIdsAtom} from "../atoms"
 import FirstTimeSetupScreen from "./FirstTimeSetupScreen"
 import {useRemoteUrl} from "../helpers/auth"
-import {sync} from "../db"
+import {useDemoMode} from "../helpers/demo"
+import {getLatestEntryDate, getLayerIds, sync} from "../db"
 
 export default function App() {
   const mobileView = useAtomValue(mobileViewAtom)
   const [remoteUrl, setRemoteUrl] = useRemoteUrl()
+  const [demoMode, enterDemoMode] = useDemoMode()
+  const setSelectedDay = useSetAtom(selectedDayAtom)
+  const setSelectedLayerIds = useSetAtom(selectedLayerIdsAtom)
 
-  if (!remoteUrl) {
+  if (!remoteUrl && !demoMode) {
     return (
       <FirstTimeSetupScreen
         onSubmit={async (url) => {
           await sync({fullSync: true, remoteUrl: url})
           setRemoteUrl(url)
+        }}
+        onDemo={async () => {
+          // Set before syncing: sync() reads the flag to decide where its data
+          // comes from.
+          enterDemoMode()
+          await sync({fullSync: true})
+
+          // Turn everything on: an empty calendar is a poor first thing to
+          // land on, and seeing the layers is most of the point.
+          setSelectedLayerIds(await getLayerIds())
+
+          // Open on a day that actually has an entry, rather than whichever
+          // side of the coin flip today landed on.
+          const latest = await getLatestEntryDate()
+          if (latest) setSelectedDay(latest)
         }}
       />
     )

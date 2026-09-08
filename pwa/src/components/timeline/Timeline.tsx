@@ -38,18 +38,39 @@ export default memo(function Timeline() {
   // center it. useLayoutEffect runs before paint so the initial scroll has
   // no flash.
   useLayoutEffect(() => {
-    if (!ref.current || !visibleTimeline?.length) return
+    if (!visibleTimeline?.length) return
+
     const idx = visibleTimeline.findIndex((d) => d.date >= selectedDay)
     const target = idx >= 0 ? idx : visibleTimeline.length - 1
 
-    const itemTop = ref.current.getItemOffset(target)
-    const itemBottom = itemTop + ref.current.getItemSize(target)
-    const viewTop = ref.current.scrollOffset
-    const viewBottom = viewTop + ref.current.viewportSize
+    let frame = 0
 
-    if (itemTop >= viewTop && itemBottom <= viewBottom) return
+    function scrollToTarget() {
+      const list = ref.current
+      if (!list) return
 
-    ref.current.scrollToIndex(target, {align: "center"})
+      // On the first commit the list has not measured its viewport yet, so it
+      // has rendered no rows and the container is not scrollable: a scroll set
+      // now would be clamped back to the top and never retried. Wait for the
+      // measurement, which lands a frame or two later.
+      if (list.viewportSize === 0) {
+        frame = requestAnimationFrame(scrollToTarget)
+        return
+      }
+
+      const itemTop = list.getItemOffset(target)
+      const itemBottom = itemTop + list.getItemSize(target)
+      const viewTop = list.scrollOffset
+      const viewBottom = viewTop + list.viewportSize
+
+      if (itemTop >= viewTop && itemBottom <= viewBottom) return
+
+      list.scrollToIndex(target, {align: "center"})
+    }
+
+    scrollToTarget()
+
+    return () => cancelAnimationFrame(frame)
   }, [selectedDay, visibleTimeline])
 
   if (!lifeData || !visibleTimeline || !visibleTimeline.length) {

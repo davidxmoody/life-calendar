@@ -1,9 +1,10 @@
 import {startTransition, useCallback, useEffect} from "react"
-import {sync} from "../../db"
+import {deleteDatabase, sync} from "../../db"
 import DatabaseStats from "./DatabaseStats"
 import {useAtom} from "jotai"
 import {syncStateAtom} from "../../atoms"
 import {resetAuth} from "../../helpers/auth"
+import {exitDemoMode, isDemoMode} from "../../helpers/demo"
 import {Button} from "../ui/button"
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "../ui/dialog"
 
@@ -54,6 +55,7 @@ export default function SyncModal(props: Props) {
   }, [syncIfNotSyncedRecently])
 
   const isLoading = syncState.type === "loading"
+  const demoMode = isDemoMode()
 
   return (
     <Dialog
@@ -67,21 +69,35 @@ export default function SyncModal(props: Props) {
         <div className="flex flex-col gap-4 mb-2">
           <DatabaseStats />
 
-          <Button
-            onClick={() => startSync({fullSync: false})}
-            disabled={isLoading}
-          >
-            {isLoading ? "Syncing..." : "Sync"}
-          </Button>
+          {!demoMode && (
+            <Button
+              onClick={() => startSync({fullSync: false})}
+              disabled={isLoading}
+            >
+              {isLoading ? "Syncing..." : "Sync"}
+            </Button>
+          )}
 
           <Button
             onClick={() => startSync({fullSync: true})}
             disabled={isLoading}
           >
-            {isLoading ? "Syncing..." : "Full sync"}
+            {isLoading
+              ? demoMode
+                ? "Generating..."
+                : "Syncing..."
+              : demoMode
+                ? "Regenerate demo data"
+                : "Full sync"}
           </Button>
 
-          <Button onClick={resetAuth}>Reset auth</Button>
+          {demoMode ? (
+            <Button onClick={() => deleteDatabase().then(exitDemoMode)}>
+              Exit demo
+            </Button>
+          ) : (
+            <Button onClick={resetAuth}>Reset auth</Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>
