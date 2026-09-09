@@ -14,7 +14,7 @@ import useToday from "../../helpers/useToday"
 import useWindowSize from "../../helpers/useWindowSize"
 import LayerRows from "./LayerRows"
 import ZoomedLayer from "./ZoomedLayer"
-import {CALENDAR_MAX_WIDTH_PX} from "./calendarLayout"
+import {getCalendarWidth} from "./calendarLayout"
 
 export default memo(function Calendar() {
   const cellSize = useAtomValue(cellSizeAtom)
@@ -29,7 +29,7 @@ export default memo(function Calendar() {
   const today = useToday()
 
   const windowSize = useWindowSize()
-  const width = Math.min(CALENDAR_MAX_WIDTH_PX, windowSize.width)
+  const width = getCalendarWidth(windowSize.width)
 
   // Every cell carries its own date, so one handler covers the whole calendar.
   function onClick(e: React.MouseEvent) {

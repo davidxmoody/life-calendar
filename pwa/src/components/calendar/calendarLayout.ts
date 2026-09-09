@@ -52,6 +52,34 @@ export function getBlockShape(cellSize: CellSize): BlockShape {
 // whatever size makes a whole number of blocks fill that width.
 export const CALENDAR_MAX_WIDTH_PX = 685
 export const CALENDAR_PADDING_PX = 16
+
+// Below this the app collapses to a single pane, so the calendar is welcome to
+// the whole viewport.
+const MULTI_PANE_MIN_WIDTH_PX = 768
+// Never shrink the calendar below this: past here the cells stop being legible.
+const CALENDAR_MIN_WIDTH_PX = 300
+// Share of the viewport the calendar may occupy while it sits alongside the
+// timeline and content panes. It only reaches its full width once the display
+// is wide enough (~2000px) for all three to breathe.
+const CALENDAR_VIEWPORT_FRACTION = 0.34
+
+// How wide to draw the calendar for a given viewport. In the multi-pane layout
+// it takes a fraction of the viewport so a narrow display (a landscape iPad,
+// say) leaves room for the timeline and content panes; the grid scales its
+// cells down to match.
+export function getCalendarWidth(viewportWidth: number): number {
+  if (viewportWidth < MULTI_PANE_MIN_WIDTH_PX) {
+    return Math.min(CALENDAR_MAX_WIDTH_PX, viewportWidth)
+  }
+
+  return Math.min(
+    CALENDAR_MAX_WIDTH_PX,
+    Math.max(
+      CALENDAR_MIN_WIDTH_PX,
+      Math.round(viewportWidth * CALENDAR_VIEWPORT_FRACTION),
+    ),
+  )
+}
 export const BLOCK_GAP_PX: Record<CellSize, number> = {day: 1, week: 4}
 
 const TARGET_CELL_PX = 10
